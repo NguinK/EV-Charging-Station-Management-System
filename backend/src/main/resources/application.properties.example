@@ -1,8 +1,9 @@
 spring.application.name=EV_CSMS
 server.port=8080
+
 spring.datasource.url=jdbc:sqlserver://localhost:1433;databaseName=EVChargingDB;encrypt=false
-spring.datasource.username=sa
-spring.datasource.password=123456
+spring.datasource.username=
+spring.datasource.password=
 
 # JPA / HIBERNATE CONFIG
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.SQLServerDialect
