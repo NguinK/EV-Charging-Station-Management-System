@@ -1,7 +1,6 @@
-package com.project.backend.dto;
+package com.evcharging.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.project.backend.enums.Role;
 import lombok.Data;
 
 @Data

@@ -1,4 +1,4 @@
-package com.project.backend.entity;
+package com.evcharging.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
