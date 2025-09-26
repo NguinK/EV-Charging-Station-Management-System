@@ -3,6 +3,7 @@ package com.evcharging.service;
 import com.evcharging.dto.AdminCreateDTO;
 import com.evcharging.dto.AdminResponseDTO;
 import com.evcharging.dto.AdminUpdateDTO;
+import com.evcharging.dto.LoginDTO;
 import com.evcharging.entity.Admin;
 import com.evcharging.repository.AdminRepository;
 
@@ -25,6 +26,13 @@ import java.util.Optional;
 public class AdminService {
     private final AdminRepository adminRepository;
     private final ModelMapper modelMapper;
+
+    @Transactional(readOnly = true)
+    public Optional<AdminResponseDTO> login(LoginDTO dto) {
+        return adminRepository.findByAccount_Email(dto.getEmail())
+                .filter(a -> a.getAccount().getPassword().equals(dto.getPassword()))
+                .map(a -> modelMapper.map(a, AdminResponseDTO.class));
+    }
 
     @Transactional(readOnly = true)
     public Page<AdminResponseDTO> getAllAdmins(Pageable pageable) {
