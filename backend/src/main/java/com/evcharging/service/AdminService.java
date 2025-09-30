@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,7 @@ import java.util.Optional;
 public class AdminService {
     private final AdminRepository adminRepository;
     private final ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
     public Optional<AdminResponseDTO> login(LoginDTO dto) {
@@ -33,6 +36,7 @@ public class AdminService {
                 .filter(a -> a.getAccount().getPassword().equals(dto.getPassword()))
                 .map(a -> modelMapper.map(a, AdminResponseDTO.class));
     }
+
 
     @Transactional(readOnly = true)
     public Page<AdminResponseDTO> getAllAdmins(Pageable pageable) {
