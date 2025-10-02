@@ -2,6 +2,7 @@ package com.evcharging.config;
 
 
 //import lombok.RequiredArgsConstructor;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 //import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -30,6 +31,21 @@ public class SecurityConfig {
                 .httpBasic(Customizer.withDefaults());
         return http.build();
     }
+
+//    @Bean
+//    public org.springdoc.core.customizers.OpenApiCustomiser securityResponses() {
+//        return openApi -> openApi.getPaths().forEach((path, item) ->
+//                item.readOperations().forEach(op -> {
+//                    // Nếu operation yêu cầu bearerAuth thì thêm response mẫu
+//                    var requiresAuth = op.getSecurity() != null && !op.getSecurity().isEmpty();
+//                    if (requiresAuth) {
+//                        op.getResponses()
+//                                .addApiResponse("401", new ApiResponse().description("Unauthorized"))
+//                                .addApiResponse("403", new ApiResponse().description("Forbidden"));
+//                    }
+//                })
+//        );
+//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
