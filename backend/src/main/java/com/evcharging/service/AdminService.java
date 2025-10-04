@@ -1,9 +1,7 @@
 package com.evcharging.service;
 
-import com.evcharging.dto.AdminCreateDTO;
-import com.evcharging.dto.AdminResponseDTO;
-import com.evcharging.dto.AdminUpdateDTO;
-import com.evcharging.dto.LoginDTO;
+import com.evcharging.config.jwtUtil;
+import com.evcharging.dto.*;
 import com.evcharging.entity.Admin;
 import com.evcharging.repository.AdminRepository;
 
@@ -29,13 +27,22 @@ public class AdminService {
     private final AdminRepository adminRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
+    private final jwtUtil jwtUtil;
 
     @Transactional(readOnly = true)
-    public Optional<AdminResponseDTO> login(LoginDTO dto) {
+    public Optional<LoginResponseDTO> login(LoginDTO dto) {
         return adminRepository.findByAccount_Email(dto.getEmail())
-                .filter(a -> a.getAccount().getPassword().equals(dto.getPassword()))
-                .map(a -> modelMapper.map(a, AdminResponseDTO.class));
+                .filter(a -> passwordEncoder.matches(dto.getPassword(), a.getAccount().getPassword()))
+                .map(a -> {
+                    String token = jwtUtil.generateToken(a.getAccount().getEmail());
+                    LoginResponseDTO response = new LoginResponseDTO();
+                    response.setToken(token);
+                    response.setFullName(a.getFullName());
+                    return response;
+
+                });
     }
+
 
 
     @Transactional(readOnly = true)
@@ -71,4 +78,5 @@ public class AdminService {
             return true;
         }).orElse(false);
     }
+
 }

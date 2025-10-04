@@ -2,6 +2,7 @@ package com.evcharging.controller;
 
 import com.evcharging.dto.LoginDTO;
 import com.evcharging.dto.AdminResponseDTO;
+import com.evcharging.dto.LoginResponseDTO;
 import com.evcharging.service.AdminService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class AdminController {
 
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO dto) {
-        Optional<AdminResponseDTO> admin = adminService.login(dto);
+        Optional<LoginResponseDTO> admin = adminService.login(dto);
         if (admin.isPresent()) {
             return ResponseEntity.ok(admin.get());
         } else {
