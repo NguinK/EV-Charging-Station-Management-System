@@ -1,13 +1,29 @@
 package com.evcharging.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
-@Getter @Setter
+/**
+ * DTO dùng để tạo mới trạm sạc (Charging Station)
+ * Dành cho Admin trong trang quản trị hệ thống.
+ */
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ChargingStationCreateDTO {
-    private String name;
-    private String location;
-    private String status; // ONLINE/OFFLINE
-    private Integer totalPorts;
 
+    @NotBlank(message = "Station name is required")
+    private String name;
+
+    @NotBlank(message = "Location is required")
+    private String location;
+
+    @NotBlank(message = "Status is required") // ONLINE / OFFLINE
+    private String status;
+
+    @NotNull(message = "Total ports is required")
+    private Integer totalPorts;
 }
