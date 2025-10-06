@@ -30,9 +30,9 @@ export default function EVHeader() {
             component="img"
             src="/ev_logo.png"
             alt="EV Station"
-            sx={{ width: 30, height: 30, objectFit: "contain" }}
+            sx={{ width: 80, height: 50, objectFit: "contain" }}
           />
-          <Typography
+          {/* <Typography
             variant="h6"
             sx={{
               fontWeight: 700,
@@ -43,7 +43,7 @@ export default function EVHeader() {
             }}
           >
             EV Station
-          </Typography>
+          </Typography> */}
         </Box>
 
         {/* Nav items chia đều */}

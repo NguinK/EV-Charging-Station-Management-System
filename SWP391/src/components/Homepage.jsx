@@ -7,8 +7,8 @@ import {
   Button,
   Stack,
 } from "@mui/material";
-import EVHeader from "../layout/Header"; // dùng lại header cũ
-import { EVFooter } from "../layout/Footer"; // dùng lại footer
+import EVHeader from "../layout/Header";
+import { EVFooter } from "../layout/Footer";
 
 export default function Homepage() {
   return (
