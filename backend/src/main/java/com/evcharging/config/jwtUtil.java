@@ -21,7 +21,7 @@ public class jwtUtil {
                 .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 ngày
-                .signWith(SECRET_KEY, SignatureAlgorithm.HS256) // ✅ đúng
+                .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
                 .compact();
     }
 }

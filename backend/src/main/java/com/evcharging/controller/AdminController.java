@@ -1,12 +1,15 @@
 package com.evcharging.controller;
 
-import com.evcharging.dto.LoginDTO;
-import com.evcharging.dto.AdminResponseDTO;
-import com.evcharging.dto.LoginResponseDTO;
+import com.evcharging.dto.*;
 import com.evcharging.service.AdminService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import jakarta.validation.Valid;
+import java.util.Optional;
 
 import java.util.Optional;
 
@@ -29,4 +32,42 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login failed");
         }
     }
+    // GET ALL ADMINS (có phân trang)
+    @GetMapping
+    public Page<AdminResponseDTO> getAllAdmins(Pageable pageable) {
+        return adminService.getAllAdmins(pageable);
+    }
+
+    // GET ADMIN BY ID
+    @GetMapping("/{id}")
+    public ResponseEntity<AdminResponseDTO> getAdminById(@PathVariable Long id) {
+        return adminService.getAdminById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // CREATE ADMIN
+    @PostMapping
+    public ResponseEntity<AdminResponseDTO> createAdmin(@Valid @RequestBody AdminCreateDTO dto) {
+        AdminResponseDTO created = adminService.createAdmin(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    //  UPDATE ADMIN
+    @PutMapping("/{id}")
+    public ResponseEntity<AdminResponseDTO> updateAdmin(@PathVariable Long id,
+                                                        @Valid @RequestBody AdminUpdateDTO dto) {
+        return adminService.updateAdmin(id, dto)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // DELETE ADMIN
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAdmin(@PathVariable Long id) {
+        return adminService.deleteAdmin(id)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
+    }
+
 }
