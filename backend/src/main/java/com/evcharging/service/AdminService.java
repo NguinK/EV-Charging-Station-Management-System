@@ -1,16 +1,17 @@
 package com.evcharging.service;
 
-import com.evcharging.config.jwtUtil;
+import com.evcharging.config.JwtUtil;
 import com.evcharging.dto.*;
+import com.evcharging.entity.Account;
 import com.evcharging.entity.Admin;
 import com.evcharging.repository.AdminRepository;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 
+import java.time.ZoneId;
 import java.util.Optional;
 
 @Service
@@ -27,7 +29,7 @@ public class AdminService {
     private final AdminRepository adminRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
-    private final jwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
     @Transactional(readOnly = true)
     public Optional<LoginResponseDTO> login(LoginDTO dto) {
@@ -38,6 +40,8 @@ public class AdminService {
                     LoginResponseDTO response = new LoginResponseDTO();
                     response.setToken(token);
                     response.setFullName(a.getFullName());
+                    response.setEmail(a.getAccount().getEmail());
+                    response.setRole(a.getAccount().getRole());
                     return response;
 
                 });
@@ -57,10 +61,45 @@ public class AdminService {
 
     @Transactional
     public AdminResponseDTO createAdmin(@Valid AdminCreateDTO dto) {
-        Admin admin = modelMapper.map(dto, Admin.class);
+        // Tạo Account từ DTO
+        Account account = new Account();
+        account.setEmail(dto.getEmail());
+        account.setPassword(passwordEncoder.encode(dto.getPassword()));
+        account.setRole(dto.getRole());
+        account.setEnabled(dto.isActive());
+        account.setFullName(dto.getFullName());
+        account.setPhone(dto.getPhone());
+        account.setAccountNonExpired(true);
+        account.setAccountNonLocked(true);
+
+        // Map sang Admin
+        Admin admin = new Admin();
+        admin.setFullName(dto.getFullName());
+        admin.setAccount(account); // gán account cho admin
         Admin saved = adminRepository.save(admin);
-        return modelMapper.map(saved, AdminResponseDTO.class);
+
+        // Map sang DTO trả về
+        AdminResponseDTO response = new AdminResponseDTO();
+        response.setId(saved.getId());
+        response.setFullName(saved.getFullName());
+        response.setEmail(saved.getAccount().getEmail());
+        response.setPhone(saved.getAccount().getPhone());
+        response.setRole(saved.getAccount().getRole());
+        response.setActive(saved.getAccount().isEnabled());
+
+        if (saved.getCreatedAt() != null) {
+            response.setCreatedAt(saved.getCreatedAt()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDateTime());
+        }
+        if (saved.getUpdatedAt() != null) {
+            response.setUpdatedAt(saved.getUpdatedAt()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDateTime());
+        }
+        return response;
     }
+
 
     @Transactional
     public Optional<AdminResponseDTO> updateAdmin(Long id, @Valid AdminUpdateDTO dto) {

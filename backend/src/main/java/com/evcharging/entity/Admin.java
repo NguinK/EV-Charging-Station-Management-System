@@ -10,14 +10,17 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 
 @Entity
 @Getter
 @Setter
 @Table(name = "admin")
+@EntityListeners(AuditingEntityListener.class)
 public class Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,17 +30,18 @@ public class Admin {
     @Column(nullable = false, length = 120)
     private String fullName;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id", nullable = false, unique = true)
     @ToString.Exclude
     private Account account;
 
     @CreatedDate
     @Column(updatable = false)
-    private Instant createdAt;
+    private LocalDateTime createdAt;
 
-    @LastModifiedDate
-    private Instant updatedAt;
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime updatedAt;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

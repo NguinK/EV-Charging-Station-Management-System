@@ -33,13 +33,13 @@ public class AdminController {
         }
     }
     // GET ALL ADMINS (có phân trang)
-    @GetMapping
+    @GetMapping("/auth/getAllAdmin")
     public Page<AdminResponseDTO> getAllAdmins(Pageable pageable) {
         return adminService.getAllAdmins(pageable);
     }
 
     // GET ADMIN BY ID
-    @GetMapping("/{id}")
+    @GetMapping("/auth/ById/{id}")
     public ResponseEntity<AdminResponseDTO> getAdminById(@PathVariable Long id) {
         return adminService.getAdminById(id)
                 .map(ResponseEntity::ok)
@@ -47,14 +47,14 @@ public class AdminController {
     }
 
     // CREATE ADMIN
-    @PostMapping
+    @PostMapping("/auth/createAdmin")
     public ResponseEntity<AdminResponseDTO> createAdmin(@Valid @RequestBody AdminCreateDTO dto) {
         AdminResponseDTO created = adminService.createAdmin(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     //  UPDATE ADMIN
-    @PutMapping("/{id}")
+    @PutMapping("/auth/updateAdmin/{id}")
     public ResponseEntity<AdminResponseDTO> updateAdmin(@PathVariable Long id,
                                                         @Valid @RequestBody AdminUpdateDTO dto) {
         return adminService.updateAdmin(id, dto)
@@ -63,7 +63,7 @@ public class AdminController {
     }
 
     // DELETE ADMIN
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/auth/deleteAdmin/{id}")
     public ResponseEntity<Void> deleteAdmin(@PathVariable Long id) {
         return adminService.deleteAdmin(id)
                 ? ResponseEntity.noContent().build()

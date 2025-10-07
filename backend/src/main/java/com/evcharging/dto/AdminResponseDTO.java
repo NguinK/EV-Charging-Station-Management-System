@@ -21,7 +21,7 @@ public class AdminResponseDTO {
     private String phone;
     private Role role; // ví dụ: ADMIN, SUPER_ADMIN
     private boolean active;
-
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }
