@@ -39,7 +39,7 @@ public class Admin {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
-    @CreatedDate
+    @LastModifiedDate
     @Column(updatable = false)
     private LocalDateTime updatedAt;
 

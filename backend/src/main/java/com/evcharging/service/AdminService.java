@@ -72,33 +72,38 @@ public class AdminService {
         account.setAccountNonExpired(true);
         account.setAccountNonLocked(true);
 
-        // Map sang Admin
+        // Tạo Admin và gắn Account
         Admin admin = new Admin();
         admin.setFullName(dto.getFullName());
-        admin.setAccount(account); // gán account cho admin
+        admin.setAccount(account);
+
+        // Lưu vào DB
         Admin saved = adminRepository.save(admin);
 
-        // Map sang DTO trả về
-        AdminResponseDTO response = new AdminResponseDTO();
-        response.setId(saved.getId());
-        response.setFullName(saved.getFullName());
-        response.setEmail(saved.getAccount().getEmail());
-        response.setPhone(saved.getAccount().getPhone());
-        response.setRole(saved.getAccount().getRole());
-        response.setActive(saved.getAccount().isEnabled());
-
-        if (saved.getCreatedAt() != null) {
-            response.setCreatedAt(saved.getCreatedAt()
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDateTime());
-        }
-        if (saved.getUpdatedAt() != null) {
-            response.setUpdatedAt(saved.getUpdatedAt()
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDateTime());
-        }
-        return response;
+        // Trả về DTO đã map
+        return mapToResponse(saved);
     }
+
+        // Hàm map sang DTO trả về
+        private AdminResponseDTO mapToResponse(Admin admin){
+            AdminResponseDTO response = new AdminResponseDTO();
+            response.setId(admin.getId());
+            response.setFullName(admin.getFullName());
+
+            Account acc = admin.getAccount();
+            response.setEmail(acc.getEmail());
+            response.setPhone(acc.getPhone());
+            response.setRole(acc.getRole());
+            response.setActive(acc.isEnabled());
+
+            if (admin.getCreatedAt() != null) {
+                response.setCreatedAt(admin.getCreatedAt());
+            }
+            if (admin.getUpdatedAt() != null) {
+                response.setUpdatedAt(admin.getUpdatedAt());
+            }
+            return response;
+        }
 
 
     @Transactional
