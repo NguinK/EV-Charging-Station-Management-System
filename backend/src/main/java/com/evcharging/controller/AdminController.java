@@ -2,6 +2,7 @@ package com.evcharging.controller;
 
 import com.evcharging.dto.*;
 import com.evcharging.service.AdminService;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,8 +34,8 @@ public class AdminController {
         }
     }
     // GET ALL ADMINS (có phân trang)
-    @GetMapping("/auth/getAllAdmin")
-    public Page<AdminResponseDTO> getAllAdmins(Pageable pageable) {
+    @GetMapping("/auth/getAllAdmins")
+    public Page<AdminResponseDTO> getAllAdmins(@ParameterObject Pageable pageable) {
         return adminService.getAllAdmins(pageable);
     }
 

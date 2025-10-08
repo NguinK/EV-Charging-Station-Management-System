@@ -19,7 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
@@ -47,11 +49,10 @@ public class AdminService {
                 });
     }
 
-
-
     @Transactional(readOnly = true)
     public Page<AdminResponseDTO> getAllAdmins(Pageable pageable) {
-        return adminRepository.findAll(pageable).map(a -> modelMapper.map(a, AdminResponseDTO.class));
+        return adminRepository.findAll(pageable)
+                .map(this::mapToResponse);
     }
 
     @Transactional(readOnly = true)
