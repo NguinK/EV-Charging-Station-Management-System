@@ -5,23 +5,15 @@ import com.evcharging.dto.*;
 import com.evcharging.entity.Account;
 import com.evcharging.entity.Admin;
 import com.evcharging.repository.AdminRepository;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-
-
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
@@ -57,7 +49,7 @@ public class AdminService {
 
     @Transactional(readOnly = true)
     public Optional<AdminResponseDTO> getAdminById(Long id) {
-        return adminRepository.findById(id).map(a -> modelMapper.map(a, AdminResponseDTO.class));
+        return adminRepository.findById(id).map(this::mapToResponse);
     }
 
     @Transactional
