@@ -8,6 +8,8 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.Date;
+
 
 /**
  * DTO dùng khi Admin hoặc hệ thống tạo tài khoản người dùng mới.
@@ -18,7 +20,7 @@ import jakarta.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserCreateDTO {
+public class EVDriverCreateDTO {
 
     @NotBlank
     @Size(min = 2, max = 100)
@@ -36,6 +38,10 @@ public class UserCreateDTO {
     @Size(min = 6, message = "Mật khẩu phải có ít nhất 6 ký tự")
     private String password;
 
-    @NotNull
-    private Role role; // ADMIN, EV_DRIVER, CS_STAFF
+    // Thông tin bổ sung cho EV Driver
+    private String driverLicense;
+    private String vehicleNumber;
+    private String vehicleType;
+    private Date dateOfBirth;
+    private String address;
 }

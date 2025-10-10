@@ -30,7 +30,7 @@ public class AdminService {
         return adminRepository.findByAccount_Email(dto.getEmail())
                 .filter(a -> passwordEncoder.matches(dto.getPassword(), a.getAccount().getPassword()))
                 .map(a -> {
-                    String token = jwtUtil.generateToken(a.getAccount().getEmail());
+                    String token = jwtUtil.generateToken(a.getAccount().getEmail(), a.getAccount().getRole());
                     LoginResponseDTO response = new LoginResponseDTO();
                     response.setToken(token);
                     response.setFullName(a.getFullName());
@@ -60,7 +60,6 @@ public class AdminService {
         account.setPassword(passwordEncoder.encode(dto.getPassword()));
         account.setRole(dto.getRole());
         account.setEnabled(dto.isActive());
-        account.setFullName(dto.getFullName());
         account.setPhone(dto.getPhone());
         account.setAccountNonExpired(true);
         account.setAccountNonLocked(true);

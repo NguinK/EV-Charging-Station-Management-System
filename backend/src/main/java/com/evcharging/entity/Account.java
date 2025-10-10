@@ -1,7 +1,6 @@
 package com.evcharging.entity;
 
 import com.evcharging.enums.Role;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -13,6 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Collections;
 
 @Entity
 @Table(
@@ -22,43 +22,48 @@ import java.util.Collection;
                 @Index(name = "idx_account_phone", columnList = "phone", unique = true)
         }
 )
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Account implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Email @NotBlank
+    @Email
+    @NotBlank
     @Column(nullable = false, unique = true, length = 150)
     private String email;
 
-    @Pattern(regexp = "^[0-9]{10,11}$", message = "Phone number should be 10-11 digits")
-    @Column(nullable = false, length = 11)
+    // Cho phép số 0xxxxxxxxx hoặc +84xxxxxxxxx
+    @Pattern(regexp = "^(\\+84|0)\\d{9,10}$", message = "Phone number should be valid")
+    @Column(nullable = false, length = 15, unique = true)
     private String phone;
 
-    @NotBlank @Size(min = 6)
+    @NotBlank
+    @Size(min = 6)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
-
-    @NotBlank @Size(min = 2, max = 100)
-    @Column(nullable = false, length = 100)
-    private String fullName;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private Role role;
 
-    @Builder.Default private boolean accountNonExpired = true;
-    @Builder.Default private boolean accountNonLocked = true;
-    @Builder.Default private boolean credentialsNonExpired = true;
-    @Builder.Default private boolean enabled = true;
+    @Builder.Default
+    private boolean accountNonExpired = true;
+    @Builder.Default
+    private boolean accountNonLocked = true;
+    @Builder.Default
+    private boolean credentialsNonExpired = true;
+    @Builder.Default
+    private boolean enabled = true;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Role safeRole = (role != null) ? role : Role.EV_DRIVER;
-        return safeRole.getGrantedAuthorities();
+        return (role != null) ? role.getGrantedAuthorities() : Collections.emptyList();
     }
 
     @Override public String getUsername() { return email; }
@@ -67,11 +72,10 @@ public class Account implements UserDetails {
     @Override public boolean isCredentialsNonExpired() { return credentialsNonExpired; }
     @Override public boolean isEnabled() { return enabled; }
 
-    @PrePersist @PreUpdate
+    @PrePersist
+    @PreUpdate
     private void normalize() {
-        if(email != null) email = email.trim().toLowerCase();
-        if(fullName != null) fullName = fullName.trim();
-        if(phone != null) phone = phone.trim();
+        if (email != null) email = email.trim().toLowerCase();
+        if (phone != null) phone = phone.trim();
     }
-
 }
