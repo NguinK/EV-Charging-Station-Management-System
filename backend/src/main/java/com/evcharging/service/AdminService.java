@@ -102,6 +102,24 @@ public class AdminService {
     public Optional<AdminResponseDTO> updateAdmin(Long id, @Valid AdminUpdateDTO dto) {
         return adminRepository.findById(id).map(entity -> {
             entity.setFullName(dto.getFullName());
+            // Lấy Account để cập nhật
+           Account account = entity.getAccount();
+
+            // Cập nhật số điện thoại nếu có
+            if (dto.getPhone() != null && !dto.getPhone().isBlank()) {
+
+                account.setPhone(dto.getPhone());
+            }
+
+            // Cập nhật password nếu có (chỉ khi người dùng muốn đổi mật khẩu)
+            if (dto.getNewPassword() != null && !dto.getNewPassword().isBlank()) {
+                account.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+            }
+
+            // Cập nhật trạng thái active (cho phép SuperAdmin khóa/mở tài khoản)
+            account.setEnabled(dto.isActive());
+
+
             Admin saved = adminRepository.save(entity);
             return modelMapper.map(saved, AdminResponseDTO.class);
         });
