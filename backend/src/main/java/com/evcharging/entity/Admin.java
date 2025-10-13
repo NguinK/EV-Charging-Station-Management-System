@@ -1,8 +1,6 @@
 package com.evcharging.entity;
 
 import com.evcharging.enums.AdminStatus;
-import com.evcharging.enums.Role;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -12,9 +10,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-
 
 @Entity
 @Getter
@@ -40,7 +36,7 @@ public class Admin {
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(updatable = false)
+    @Column  // BỎ updatable = false - đây là lỗi chính!
     private LocalDateTime updatedAt;
 
     @Enumerated(EnumType.STRING)
