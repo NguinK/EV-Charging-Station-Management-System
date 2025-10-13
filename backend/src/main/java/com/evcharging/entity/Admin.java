@@ -36,7 +36,7 @@ public class Admin {
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column  // BỎ updatable = false - đây là lỗi chính!
+    @Column
     private LocalDateTime updatedAt;
 
     @Enumerated(EnumType.STRING)
