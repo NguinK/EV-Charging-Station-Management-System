@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.project</groupId>
 	<artifactId>backend</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1</version>
 	<name>EV_CSMS</name>
 	<description>Backend code for project</description>
 	<url/>
@@ -55,7 +55,7 @@
 		</dependency>
 
 
-		<!-- Lombol -->
+		<!-- Lombok -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
