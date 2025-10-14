@@ -2,11 +2,13 @@ package com.evcharging.entity;
 
 import com.evcharging.enums.SessionStatus;
 import jakarta.persistence.*;
+import lombok.Data;
 
 
 import java.time.LocalDateTime;
 
 @Entity
+@Data
 public class ChargingSession {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

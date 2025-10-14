@@ -1,7 +1,8 @@
 package com.evcharging.service;
 
-import com.evcharging.entity.Admin;
-import com.evcharging.repository.AdminRepository;
+import com.evcharging.entity.Account;
+
+import com.evcharging.repository.AccountRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,26 +13,28 @@ import java.util.List;
 
 
 @Service
-    public class CustomUserDetailsService implements UserDetailsService {
+public class CustomUserDetailsService implements UserDetailsService {
 
-        private final AdminRepository adminRepository;
+    private final AccountRepository accountRepository;
 
-        public CustomUserDetailsService(AdminRepository adminRepository) {
-            this.adminRepository = adminRepository;
-        }
-
-        @Override
-        public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-            Admin admin = adminRepository.findByAccount_Email(email)
-                    .orElseThrow(() -> new UsernameNotFoundException("Admin not found"));
-
-            return new org.springframework.security.core.userdetails.User(
-                    admin.getAccount().getEmail(),
-                    admin.getAccount().getPassword(),
-                    List.of(new SimpleGrantedAuthority(admin.getAccount().getRole().name()))
-            );
-        }
-
+    public CustomUserDetailsService(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
     }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+
+        // Lấy role từ account (ví dụ: DRIVER, STAFF, ADMIN)
+        String roleName = account.getRole().name(); // Enum Role { DRIVER, STAFF, ADMIN }
+
+        return new org.springframework.security.core.userdetails.User(
+                account.getEmail(),
+                account.getPassword(),
+                List.of(new SimpleGrantedAuthority("ROLE_" + roleName))
+        );
+    }
+}
 
 

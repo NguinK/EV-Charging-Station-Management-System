@@ -5,10 +5,13 @@ import com.evcharging.enums.PaymentMethod;
 import com.evcharging.enums.TransactionStatus;
 import com.evcharging.enums.TransactionType;
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Data
+@Table(name = "transactions")
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

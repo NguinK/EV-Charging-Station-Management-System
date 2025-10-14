@@ -1,7 +1,8 @@
 package com.evcharging.dto;
-
+import lombok.Data;
 import java.time.LocalDate;
 
+@Data
 public class DriverProfileDTO {
     private String fullName;
     private LocalDate dateOfBirth;

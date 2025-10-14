@@ -3,7 +3,8 @@ package com.evcharging.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import java.util.Date;
+import java.time.LocalDate;
+
 
 @Getter
 @Setter
@@ -21,6 +22,6 @@ public class EVDriver {
     private String driverLicense;
     private String vehicleNumber;
     private String vehicleType;
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
     private String address;
 }

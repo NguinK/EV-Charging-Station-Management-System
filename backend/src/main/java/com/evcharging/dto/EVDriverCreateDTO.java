@@ -1,14 +1,13 @@
 package com.evcharging.dto;
 
-import com.evcharging.enums.Role;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
 
-import java.util.Date;
 
 
 /**
@@ -42,6 +41,6 @@ public class EVDriverCreateDTO {
     private String driverLicense;
     private String vehicleNumber;
     private String vehicleType;
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
     private String address;
 }
