@@ -24,15 +24,6 @@ public class EVDriverController {
         return ResponseEntity.ok(driverService.getProfile(driverId));
     }
 
-    // Cập nhật hồ sơ tài xế
-    @PutMapping("/updateProfile/{driverId}")
-    public ResponseEntity<DriverProfileDTO> updateProfile(
-            @PathVariable Long driverId,
-            @RequestBody DriverProfileDTO dto
-    ) {
-        return ResponseEntity.ok(driverService.updateProfile(driverId, dto));
-    }
-
     // Lấy lịch sử giao dịch trong khoảng thời gian
     @GetMapping("/transactions/{driverId}")
     public ResponseEntity<List<TransactionDTO>> getTransactions(
