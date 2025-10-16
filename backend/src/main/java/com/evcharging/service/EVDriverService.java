@@ -28,20 +28,6 @@ public class EVDriverService {
         return mapToProfileDTO(driver);
     }
 
-    // Cập nhật hồ sơ tài xế
-    public DriverProfileDTO updateProfile(Long driverId, DriverProfileDTO dto) {
-        EVDriver driver = driverRepository.findById(driverId)
-                .orElseThrow(() -> new RuntimeException("Driver not found with id: " + driverId));
-
-        driver.setFullName(dto.getFullName());
-        driver.setDateOfBirth(dto.getDateOfBirth());
-        driver.setAddress(dto.getAddress());
-        driver.setDriverLicense(dto.getDriverLicense());
-
-        EVDriver saved = driverRepository.save(driver);
-        return mapToProfileDTO(saved);
-    }
-
     // Lấy lịch sử giao dịch
     public List<TransactionDTO> getTransactions(Long driverId, LocalDate from, LocalDate to) {
         return transactionRepository
