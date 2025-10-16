@@ -31,4 +31,4 @@ replay_pid*
 target/
 
 # Application configuration
-#backend/src/main/resources/application.properties
+backend/src/main/resources/application-dev.properties
