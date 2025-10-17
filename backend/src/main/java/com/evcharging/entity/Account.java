@@ -28,7 +28,6 @@ import java.util.Collections;
 @AllArgsConstructor
 @Builder
 public class Account implements UserDetails {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

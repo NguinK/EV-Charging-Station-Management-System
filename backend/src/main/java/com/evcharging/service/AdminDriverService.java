@@ -5,6 +5,9 @@ import com.evcharging.entity.EVDriver;
 import com.evcharging.repository.EVDriverRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class AdminDriverService {
 
@@ -65,4 +68,13 @@ public class AdminDriverService {
         dto.setVehicleType(driver.getVehicleType());
         return dto;
     }
+
+    public List<DriverProfileDTO> getAllDrivers() {
+        return driverRepository.findAll()
+                .stream()
+                .map(this::mapToProfileDTO)
+                .collect(Collectors.toList());
+    }
+
+
 }
