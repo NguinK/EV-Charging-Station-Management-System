@@ -15,6 +15,7 @@ import {
   Slide,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import EVHeader from "./layout/Header";
 
 export default function PricePage() {
   const [show, setShow] = React.useState(false);
@@ -25,6 +26,10 @@ export default function PricePage() {
   }, []);
 
   return (
+    <>
+    <EVHeader/>
+     
+    
     <Box
       sx={{
         bgcolor: "#0f0f0f",
@@ -67,7 +72,7 @@ export default function PricePage() {
                     align="center"
                     sx={{ fontSize: 36, fontWeight: 900, mb: 3 }}
                   >
-                    9.000Đ/KWH
+                    9.000 VND/KWH
                   </Typography>
 
                   <Stack alignItems="center" sx={{ mb: 3 }}>
@@ -129,7 +134,7 @@ export default function PricePage() {
                     align="center"
                     sx={{ fontSize: 36, fontWeight: 900, mb: 0 }}
                   >
-                    1.000.000 VNĐ
+                    1.000.000 VND
                   </Typography>
                   <Typography align="center" sx={{ opacity: 0.7, mb: 3 }}>
                     Per Year
@@ -179,5 +184,7 @@ export default function PricePage() {
         </Grid>
       </Container>
     </Box>
+    
+    </>
   );
 }
