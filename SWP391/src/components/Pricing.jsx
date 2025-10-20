@@ -1,191 +1,108 @@
 import React from "react";
-import {
-  Box,
-  Container,
-  Typography,
-  Grid,
-  Card,
-  CardContent,
-  Button,
-  Stack,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Slide,
-} from "@mui/material";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { Layout, Row, Col, Card, Typography, Button, List } from "antd";
+import { CheckCircleFilled } from "@ant-design/icons";
 import EVHeader from "./layout/Header";
+import { EVFooter } from "./layout/Footer";
+
+const { Content } = Layout;
+
+const plans = [
+  {
+    title: "ONE TIME",
+    price: "9.000 VND/KWH",
+    description: null,
+    features: ["All station", "Booking Free"],
+    buttonLabel: "Get Started",
+  },
+  {
+    title: "SUBSCRIPTION",
+    price: "1.000.000 VND",
+    description: "Per Year",
+    features: [
+      "All station",
+      "Booking Free",
+      "4200 VND / KWH",
+      "Prioritize fast charging types",
+      "No waiting",
+    ],
+    buttonLabel: "Get Started",
+  },
+];
 
 export default function PricePage() {
-  const [show, setShow] = React.useState(false);
-
-  React.useEffect(() => {
-    const t = setTimeout(() => setShow(true), 100);
-    return () => clearTimeout(t);
-  }, []);
-
   return (
     <>
-    <EVHeader/>
-     
-    
-    <Box
-      sx={{
-        bgcolor: "#0f0f0f",
-        color: "#eaeaea",
-        py: 6,
-        minHeight: "calc(100vh - 64px - 56px)", // chừa header+footer
-        width: "100%",
-      }}
-    >
-      <Container maxWidth="lg">
-        <Typography
-          variant="h4"
-          align="center"
-          sx={{ fontWeight: 800, letterSpacing: 1, mb: 6 }}
-        >
-          PRICE
-        </Typography>
+      <EVHeader />
+      <Layout className="min-h-screen bg-neutral-950">
+        <Content className="flex flex-col items-center px-6 pb-24 pt-28">
+          <Typography.Title
+            level={2}
+            className="mb-12 text-3xl font-extrabold tracking-[0.2em] !text-zinc-100 md:text-4xl"
+          >
+            PRICE
+          </Typography.Title>
 
-        <Grid container spacing={6} justifyContent="center">
-          {/* Gói One Time */}
-          <Grid item xs={12} md={5}>
-            <Slide in={show} direction="up" timeout={500}>
-              <Card
-                sx={{
-                  bgcolor: "#121212",
-                  color: "#eaeaea",
-                  borderRadius: 2,
-                  boxShadow: 4,
-                  border: "1px solid #2b2b2b",
-                }}
-              >
-                <CardContent>
-                  <Typography
-                    align="center"
-                    sx={{ fontWeight: 800, opacity: 0.9, mb: 2 }}
-                  >
-                    ONE TIME
-                  </Typography>
-                  <Typography
-                    align="center"
-                    sx={{ fontSize: 36, fontWeight: 900, mb: 3 }}
-                  >
-                    9.000 VND/KWH
-                  </Typography>
-
-                  <Stack alignItems="center" sx={{ mb: 3 }}>
-                    <Button
-                      variant="contained"
-                      disableElevation
-                      sx={{
-                        background: "#34c759",
-                        ":hover": { background: "#2eb24f" },
-                        borderRadius: 1.2,
-                        px: 3,
-                      }}
+          <Row gutter={[32, 32]} justify="center" className="w-full max-w-5xl">
+            {plans.map((plan) => (
+              <Col xs={24} md={12} key={plan.title}>
+                <Card
+                  bordered={false}
+                  className="h-full rounded-2xl border border-neutral-800/80 bg-neutral-900/95 shadow-[0_16px_40px_rgba(15,15,15,0.65)] [&_.ant-card-body]:flex [&_.ant-card-body]:h-full [&_.ant-card-body]:flex-col [&_.ant-card-body]:gap-6 [&_.ant-card-body]:p-8 [&_.ant-card-body]:text-zinc-100"
+                >
+                  <header className="flex flex-col items-center text-center">
+                    <Typography.Title
+                      level={4}
+                      className="mb-2 text-base font-extrabold uppercase tracking-[0.4em] !text-zinc-100"
                     >
-                      Get Started
-                    </Button>
-                  </Stack>
-
-                  <List dense>
-                    {["All station", "Booking Free"].map((text) => (
-                      <ListItem key={text} sx={{ py: 0.75 }}>
-                        <ListItemIcon sx={{ minWidth: 32 }}>
-                          <CheckCircleIcon
-                            fontSize="small"
-                            sx={{ color: "#34c759" }}
-                          />
-                        </ListItemIcon>
-                        <ListItemText
-                          primaryTypographyProps={{ fontSize: 14 }}
-                          primary={text}
-                        />
-                      </ListItem>
-                    ))}
-                  </List>
-                </CardContent>
-              </Card>
-            </Slide>
-          </Grid>
-
-          {/* Gói Subscription */}
-          <Grid item xs={12} md={5}>
-            <Slide in={show} direction="up" timeout={700}>
-              <Card
-                sx={{
-                  bgcolor: "#121212",
-                  color: "#eaeaea",
-                  borderRadius: 2,
-                  boxShadow: 4,
-                  border: "1px solid #2b2b2b",
-                }}
-              >
-                <CardContent>
-                  <Typography
-                    align="center"
-                    sx={{ fontWeight: 800, opacity: 0.9, mb: 2 }}
-                  >
-                    SUBSCRIPTION
-                  </Typography>
-                  <Typography
-                    align="center"
-                    sx={{ fontSize: 36, fontWeight: 900, mb: 0 }}
-                  >
-                    1.000.000 VND
-                  </Typography>
-                  <Typography align="center" sx={{ opacity: 0.7, mb: 3 }}>
-                    Per Year
-                  </Typography>
-
-                  <Stack alignItems="center" sx={{ mb: 3 }}>
-                    <Button
-                      variant="contained"
-                      disableElevation
-                      sx={{
-                        background: "#34c759",
-                        ":hover": { background: "#2eb24f" },
-                        borderRadius: 1.2,
-                        px: 3,
-                      }}
+                      {plan.title}
+                    </Typography.Title>
+                    <Typography.Title
+                      level={2}
+                      className={`text-3xl font-black !text-zinc-100 md:text-4xl ${
+                        plan.description ? "mb-2" : "mb-8"
+                      }`}
                     >
-                      Get Started
-                    </Button>
-                  </Stack>
+                      {plan.price}
+                    </Typography.Title>
+                    {plan.description && (
+                      <Typography.Paragraph className="mb-8 text-sm uppercase tracking-[0.3em] !text-zinc-400">
+                        {plan.description}
+                      </Typography.Paragraph>
+                    )}
+                  </header>
 
-                  <List dense>
-                    {[
-                      "All station",
-                      "Booking Free",
-                      "4200 VND / KWH",
-                      "Prioritize fast charging types",
-                      "No waiting",
-                    ].map((text) => (
-                      <ListItem key={text} sx={{ py: 0.75 }}>
-                        <ListItemIcon sx={{ minWidth: 32 }}>
-                          <CheckCircleIcon
-                            fontSize="small"
-                            sx={{ color: "#34c759" }}
-                          />
-                        </ListItemIcon>
-                        <ListItemText
-                          primaryTypographyProps={{ fontSize: 14 }}
-                          primary={text}
+                  <Button
+                    type="primary"
+                    size="large"
+                    shape="round"
+                    className="mx-auto mt-2 w-full max-w-xs !bg-emerald-500 !px-8 !py-5 text-sm font-semibold uppercase tracking-wider hover:!bg-emerald-400"
+                  >
+                    {plan.buttonLabel}
+                  </Button>
+
+                  <List
+                    dataSource={plan.features}
+                    className="mt-2"
+                    renderItem={(item) => (
+                      <List.Item className="border-none px-0 py-3">
+                        <List.Item.Meta
+                          avatar={<CheckCircleFilled className="text-lg text-emerald-500" />}
+                          title={
+                            <Typography.Text className="text-sm font-medium !text-zinc-100">
+                              {item}
+                            </Typography.Text>
+                          }
                         />
-                      </ListItem>
-                    ))}
-                  </List>
-                </CardContent>
-              </Card>
-            </Slide>
-          </Grid>
-        </Grid>
-      </Container>
-      
-    </Box>
-    
+                      </List.Item>
+                    )}
+                  />
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        </Content>
+        <EVFooter />
+      </Layout>
     </>
   );
 }
