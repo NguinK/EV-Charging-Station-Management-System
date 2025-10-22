@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
@@ -16,4 +17,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             LocalDateTime from,
             LocalDateTime to
     );
+    List<Transaction> findAllByDriverId(Long driverId);
+    Optional<Transaction> findBySessionId(Long sessionId);
 }
