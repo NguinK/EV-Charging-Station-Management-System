@@ -24,13 +24,13 @@ public class TransactionController {
     }
 
     // Lấy transaction theo session
-    @GetMapping("/session/{sessionId}")
+    @GetMapping("/getTransactionfromSession/{sessionId}")
     public ResponseEntity<Transaction> getTransactionBySession(@PathVariable Long sessionId) {
         return ResponseEntity.ok(transactionService.getTransactionBySession(sessionId));
     }
 
     // Xác nhận thanh toán
-    @PostMapping("/{transactionId}/confirm")
+    @PostMapping("/{transactionId}/confirmPayment")
     public ResponseEntity<Transaction> confirmPayment(
             @PathVariable Long transactionId,
             @RequestParam boolean success) {
