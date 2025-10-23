@@ -78,8 +78,8 @@ public class ChargingSessionService {
         tx.setTimestamp(LocalDateTime.now());
         tx.setAmount(cost);
         tx.setCurrency("VND");
-        tx.setType(TransactionType.CHARGING_PAYMENT);
-        tx.setPaymentMethod(PaymentMethod.EWALLET); // hoặc BANKING/CASH tuỳ
+        tx.setType(TransactionType.PAYMENT);
+        tx.setPaymentMethod(PaymentMethod.E_WALLET); // hoặc BANKING/CASH tuỳ
         tx.setStatus(TransactionStatus.PENDING);
         tx.setInvoiceNumber("INV-" + System.currentTimeMillis());
 
