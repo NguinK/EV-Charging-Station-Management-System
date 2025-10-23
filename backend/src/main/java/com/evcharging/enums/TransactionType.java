@@ -2,9 +2,10 @@ package com.evcharging.enums;
 
 
 public enum TransactionType {
-    TOP_UP,             // Nạp tiền
-    CHARGING_PAYMENT,   // Thanh toán phiên sạc
-    SUBSCRIPTION,       // Gói thuê bao
-    REFUND              // Hoàn tiền
+    DEPOSIT,        // Nạp tiền vào ví
+    WITHDRAWAL,     // Rút tiền
+    PAYMENT,        // Thanh toán phí sạc
+    REFUND,         // Hoàn tiền
+    TRANSFER        // Chuyển khoản
 }
 
