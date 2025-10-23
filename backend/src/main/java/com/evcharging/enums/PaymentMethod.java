@@ -1,5 +1,5 @@
 package com.evcharging.enums;
 
 public enum PaymentMethod {
-    EWALLET, BANKING, CASH, CREDIT_CARD
+    E_WALLET, BANKING, CASH, CREDIT_CARD, SUBSCRIPTION
 }
