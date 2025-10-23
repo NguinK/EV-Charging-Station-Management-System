@@ -17,7 +17,13 @@ public class ChargingStation {
     private String location;        // Địa chỉ hoặc tọa độ GPS
     private String status;          // ONLINE, OFFLINE, MAINTENANCE
     private int totalPoints;        // Tổng số điểm sạc
-    private String operator;        // Đơn vị vận hành (VD: Xanh SM)
+    private String operator;
+    private double latitude;
+    private double longitude;
+
+
+    @OneToMany(mappedBy = "station", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChargingPoint> points = new ArrayList<>();
 
     @OneToMany(mappedBy = "station", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChargingSession> sessions = new ArrayList<>();

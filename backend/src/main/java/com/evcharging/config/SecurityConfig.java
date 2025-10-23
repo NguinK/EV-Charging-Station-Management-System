@@ -37,8 +37,9 @@ public class SecurityConfig {
                                 "/auth/**"
 
 
+
                         ).permitAll()
-                        .requestMatchers("/drivers/**").hasRole("EV_DRIVER")
+                        .requestMatchers("/drivers/**", "/drivers/reservations/**", "/api/charging-points","/api/stations/**").hasRole("EV_DRIVER")
                         .requestMatchers("/staff/**").hasRole("STAFF")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/admin/drivers/**").hasRole("ADMIN")

@@ -1,7 +1,9 @@
 package com.evcharging.service;
 
 import com.evcharging.dto.DriverProfileDTO;
+import com.evcharging.entity.Account;
 import com.evcharging.entity.EVDriver;
+import com.evcharging.repository.AccountRepository;
 import com.evcharging.repository.EVDriverRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ public class AdminDriverService {
     }
 
     public DriverProfileDTO createDriver(DriverProfileDTO dto) {
+
         EVDriver driver = new EVDriver();
         driver.setFullName(dto.getFullName());
         driver.setDateOfBirth(dto.getDateOfBirth());
