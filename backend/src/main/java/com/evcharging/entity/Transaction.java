@@ -32,6 +32,8 @@ public class Transaction {
 
     private String invoiceNumber;        // Mã hóa đơn điện tử
 
+    private LocalDateTime paidAt;   // Thời điểm thanh toán thành công
+
     // Quan hệ
     @ManyToOne
     @JoinColumn(name = "driver_id", nullable = false)
