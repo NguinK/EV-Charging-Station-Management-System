@@ -18,18 +18,23 @@ public class ChargingSessionService {
     private final ChargingSessionRepository sessionRepo;
     private final ReservationRepository reservationRepo;
     private final TransactionRepository transactionRepo;
+    private final NotificationService notificationService;
+
+
 
     public ChargingSessionService(ChargingSessionRepository sessionRepo,
                                   ReservationRepository reservationRepo,
-                                  TransactionRepository transactionRepo) {
+                                  TransactionRepository transactionRepo,
+                                  NotificationService notificationService) {
         this.sessionRepo = sessionRepo;
         this.reservationRepo = reservationRepo;
         this.transactionRepo = transactionRepo;
+        this.notificationService=notificationService;
     }
 
-    /**
-     * Bắt đầu phiên sạc từ một Reservation hợp lệ
-     */
+
+     //Bắt đầu phiên sạc từ một Reservation hợp lệ
+
     @Transactional
     public ChargingSession startSession(Long reservationId, int startSoc) {
         Reservation reservation = reservationRepo.findById(reservationId)
@@ -53,9 +58,8 @@ public class ChargingSessionService {
         return sessionRepo.save(session);
     }
 
-    /**
-     * Kết thúc phiên sạc, cập nhật thông tin và tạo Transaction
-     */
+
+     //Kết thúc phiên sạc, cập nhật thông tin và tạo Transaction
     @Transactional
     public ChargingSession endSession(Long sessionId, int endSoc, double energy, double cost) {
         ChargingSession session = sessionRepo.findById(sessionId)
@@ -70,6 +74,11 @@ public class ChargingSessionService {
         session.setEnergyConsumed(energy);
         session.setCost(cost);
         session.setStatus(SessionStatus.COMPLETED);
+
+        if (endSoc >= 100) {
+            notificationService.sendChargingComplete(session.getDriver());
+        }
+
 
         // Tạo Transaction gắn với session
         Transaction tx = new Transaction();
