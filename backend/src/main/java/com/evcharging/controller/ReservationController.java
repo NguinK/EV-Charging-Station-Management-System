@@ -3,6 +3,8 @@ package com.evcharging.controller;
 import com.evcharging.dto.ReservationCreateDTO;
 import com.evcharging.dto.ReservationResponseDTO;
 import com.evcharging.entity.Account;
+import com.evcharging.entity.EVDriver;
+import com.evcharging.repository.EVDriverRepository;
 import com.evcharging.service.ReservationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +17,12 @@ import java.util.List;
 public class ReservationController {
 
     private final ReservationService reservationService;
+    private final EVDriverRepository driverRepository;
 
-    public ReservationController(ReservationService reservationService) {
+
+    public ReservationController(ReservationService reservationService,  EVDriverRepository driverRepository) {
         this.reservationService = reservationService;
+        this.driverRepository = driverRepository;
     }
 
     // Tạo mới một reservation (driver đặt chỗ)
@@ -26,7 +31,12 @@ public class ReservationController {
             @RequestBody ReservationCreateDTO dto,
             @AuthenticationPrincipal Account user) {
 
-        ReservationResponseDTO response = reservationService.createReservation(user.getId(), dto);
+        // Lấy EVDriver từ accountId
+        EVDriver driver = driverRepository.findByAccountId(user.getId())
+                .orElseThrow(() -> new RuntimeException("Driver not found"));
+
+        // Gọi service với driverId
+        ReservationResponseDTO response = reservationService.createReservation(driver.getId(), dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
