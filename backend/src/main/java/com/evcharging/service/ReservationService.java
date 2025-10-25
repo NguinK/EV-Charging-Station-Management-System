@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -56,8 +57,9 @@ public class ReservationService {
         );
     }
 
-    public ReservationResponseDTO getReservation(Long id) {
-        Reservation res = reservationRepository.findById(id)
+    public ReservationResponseDTO getReservationDetails(Long driverId) {
+
+        Reservation res = reservationRepository.findById(driverId)
                 .orElseThrow(() -> new RuntimeException("Reservation not found"));
         return new ReservationResponseDTO(
                 res.getId(),
@@ -77,8 +79,12 @@ public class ReservationService {
         reservationRepository.save(res);
     }
 
-    public List<ReservationResponseDTO> getReservationsByDriver(Long driverId) {
-        List<Reservation> reservations = reservationRepository.findByDriverId(driverId);
+    public List<ReservationResponseDTO> getReservationList(Long accountId) {
+        EVDriver driver = driverRepository.findByAccountId(accountId)
+                .orElseThrow(() -> new RuntimeException("Driver not found"));
+
+        List<Reservation> reservations = reservationRepository.findByDriver(driver);
+
         return reservations.stream()
                 .map(res -> new ReservationResponseDTO(
                         res.getId(),
@@ -88,6 +94,7 @@ public class ReservationService {
                         res.getStartTime(),
                         res.getExpireTime()
                 ))
-                .toList();
+                .collect(Collectors.toList());
+
     }
 }

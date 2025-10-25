@@ -42,8 +42,8 @@ public class ReservationController {
 
     // Lấy thông tin chi tiết một reservation
     @GetMapping("/getDetails/{id}")
-    public ResponseEntity<ReservationResponseDTO> getReservation(@PathVariable Long id) {
-        ReservationResponseDTO response = reservationService.getReservation(id);
+    public ResponseEntity<ReservationResponseDTO> getReservationDetails(@PathVariable Long id) {
+        ReservationResponseDTO response = reservationService.getReservationDetails(id);
         return ResponseEntity.ok(response);
     }
 
@@ -58,7 +58,7 @@ public class ReservationController {
     @GetMapping("/getList")
     public ResponseEntity<List<ReservationResponseDTO>> getDriverReservations(
             @AuthenticationPrincipal Account user) {
-        List<ReservationResponseDTO> reservations = reservationService.getReservationsByDriver(user.getId());
+        List<ReservationResponseDTO> reservations = reservationService.getReservationList(user.getId());
         return ResponseEntity.ok(reservations);
     }
 }
