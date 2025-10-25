@@ -26,19 +26,19 @@ public class ReservationController {
     }
 
     // Tạo mới một reservation (driver đặt chỗ)
-    @PostMapping("/bookReservation")
-    public ResponseEntity<ReservationResponseDTO> createReservation(
-            @RequestBody ReservationCreateDTO dto,
-            @AuthenticationPrincipal Account user) {
-
-        // Lấy EVDriver từ accountId
-        EVDriver driver = driverRepository.findByAccountId(user.getId())
-                .orElseThrow(() -> new RuntimeException("Driver not found"));
-
-        // Gọi service với driverId
-        ReservationResponseDTO response = reservationService.createReservation(driver.getId(), dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
+//    @PostMapping("/bookReservation")
+//    public ResponseEntity<ReservationResponseDTO> createReservation(
+//            @RequestBody ReservationCreateDTO dto,
+//            @AuthenticationPrincipal Account user) {
+//
+//        // Lấy EVDriver từ accountId
+//        EVDriver driver = driverRepository.findByAccountId(user.getId())
+//                .orElseThrow(() -> new RuntimeException("Driver not found"));
+//
+//        // Gọi service với driverId
+//        ReservationResponseDTO response = reservationService.createReservation(driver.getId(), dto);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+//    }
 
     // Lấy thông tin chi tiết một reservation
     @GetMapping("/getDetails/{id}")
@@ -60,5 +60,17 @@ public class ReservationController {
             @AuthenticationPrincipal Account user) {
         List<ReservationResponseDTO> reservations = reservationService.getReservationList(user.getId());
         return ResponseEntity.ok(reservations);
+    }
+
+    @PostMapping("/auto")
+    public ResponseEntity<ReservationResponseDTO> autoApproveReservation(
+            @AuthenticationPrincipal Account user,
+            @RequestBody ReservationCreateDTO dto
+    ) {
+        // Lấy EVDriver từ accountId
+        EVDriver driver = driverRepository.findByAccountId(user.getId())
+                .orElseThrow(() -> new RuntimeException("Driver not found"));
+        ReservationResponseDTO response = reservationService.createReservationAutoApprove(driver.getId(), dto);
+        return ResponseEntity.ok(response);
     }
 }

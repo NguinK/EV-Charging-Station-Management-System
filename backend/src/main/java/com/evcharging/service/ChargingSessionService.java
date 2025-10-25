@@ -34,7 +34,6 @@ public class ChargingSessionService {
 
 
      //Bắt đầu phiên sạc từ một Reservation hợp lệ
-
     @Transactional
     public ChargingSession startSession(Long reservationId, int startSoc) {
         Reservation reservation = reservationRepo.findById(reservationId)

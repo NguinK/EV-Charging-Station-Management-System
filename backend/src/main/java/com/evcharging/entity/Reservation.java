@@ -49,4 +49,9 @@ public class Reservation {
     @OneToOne(mappedBy = "reservation", cascade = CascadeType.ALL)
     private ChargingSession chargingSession;
 
+    @ManyToOne
+    private ChargingPoint chargingPoint;
+
+
+
 }

@@ -85,32 +85,32 @@ public class ReservationService {
 
         throw new RuntimeException("Không còn điểm sạc nào trống tại thời điểm này");
     }
-    @Transactional
-    public ReservationResponseDTO createReservation(Long driverId, ReservationCreateDTO dto) {
-        EVDriver driver = driverRepository.findById(driverId)
-                .orElseThrow(() -> new RuntimeException("Driver not found"));
-        ChargingStation station = stationRepository.findById(dto.getStationId())
-                .orElseThrow(() -> new RuntimeException("Station not found"));
-
-        Reservation reservation = new Reservation();
-        reservation.setDriver(driver);
-        reservation.setStation(station);
-        reservation.setConnectorType(dto.getConnectorType());
-        reservation.setStatus(ReservationStatus.CONFIRMED);
-        reservation.setStartTime(dto.getStartTime());
-        reservation.setExpireTime(dto.getStartTime().plusMinutes(30));
-
-        Reservation saved = reservationRepository.save(reservation);
-
-        return new ReservationResponseDTO(
-                saved.getId(),
-                station.getName(),
-                saved.getConnectorType(),
-                saved.getStatus(),
-                saved.getStartTime(),
-                saved.getExpireTime()
-        );
-    }
+//    @Transactional
+//    public ReservationResponseDTO createReservation(Long driverId, ReservationCreateDTO dto) {
+//        EVDriver driver = driverRepository.findById(driverId)
+//                .orElseThrow(() -> new RuntimeException("Driver not found"));
+//        ChargingStation station = stationRepository.findById(dto.getStationId())
+//                .orElseThrow(() -> new RuntimeException("Station not found"));
+//
+//        Reservation reservation = new Reservation();
+//        reservation.setDriver(driver);
+//        reservation.setStation(station);
+//        reservation.setConnectorType(dto.getConnectorType());
+//        reservation.setStatus(ReservationStatus.CONFIRMED);
+//        reservation.setStartTime(dto.getStartTime());
+//        reservation.setExpireTime(dto.getStartTime().plusMinutes(30));
+//
+//        Reservation saved = reservationRepository.save(reservation);
+//
+//        return new ReservationResponseDTO(
+//                saved.getId(),
+//                station.getName(),
+//                saved.getConnectorType(),
+//                saved.getStatus(),
+//                saved.getStartTime(),
+//                saved.getExpireTime()
+//        );
+//    }
 
     public ReservationResponseDTO getReservationDetails(Long driverId) {
 
