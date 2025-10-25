@@ -1,6 +1,7 @@
 package com.evcharging.entity;
 
 import com.evcharging.enums.ReservationStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -36,9 +37,11 @@ public class Reservation {
     @Column(nullable = false)
     private ReservationStatus status; // PENDING, CONFIRMED, CANCELLED, EXPIRED
 
+    @JsonFormat(pattern = "dd-MM-yyyy mm:HH", timezone = "Asia/Ho_Chi_Minh")
     @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;
 
+    @JsonFormat(pattern = "dd-MM-yyyy mm:HH", timezone = "Asia/Ho_Chi_Minh")
     @Column(name = "expire_time", nullable = false)
     private LocalDateTime expireTime;
 

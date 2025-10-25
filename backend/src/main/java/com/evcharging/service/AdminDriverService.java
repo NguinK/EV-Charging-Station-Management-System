@@ -1,8 +1,12 @@
 package com.evcharging.service;
 
 import com.evcharging.dto.DriverProfileDTO;
+import com.evcharging.entity.Account;
 import com.evcharging.entity.EVDriver;
+import com.evcharging.enums.Role;
+import com.evcharging.repository.AccountRepository;
 import com.evcharging.repository.EVDriverRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,13 +16,29 @@ import java.util.stream.Collectors;
 public class AdminDriverService {
 
     private final EVDriverRepository driverRepository;
+    private final AccountRepository accountRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public AdminDriverService(EVDriverRepository driverRepository) {
+    public AdminDriverService(EVDriverRepository driverRepository,
+                              AccountRepository accountRepository,
+                              PasswordEncoder passwordEncoder) {
         this.driverRepository = driverRepository;
+        this.accountRepository = accountRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public DriverProfileDTO createDriver(DriverProfileDTO dto) {
+        // Tạo Account mới
+        Account account = new Account();
+        account.setEmail(dto.getEmail());
+        account.setPhone(dto.getPhone());
+        account.setPassword(passwordEncoder.encode(dto.getPassword()));
+        account.setRole(Role.EV_DRIVER); // gán role mặc định
+        Account savedAccount = accountRepository.save(account);
+
+        // Tạo EVDriver gắn với Account
         EVDriver driver = new EVDriver();
+        driver.setAccount(savedAccount);
         driver.setFullName(dto.getFullName());
         driver.setDateOfBirth(dto.getDateOfBirth());
         driver.setAddress(dto.getAddress());
@@ -26,9 +46,12 @@ public class AdminDriverService {
         driver.setVehicleNumber(dto.getVehicleNumber());
         driver.setVehicleType(dto.getVehicleType());
 
-        EVDriver saved = driverRepository.save(driver);
-        return mapToProfileDTO(saved);
+        EVDriver savedDriver = driverRepository.save(driver);
+
+        // B3: Trả về DTO
+        return mapToProfileDTO(savedDriver);
     }
+
 
     public DriverProfileDTO updateDriver(Long driverId, DriverProfileDTO dto) {
         EVDriver driver = driverRepository.findById(driverId)
@@ -66,6 +89,9 @@ public class AdminDriverService {
         dto.setDriverLicense(driver.getDriverLicense());
         dto.setVehicleNumber(driver.getVehicleNumber());
         dto.setVehicleType(driver.getVehicleType());
+        dto.setEmail(driver.getAccount().getEmail());
+        dto.setPhone(driver.getAccount().getPhone());
+
         return dto;
     }
 

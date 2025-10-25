@@ -15,9 +15,11 @@ public class EVDriver {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToOne
+
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id", nullable = false)
-    private Account account;   // liên kết tới bảng account
+    private Account account;
+    // liên kết tới bảng account
     private String fullName;
     private String driverLicense;
     private String vehicleNumber;

@@ -60,6 +60,9 @@ public class Account implements UserDetails {
     @Builder.Default
     private boolean enabled = true;
 
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
+    private EVDriver driver;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return (role != null) ? role.getGrantedAuthorities() : Collections.emptyList();
