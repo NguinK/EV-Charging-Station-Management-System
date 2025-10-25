@@ -86,9 +86,8 @@ public class ChargingPointService {
         return chargingPointRepo.save(point);
     }
 
-    /**
-     * Xóa điểm sạc
-     */
+
+    //Xóa điểm sạc
     @Transactional
     public void deleteChargingPoint(Long pointId) {
         ChargingPoint point = chargingPointRepo.findById(pointId)
