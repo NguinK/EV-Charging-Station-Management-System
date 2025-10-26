@@ -61,7 +61,7 @@ public class ChargingSessionService {
         return toDTO(session); // trả về DTO
     }
 
-    // Kết thúc phiên sạc, cập nhật thông tin và tạo Transaction
+    // Kết thúc phiên sạc thủ công, cập nhật thông tin và tạo Transaction
     @Transactional
     public ChargingSessionDTO endSession(Long sessionId, int endSoc, double energy, double cost) {
         ChargingSession session = sessionRepo.findById(sessionId)
@@ -77,9 +77,7 @@ public class ChargingSessionService {
         session.setCost(cost);
         session.setStatus(SessionStatus.COMPLETED);
 
-        if (endSoc >= 100) {
-            notificationService.sendChargingComplete(session.getDriver());
-        }
+        notificationService.sendChargingComplete(session.getDriver());
 
         // Tạo Transaction gắn với session
         Transaction tx = new Transaction();

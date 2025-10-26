@@ -31,7 +31,7 @@ public class ChargingSessionController {
 
 
     // Kết thúc phiên sạc
-    @PutMapping("/{sessionId}/end")
+    @PutMapping("/{sessionId}/endManual")
     public ResponseEntity<ChargingSessionDTO> endSession(
             @PathVariable Long sessionId,
             @RequestBody EndSessionCreateDTO req) {

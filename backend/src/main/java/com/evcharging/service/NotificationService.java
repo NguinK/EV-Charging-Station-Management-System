@@ -16,7 +16,6 @@ public class NotificationService {
         String email = driver.getAccount().getEmail();
         String subject = " Phiên sạc đã hoàn tất";
         String message = "Xe của bạn đã sạc đầy 100%. Vui lòng rút sạc để nhường cho người khác.";
-
         emailService.send(email, subject, message);
     }
 }
