@@ -11,7 +11,6 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "users")
 public class EVDriver {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

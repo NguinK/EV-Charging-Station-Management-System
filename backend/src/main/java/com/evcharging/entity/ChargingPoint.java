@@ -14,46 +14,46 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChargingPoint {
+    public class ChargingPoint {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "station_id", nullable = false)
-    private ChargingStation station;
+        @ManyToOne
+        @JoinColumn(name = "station_id", nullable = false)
+        private ChargingStation station;
 
-    @Column(nullable = false)
-    private String pointCode; // Mã điểm sạc (ví dụ: CP-001, CP-002)
+        @Column(nullable = false)
+        private String pointCode; // Mã điểm sạc (ví dụ: CP-001, CP-002)
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ConnectorType connectorType; // CCS, CHADEMO, AC_TYPE2
+        @Enumerated(EnumType.STRING)
+        @Column(nullable = false)
+        private ConnectorType connectorType; // CCS, CHADEMO, AC_TYPE2
 
-    private Integer maxPower; // Công suất tối đa (kW)
+        private Integer maxPower; // Công suất tối đa (kW)
 
-    @Enumerated(EnumType.STRING)
-    private ChargingSpeed speed; // SLOW, FAST, ULTRA_FAST
+        @Enumerated(EnumType.STRING)
+        private ChargingSpeed speed; // SLOW, FAST, ULTRA_FAST
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private PointStatus status; // AVAILABLE, OCCUPIED, OFFLINE, RESERVED, MAINTENANCE
+        @Enumerated(EnumType.STRING)
+        @Column(nullable = false)
+        private PointStatus status; // AVAILABLE, OCCUPIED, OFFLINE, RESERVED, MAINTENANCE
 
-    @Column(nullable = false)
-    private Double pricePerKwh; // Giá theo kWh (VND)
+        @Column(nullable = false)
+        private Double pricePerKwh; // Giá theo kWh (VND)
 
-    @Column(nullable = false)
-    private Double pricePerMinute; // Giá theo phút (VND)
+        @Column(nullable = false)
+        private Double pricePerMinute; // Giá theo phút (VND)
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
+        @PrePersist
+        protected void onCreate() {
+            createdAt = LocalDateTime.now();
+            updatedAt = LocalDateTime.now();
+        }
 
     @PreUpdate
     protected void onUpdate() {

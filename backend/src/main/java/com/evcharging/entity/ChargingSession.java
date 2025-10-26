@@ -63,4 +63,11 @@ public class ChargingSession {
     // Quan hệ 1-1 với Transaction
     @OneToOne(mappedBy = "session", cascade = CascadeType.ALL)
     private Transaction transaction;
+    private LocalDateTime lastUpdatedTime;
+
+    //Quan hệ M-1 với ChargingPoint
+    @ManyToOne
+    @JoinColumn(name = "charging_point_id")
+    private ChargingPoint chargingPoint;
+
 }

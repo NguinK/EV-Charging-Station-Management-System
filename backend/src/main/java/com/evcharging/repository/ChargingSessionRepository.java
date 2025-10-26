@@ -10,16 +10,5 @@ import java.util.List;
 
 @Repository
 public interface ChargingSessionRepository extends JpaRepository<ChargingSession, Long> {
-
-    // Tìm session đang active (CHARGING) của 1 driver
-    Optional<ChargingSession> findByDriverIdAndStatus(Long driverId, SessionStatus status);
-
-    // Lấy tất cả session của 1 driver
-    List<ChargingSession> findAllByDriverId(Long driverId);
-
-    // Lấy tất cả session của 1 station
-    List<ChargingSession> findAllByStationId(Long stationId);
-
-    // Tìm session theo reservation
-    Optional<ChargingSession> findByReservationId(Long reservationId);
+    List<ChargingSession> findByStatus(SessionStatus sessionStatus);
 }
