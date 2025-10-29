@@ -39,7 +39,6 @@ const ModalMessage = () => {
         confirmLoading={confirmLoading}
         footer={null}
         onCancel={handleCancel}
-        centered
       >
         <BookingPage onSuccess={handleBookingSuccess} />
       </Modal>
