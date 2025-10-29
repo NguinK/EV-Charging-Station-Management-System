@@ -9,7 +9,7 @@ import {
 import { Breadcrumb, ConfigProvider, Layout, Menu, theme } from "antd";
 import HistoryPage from "./HistoryPage";
 import BookingPage from "../BookingPage";
-import EditProfile from "./EditProfile";
+import EditProfile from "./EditAccount";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -22,11 +22,11 @@ const items = [
   getItem("History", "history", <DesktopOutlined />),
   getItem("Account", "account", <UserOutlined />),
   getItem("Wallet", "Wallet", <WalletOutlined />),
-  getItem("Issue", "files", <ToolOutlined />),
+  
 
 ];
 
-const Dashboard = () => {
+const Admin = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKey, setSelectedKey] = useState("booking");
 
@@ -103,4 +103,4 @@ const Dashboard = () => {
     </ConfigProvider>
   );
 };
-export default Dashboard;
+export default Admin;

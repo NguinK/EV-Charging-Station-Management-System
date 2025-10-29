@@ -5,12 +5,12 @@ import PricePage from "./components/Pricing";
 import RegisterPage from "./pages/Register";
 import EVHeader from "./components/layout/Header";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import AdminR from "./pages/Admin/Dashboard";
+import AdminR from "./pages/Admin/AdminPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import BookingPage from "./pages/BookingPage";
 import ModalMessage from "./pages/ModalMessage";
 import HistoryPage from "./pages/Admin/HistoryPage";
-import Dashboard from "./pages/Admin/Dashboard";
+import Dashboard from "./pages/Admin/AdminPage";
 
 function App() {
   return (
