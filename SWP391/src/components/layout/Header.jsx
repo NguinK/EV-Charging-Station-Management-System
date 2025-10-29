@@ -1,80 +1,63 @@
 import React from "react";
-import { AppBar, Toolbar, Box, Button, Typography, Stack } from "@mui/material";
+import { Layout, Menu } from "antd";
+import { Link, useLocation } from "react-router-dom";
+
+const { Header } = Layout;
 
 const navItems = [
-  { label: "Home", href: "/" },
-  // { label: "Price", href: "/price" },
-  { label: "Login", href: "/login", isLogin: true },
+  { key: "/", label: "Home", path: "/" },
+  { key: "/price", label: "Pricing", path: "/price" },
+  { key: "/booking", label: "Booking", path: "/booking" },
+  { key: "/history", label: "History", path: "/history" },
 ];
 
 export default function EVHeader() {
-  return (
-    <AppBar
-      position="fixed"
-      elevation={0}
-      sx={{
-        top: 0,
-        left: 0,
-        right: 0,
-        background: "#e5e5e5",
-        color: "#111",
-        borderRadius: 0,
-        px: { xs: 2, sm: 4 },
-      }}
-    >
-      <Toolbar sx={{ minHeight: 64, gap: 2 }}>
-        {/* Logo + Brand */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
-          <Box
-            component="img"
-            src="/ev_logo.png"
-            alt="EV Station"
-            sx={{ width: 80, height: 50, objectFit: "contain" }}
-          />
-        </Box>
+  const location = useLocation();
 
-        {/* Nav items chia đều */}
-        <Stack
-          direction="row"
-          sx={{ flexGrow: 1, justifyContent: "space-evenly" }}
-          alignItems="center"
+  const activeKey =
+    navItems.find((item) =>
+      item.key === "/"
+        ? location.pathname === "/"
+        : location.pathname.startsWith(item.key)
+    )?.key || "/";
+
+  return (
+    <Header className="flex items-center justify-between !bg-[#050B0A] !px-4 md:!px-12 !h-20 !leading-none">
+      <Link
+        to="/"
+        className="text-2xl font-semibold tracking-wide text-[#E9FFEE] no-underline transition-colors duration-200 hover:text-gray-300 focus-visible:outline-none"
+      >
+        EVCharge
+      </Link>
+
+      <div className="flex items-center gap-6">
+        <Menu
+          mode="horizontal"
+          selectedKeys={[activeKey]}
+          items={navItems.map((item) => ({
+            key: item.key,
+            label: (
+              <Link
+                to={item.path}
+                className="text-sm font-medium text-[#E9FFEE] no-underline transition-colors duration-200 hover:text-gray-300 focus-visible:outline-none"
+              >
+                {item.label}
+              </Link>
+            ),
+            style: {
+              background: "transparent",
+            },
+          }))}
+          className="!bg-transparent !border-0 !border-b-0 !text-[#E9FFEE] [&_.ant-menu-item]:!bg-transparent [&_.ant-menu-item]:!px-0 md:[&_.ant-menu-item]:!px-4 [&_.ant-menu-item]:!text-[#E9FFEE] [&_.ant-menu-item]:focus-visible:!outline-none [&_.ant-menu-item-selected]:!bg-transparent [&_.ant-menu-item-selected]:!text-white [&_.ant-menu-item:hover]:!bg-transparent"
+        />
+
+        <Link
+          to="/login"
+          className="rounded-full bg-emerald-500 px-5 py-2 text-sm font-semibold text-[#050B0A] transition-transform duration-200 hover:scale-105 focus-visible:outline-none"
         >
-          {navItems.map((item) =>
-            item.isLogin ? (
-              <Button
-                key={item.label}
-                href={item.href}
-                variant="contained"
-                disableElevation
-                sx={{
-                  textTransform: "none",
-                  fontWeight: 600,
-                  borderRadius: 999,
-                  px: 2.5,
-                  backgroundColor: "#34c759",
-                  ":hover": { backgroundColor: "#2eb24f" },
-                }}
-              >
-                {item.label}
-              </Button>
-            ) : (
-              <Button
-                key={item.label}
-                href={item.href}
-                variant="text"
-                sx={{
-                  textTransform: "none",
-                  fontSize: 16,
-                  fontWeight: 500,
-                  color: "#111",
-                }}
-              >
-                {item.label}
-              </Button>
-            )
-          )}
-        </Stack>
-      </Toolbar>
-    </AppBar>
+          Login
+        </Link>
+      </div>
+    </Header>
   );
 }

@@ -5,10 +5,12 @@ const { Footer } = Layout;
 
 export function EVFooter() {
   return (
-    <Footer className="border-t border-neutral-900 bg-neutral-950 py-6 text-center ">
-      <Typography.Text className="text-lg font-bold ">
-        EVStation ©{new Date().getFullYear()}
+    <Footer className="!bg-[#050B0A] py-6 text-center">
+      <Typography.Text className="!text-[#E9FFEE] text-sm">
+        © {new Date().getFullYear()} EVCharge. All rights reserved.
       </Typography.Text>
     </Footer>
   );
 }
+
+export default EVFooter;
