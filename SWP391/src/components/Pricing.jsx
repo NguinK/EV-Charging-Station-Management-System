@@ -1,8 +1,8 @@
 import React from "react";
 import { Layout, Row, Col, Card, Typography, Button, List } from "antd";
 import { CheckCircleFilled } from "@ant-design/icons";
-import EVHeader from "./layout/Header";
-import { EVFooter } from "./layout/Footer";
+import Header from "./layout/Header";
+import Footer from "./layout/Footer";
 import { useNavigate } from "react-router-dom";
 
 const { Content } = Layout;
@@ -43,7 +43,7 @@ export default function PricePage() {
 
   return (
     <>
-      <EVHeader />
+      <Header />
       <Layout className="min-h-screen bg-[#dde1e1]">
         <Content className="flex flex-col items-center px-6 pb-24 pt-[180px]">
           <Typography.Title
@@ -113,7 +113,7 @@ export default function PricePage() {
             ))}
           </Row>
         </Content>
-        <EVFooter />
+        <Footer />
       </Layout>
     </>
   );

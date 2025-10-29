@@ -1,80 +1,57 @@
 import React from "react";
-import { AppBar, Toolbar, Box, Button, Typography, Stack } from "@mui/material";
+import { Layout, Menu, Typography } from "antd";
+import { Link, useLocation } from "react-router-dom";
 
-const navItems = [
-  { label: "Home", href: "/" },
-  // { label: "Price", href: "/price" },
-  { label: "Login", href: "/login", isLogin: true },
+const { Header: AntHeader } = Layout;
+
+const navigationItems = [
+  { key: "/", label: "Home" },
+  { key: "/price", label: "Pricing" },
+  { key: "/booking", label: "Booking" },
+  { key: "/history", label: "History" },
+  { key: "/login", label: "Login" },
 ];
 
-export default function EVHeader() {
-  return (
-    <AppBar
-      position="fixed"
-      elevation={0}
-      sx={{
-        top: 0,
-        left: 0,
-        right: 0,
-        background: "#e5e5e5",
-        color: "#111",
-        borderRadius: 0,
-        px: { xs: 2, sm: 4 },
-      }}
-    >
-      <Toolbar sx={{ minHeight: 64, gap: 2 }}>
-        {/* Logo + Brand */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
-          <Box
-            component="img"
-            src="/ev_logo.png"
-            alt="EV Station"
-            sx={{ width: 80, height: 50, objectFit: "contain" }}
-          />
-        </Box>
+const AppHeader = () => {
+  const location = useLocation();
+  const activeKey =
+    navigationItems
+      .filter((item) => item.key !== "/")
+      .find((item) => location.pathname.startsWith(item.key))?.key || "/";
 
-        {/* Nav items chia đều */}
-        <Stack
-          direction="row"
-          sx={{ flexGrow: 1, justifyContent: "space-evenly" }}
-          alignItems="center"
-        >
-          {navItems.map((item) =>
-            item.isLogin ? (
-              <Button
-                key={item.label}
-                href={item.href}
-                variant="contained"
-                disableElevation
-                sx={{
-                  textTransform: "none",
-                  fontWeight: 600,
-                  borderRadius: 999,
-                  px: 2.5,
-                  backgroundColor: "#34c759",
-                  ":hover": { backgroundColor: "#2eb24f" },
-                }}
-              >
-                {item.label}
-              </Button>
-            ) : (
-              <Button
-                key={item.label}
-                href={item.href}
-                variant="text"
-                sx={{
-                  textTransform: "none",
-                  fontSize: 16,
-                  fontWeight: 500,
-                  color: "#111",
-                }}
-              >
-                {item.label}
-              </Button>
-            )
-          )}
-        </Stack>
-      </Toolbar>
-    </AppBar>
+  return (
+    <AntHeader className="!bg-[#050B0A] !h-auto px-6 py-4 lg:px-12">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <Link to="/" className="flex items-center gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#0C1013] text-[#34C759] shadow-lg shadow-[#34C759]/20">
+            <span className="text-xl font-semibold">EV</span>
+          </div>
+          <Typography.Title level={4} className="!m-0 text-white">
+            EVCharge
+          </Typography.Title>
+        </Link>
+
+        <div className="flex flex-1 justify-start md:justify-end">
+          <Menu
+            mode="horizontal"
+            selectedKeys={[activeKey]}
+            items={navigationItems.map((item) => ({
+              key: item.key,
+              label: (
+                <Link
+                  to={item.key}
+                  className="text-sm font-medium text-white transition-colors duration-200 hover:text-gray-300"
+                >
+                  {item.label}
+                </Link>
+              ),
+            }))}
+            className="min-w-full justify-start border-none bg-transparent text-white md:min-w-fit [&_.ant-menu-item]:!border-b-0 [&_.ant-menu-item]:!px-2 [&_.ant-menu-item]:lg:!px-4 [&_.ant-menu-item-selected]:bg-transparent [&_.ant-menu-item-selected_a]:text-[#34C759] [&_.ant-menu-item:hover]:!bg-[#1A1F1D]"
+          />
+        </div>
+      </div>
+    </AntHeader>
   );
-}
+};
+
+export default AppHeader;
