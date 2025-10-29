@@ -33,7 +33,7 @@ function BookingPage() {
       form={form}
       layout="vertical"
       onFinish={onFinish}
-      style={{ maxWidth: 500, margin: "0 auto", marginTop: 400 }}
+      style={{ maxWidth: 500, margin: "0 auto", marginTop: 30 }}
     >
       <Form.Item
         label="Mã trạm (stationId)"

@@ -7,9 +7,9 @@ import {
   WalletOutlined,
 } from "@ant-design/icons";
 import { Breadcrumb, ConfigProvider, Layout, Menu, theme } from "antd";
-import HistoryPage from "./HistoryPage";
-import BookingPage from "../BookingPage";
-import EditProfile from "./EditAccount";
+
+
+import Charge from "./Charge";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -18,15 +18,14 @@ function getItem(label, key, icon, children) {
 }
 
 const items = [
-  getItem("Station", "booking", <PieChartOutlined />),
+  getItem("Charge", "booking", <PieChartOutlined />),
   getItem("History", "history", <DesktopOutlined />),
   getItem("Account", "account", <UserOutlined />),
   getItem("Wallet", "Wallet", <WalletOutlined />),
-  
-
+  getItem("Log Out", "Log Out", <WalletOutlined />),
 ];
 
-const Admin = () => {
+const UserPage = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKey, setSelectedKey] = useState("booking");
 
@@ -36,11 +35,11 @@ const Admin = () => {
   const renderContent = () => {
     switch (selectedKey) {
       case "booking":
-        return <BookingPage />;
+        return <Charge/>;
       case "history":
-        return <HistoryPage />;
+        return ;
       case "account":
-        return <EditProfile />;
+        return ;
       default:
         return (
           <div className="text-gray-500">
@@ -58,7 +57,7 @@ const Admin = () => {
             itemHeight: 70, // ✅ tăng chiều cao item sidebar
             fontSize: 20, // ✅ chữ to
             iconSize: 20, // ✅ icon to
-            itemPaddingInline:60
+            itemPaddingInline: 60,
           },
         },
       }}
@@ -66,7 +65,7 @@ const Admin = () => {
       <Layout style={{ minHeight: "100vh" }}>
         {/* SIDEBAR */}
         <Sider
-          width={300} 
+          width={300}
           collapsible
           collapsed={collapsed}
           onCollapse={(value) => setCollapsed(value)}
@@ -102,4 +101,4 @@ const Admin = () => {
     </ConfigProvider>
   );
 };
-export default Admin;
+export default UserPage;

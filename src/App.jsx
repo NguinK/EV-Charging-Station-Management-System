@@ -11,11 +11,14 @@ import BookingPage from "./pages/BookingPage";
 import ModalMessage from "./pages/ModalMessage";
 import HistoryPage from "./pages/Admin/HistoryPage";
 import Dashboard from "./pages/Admin/AdminPage";
+import Charge from "./pages/User/Charge";
+import UserPage from "./pages/User/UserPage";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Homepage/>} />
+      <Route path="/user" element={<UserPage/>} />
       <Route path="/price" element={<PricePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />

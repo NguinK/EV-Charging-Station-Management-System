@@ -21,12 +21,15 @@ const ModalMessage = () => {
   };
 
   return (
-    <>
+    <div className="flex justify-center mt-10">
       <Button
         type="primary"
         onClick={showModal}
-        style={{ maxWidth: 500, margin: "0 auto", marginTop: 400 }}
-        className="h-12 w-full rounded-full border-none bg-gradient-to-r from-[#2cd06d] to-[#49eb85] text-base font-semibold text-[#fcfcfc] shadow-[0_15px_30px_rgba(18,70,38,0.35)] transition hover:from-[#34c759] hover:to-[#45e47d]"
+        style={{
+          padding: "25px 32px",
+          fontSize: "20px",
+          borderRadius: "10px",
+        }}
       >
         Booking
       </Button>
@@ -34,12 +37,13 @@ const ModalMessage = () => {
         title="Booking Charging"
         open={open}
         confirmLoading={confirmLoading}
-        footer={null} 
+        footer={null}
         onCancel={handleCancel}
+        centered
       >
         <BookingPage onSuccess={handleBookingSuccess} />
       </Modal>
-    </>
+    </div>
   );
 };
 export default ModalMessage;
