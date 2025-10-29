@@ -1,30 +1,32 @@
 import React from "react";
 import { Form, Input, Button, DatePicker, Select, message } from "antd";
 import dayjs from "dayjs";
-import axios from "axios";
+import reservationAPI from "../api/reservationAPI";
 
 function BookingPage() {
   const [form] = Form.useForm();
 
   const onFinish = async (values) => {
     try {
-      // Convert DatePicker value (dayjs) sang ISO string
+      // ✅ Chuẩn bị dữ liệu gửi đi
       const payload = {
         stationId: Number(values.stationId),
         connectorType: values.connectorType,
-        startTime: values.startTime.toISOString(), // ✅ ISO format
+        startTime: values.startTime.toISOString(), // ISO format
       };
 
       console.log("Payload gửi API:", payload);
 
-      const res = await axios.post(
-        "http://localhost:8080/api/bookings",
-        payload
-      );
+      // ✅ Gọi API có sẵn
+      const res = await reservationAPI.createReservation(payload);
+
       message.success("Đặt xe thành công!");
-      console.log(res.data);
+      console.log("Kết quả API:", res.data);
+
+      // ✅ Gọi callback đóng modal nếu có
+      
     } catch (error) {
-      console.error(error);
+      console.error("Lỗi khi gửi yêu cầu:", error);
       message.error("Lỗi khi gửi yêu cầu!");
     }
   };
@@ -55,13 +57,7 @@ function BookingPage() {
         </Select>
       </Form.Item>
 
-      <Form
-        form={form}
-        layout="vertical"
-        initialValues={{
-          startTime: dayjs().add(15, "minute"), // mặc định sau 15 phút
-        }}
-      >
+      
         <Form.Item label="Thời gian bắt đầu " name="startTime">
           <DatePicker
             showTime={{
@@ -75,7 +71,7 @@ function BookingPage() {
             }
           />
         </Form.Item>
-      </Form>
+      
 
       <Form.Item>
         <Button

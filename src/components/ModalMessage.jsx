@@ -4,7 +4,7 @@ import BookingPage from "../pages/BookingPage";
 const ModalMessage = () => {
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
-
+  const [ setModalText] = useState("");
   const showModal = () => setOpen(true);
 
   const handleCancel = () => {
@@ -13,6 +13,7 @@ const ModalMessage = () => {
 
   // Hàm này được gọi khi BookingForm submit thành công
   const handleBookingSuccess = () => {
+    setModalText("Quá trình đặt xe đang diễn ra ");
     setConfirmLoading(true);
     setTimeout(() => {
       setConfirmLoading(false);
@@ -39,8 +40,9 @@ const ModalMessage = () => {
         confirmLoading={confirmLoading}
         footer={null}
         onCancel={handleCancel}
+        
       >
-        <BookingPage onSuccess={handleBookingSuccess} />
+        {open && <BookingPage onSuccess={handleBookingSuccess} />}
       </Modal>
     </div>
   );
