@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Modal } from "antd";
-import BookingPage from "./BookingPage";
+import BookingPage from "../pages/BookingPage";
 const ModalMessage = () => {
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);

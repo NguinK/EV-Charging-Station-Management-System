@@ -6,9 +6,9 @@ import RegisterPage from "./pages/Register";
 import EVHeader from "./components/layout/Header";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AdminR from "./pages/Admin/AdminPage";
-import NotFoundPage from "./pages/NotFoundPage";
+import NotFoundPage from "./components/layout/NotFoundPage";
 import BookingPage from "./pages/BookingPage";
-import ModalMessage from "./pages/ModalMessage";
+import ModalMessage from "./components/ModalMessage";
 import HistoryPage from "./pages/Admin/HistoryPage";
 import Dashboard from "./pages/Admin/AdminPage";
 import Charge from "./pages/User/Charge";
@@ -17,14 +17,13 @@ import UserPage from "./pages/User/UserPage";
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Homepage/>} />
-      <Route path="/user" element={<UserPage/>} />
+      <Route path="/" element={<Homepage />} />
+      <Route path="/user" element={<UserPage />} />
       <Route path="/price" element={<PricePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/admin" element={<AdminR />} />
-      <Route path="*" element={<NotFoundPage/>} />
-     
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }
