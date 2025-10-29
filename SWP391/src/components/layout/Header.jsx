@@ -3,8 +3,7 @@ import { AppBar, Toolbar, Box, Button, Typography, Stack } from "@mui/material";
 
 const navItems = [
   { label: "Home", href: "/" },
-  { label: "Charge", href: "/charge" },
-  { label: "Price", href: "/price" },
+  // { label: "Price", href: "/price" },
   { label: "Login", href: "/login", isLogin: true },
 ];
 
@@ -32,18 +31,6 @@ export default function EVHeader() {
             alt="EV Station"
             sx={{ width: 80, height: 50, objectFit: "contain" }}
           />
-          {/* <Typography
-            variant="h6"
-            sx={{
-              fontWeight: 700,
-              letterSpacing: 0.25,
-              background: "linear-gradient(90deg, #9cd6a8, #2ecc71)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
-          >
-            EV Station
-          </Typography> */}
         </Box>
 
         {/* Nav items chia đều */}

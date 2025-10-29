@@ -1,3 +1,4 @@
 {
-    "chatgpt.commentCodeLensEnabled": true
+    "chatgpt.commentCodeLensEnabled": true,
+    "CodeGPT.apiKey": "Anthropic"
 }

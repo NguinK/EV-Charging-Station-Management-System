@@ -5,8 +5,8 @@ const { Footer } = Layout;
 
 export function EVFooter() {
   return (
-    <Footer className="border-t border-neutral-900 bg-neutral-950 py-6 text-center">
-      <Typography.Text className="text-sm font-medium !text-zinc-200">
+    <Footer className="border-t border-neutral-900 bg-neutral-950 py-6 text-center ">
+      <Typography.Text className="text-lg font-bold ">
         EVStation ©{new Date().getFullYear()}
       </Typography.Text>
     </Footer>

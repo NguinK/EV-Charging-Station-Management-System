@@ -8,8 +8,13 @@ import {
   Input,
   Space,
   Typography,
+  message,
+  Alert,
 } from "antd";
-import { Link as RouterLink } from "react-router-dom";
+
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import authAPI from "../api/authAPI";
+import { useState } from "react";
 
 const { Title, Text } = Typography;
 
@@ -24,6 +29,44 @@ const formItemClassName =
   [&_.ant-input-affix-wrapper]:!text-[#e9ffee]";
 
 function LoginPage() {
+  const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
+
+  const handleLogin = async (values) => {
+    try {
+      // ✅ Gửi request đúng định dạng backend yêu cầu
+      const res = await authAPI.postLoginUser({
+        email: values.email,
+        password: values.password,
+      });
+
+      console.log("✅ Login success:", res.data);
+
+      // ✅ Lấy token từ response
+      const token = res?.data?.token;
+      const userInfo = {
+        fullName: res?.data?.fullName,
+        email: res?.data?.email,
+        role: res?.data?.role,
+      };
+
+      // ✅ Lưu token + user info
+      localStorage.setItem("token", token);
+      localStorage.setItem("userInfo", JSON.stringify(userInfo));
+
+      message.success("Login successful!");
+      navigate("/home");
+    } catch (error) {
+      console.error("❌ Login error:", error.response?.data || error.message);
+
+      if (error.response?.status === 400) {
+        setErrorMessage("Sai email hoặc mật khẩu!");
+      } else {
+        setErrorMessage("Lỗi server hoặc kết nối thất bại!");
+      }
+    }
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#050b0a] px-4 text-white">
       <div className="absolute inset-0 -z-10">
@@ -59,15 +102,7 @@ function LoginPage() {
               </Text>
             </div>
 
-            <Form
-              layout="vertical"
-              size="large"
-              className="space-y-2"
-              requiredMark={false}
-              onFinish={(values) => {
-                console.log("Login", values);
-              }}
-            >
+            <Form layout="vertical" size="large" onFinish={handleLogin}>
               <Form.Item
                 name="email"
                 label="Email"
@@ -87,6 +122,15 @@ function LoginPage() {
               >
                 <Input.Password placeholder="Enter your password" />
               </Form.Item>
+              
+              {errorMessage && (
+                <Alert
+                  message={errorMessage}
+                  type="error"
+                  showIcon
+                  className="mb-3 bg-[#e0e0e1] border-[#3a4045]"
+                />
+              )} 
 
               <div className="flex items-center justify-between text-xs text-[#a0b5a9]">
                 <Form.Item
@@ -94,7 +138,7 @@ function LoginPage() {
                   valuePropName="checked"
                   className="!mb-0"
                 >
-                  <Checkbox className="text-[#a9bbb4]">Remember me</Checkbox>
+                  
                 </Form.Item>
                 <Button
                   type="link"
@@ -118,11 +162,6 @@ function LoginPage() {
             </Divider>
 
             <Space size="middle" className="justify-center">
-              <Button
-                shape="circle"
-                icon={<FacebookFilled />}
-                className="h-12 w-12 !bg-[#0c1113] !text-[#1877f2] hover:!bg-[#172026]"
-              />
               <Button
                 shape="circle"
                 icon={<GoogleOutlined />}

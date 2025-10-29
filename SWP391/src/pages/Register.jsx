@@ -1,7 +1,7 @@
 import { LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Card, Form, Input, Typography } from "antd";
+import { Button, Card, Form, Input, Typography, message } from "antd";
 import { Link as RouterLink } from "react-router-dom";
-
+import authAPI from "../api/authAPI";
 const { Title, Text } = Typography;
 
 const formItemClassName =
@@ -50,8 +50,27 @@ function RegisterPage() {
             size="large"
             className="space-y-2"
             requiredMark={false}
-            onFinish={(values) => {
-              console.log("Register", values);
+            onFinish={async (values) => {
+              try {
+                const payload = {
+                  fullName: values.fullName,
+                  email: values.email,
+                  phone: values.phone || "0123456789", // tạm để nếu form chưa có ô nhập
+                  password: values.password,
+                  driverLicense: "string",
+                  vehicleNumber: "string",
+                  vehicleType: "string",
+                  dateOfBirth: "2025-10-26",
+                  address: "string",
+                };
+
+                const res = await authAPI.postResgisterUser(payload);
+                console.log("Register success:", res);
+                message.success("Register successfully!");
+              } catch (error) {
+                console.error("Register failed:", error);
+                message.error("Register failed!");
+              }
             }}
           >
             <Form.Item
