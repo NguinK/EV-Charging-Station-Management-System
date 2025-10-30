@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Invoice {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,9 +28,6 @@ public class Invoice {
 
     // Thông tin khách hàng
     private String customerName;
-    private String customerEmail;
-    private String customerPhone;
-    private String customerAddress;
     private String taxCode; // Mã số thuế (nếu có)
 
     // Thông tin hóa đơn

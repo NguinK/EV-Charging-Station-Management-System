@@ -1,5 +1,6 @@
 package com.evcharging.entity;
 
+import com.evcharging.enums.ConnectorType;
 import com.evcharging.enums.ReservationStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
@@ -30,8 +31,11 @@ public class Reservation {
     @JoinColumn(name = "station_id", nullable = false)
     private ChargingStation station;
 
+    private Double holdingFee;
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "connector_type", nullable = false, length = 50)
-    private String connectorType; // CCS, CHAdeMO, AC
+    private ConnectorType connectorType; // CCS, CHAdeMO, AC
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Payment {
 
+public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -48,8 +48,9 @@ public class Payment {
     @Column(unique = true)
     private String transactionId; // Mã giao dịch từ payment gateway
 
-    @Column(unique = true)
-    private String invoiceNumber; // Số hóa đơn
+    @OneToOne
+    @JoinColumn(name = "invoice_id")
+    private Invoice invoice;
 
     private LocalDateTime paymentTime;
     private LocalDateTime createdAt;
@@ -58,4 +59,6 @@ public class Payment {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
+
+
 }

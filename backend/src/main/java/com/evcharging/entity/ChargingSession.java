@@ -70,4 +70,8 @@ public class ChargingSession {
     @JoinColumn(name = "charging_point_id")
     private ChargingPoint chargingPoint;
 
+    @PreUpdate
+    protected void onUpdate() {
+        lastUpdatedTime = LocalDateTime.now();
+    }
 }

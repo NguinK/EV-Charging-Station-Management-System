@@ -2,7 +2,7 @@ package com.evcharging.repository;
 
 import com.evcharging.entity.ChargingPoint;
 import com.evcharging.enums.ConnectorType;
-import com.evcharging.enums.PointStatus;
+import com.evcharging.enums.ChargingPointStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,12 +21,12 @@ public interface ChargingPointRepository extends JpaRepository<ChargingPoint, Lo
     List<ChargingPoint> findByConnectorType(ConnectorType connectorType);
 
      //Tìm điểm sạc theo trạng thái
-    List<ChargingPoint> findByStatus(PointStatus status);
+    List<ChargingPoint> findByStatus(ChargingPointStatus status);
 
      //Tìm điểm sạc theo trạm và trạng thái
     @Query("SELECT cp FROM ChargingPoint cp WHERE cp.station.id = :stationId AND cp.status = :status")
     List<ChargingPoint> findByStationIdAndStatus(@Param("stationId") Long stationId,
-                                                 @Param("status") PointStatus status);
+                                                 @Param("status") ChargingPointStatus status);
 
 
       //Đếm số điểm sạc available của một trạm

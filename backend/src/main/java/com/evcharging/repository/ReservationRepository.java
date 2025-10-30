@@ -14,7 +14,7 @@ import java.util.List;
 
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-    List<Reservation> findByStationId(Long stationId);
+    List<Reservation> findByStatusAndExpireTimeBefore(ReservationStatus status, LocalDateTime time);
     List<Reservation> findByDriver(EVDriver driver);
     @Query("SELECT COUNT(r)>0 FROM Reservation r WHERE r.chargingPoint = :point AND r.status IN :statuses AND r.startTime < :newExpireTime AND r.expireTime > :newStartTime")
     Boolean existsByChargingPointAndStatusInAndTimeOverlap(

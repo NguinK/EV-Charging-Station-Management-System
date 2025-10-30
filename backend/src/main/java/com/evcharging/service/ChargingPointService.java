@@ -34,7 +34,7 @@ public class ChargingPointService {
         point.setConnectorType(connectorType);
         point.setMaxPower(maxPower);
         point.setSpeed(determineChargingSpeed(maxPower));
-        point.setStatus(PointStatus.AVAILABLE);
+        point.setStatus(ChargingPointStatus.AVAILABLE);
         point.setPricePerKwh(pricePerKwh);
         point.setPricePerMinute(pricePerMinute);
         point.setCreatedAt(LocalDateTime.now());
@@ -50,30 +50,24 @@ public class ChargingPointService {
         return chargingPointRepo.findByStationId(stationId);
     }
 
-    /**
-     * Lấy các điểm sạc có sẵn của một trạm
-     */
+
+     // Lấy các điểm sạc có sẵn của một trạm
     public List<ChargingPoint> getAvailablePoints(Long stationId) {
-        return chargingPointRepo.findByStationIdAndStatus(stationId, PointStatus.AVAILABLE);
+        return chargingPointRepo.findByStationIdAndStatus(stationId, ChargingPointStatus.AVAILABLE);
     }
 
-    /**
-     * Cập nhật trạng thái điểm sạc
-     */
+    //Cập nhật trạng thái điểm sạc
     @Transactional
-    public ChargingPoint updatePointStatus(Long pointId, PointStatus status) {
+    public ChargingPoint updatePointStatus(Long pointId, ChargingPointStatus status) {
         ChargingPoint point = chargingPointRepo.findById(pointId)
                 .orElseThrow(() -> new RuntimeException("Charging point not found"));
-
         point.setStatus(status);
         point.setUpdatedAt(LocalDateTime.now());
-
         return chargingPointRepo.save(point);
     }
 
-    /**
-     * Cập nhật giá của điểm sạc
-     */
+
+    //Cập nhật giá của điểm sạc
     @Transactional
     public ChargingPoint updatePricing(Long pointId, Double pricePerKwh, Double pricePerMinute) {
         ChargingPoint point = chargingPointRepo.findById(pointId)
@@ -93,31 +87,28 @@ public class ChargingPointService {
         ChargingPoint point = chargingPointRepo.findById(pointId)
                 .orElseThrow(() -> new RuntimeException("Charging point not found"));
 
-        if (point.getStatus() == PointStatus.OCCUPIED) {
+        if (point.getStatus() == ChargingPointStatus.OCCUPIED) {
             throw new RuntimeException("Cannot delete charging point that is currently in use");
         }
 
         chargingPointRepo.delete(point);
     }
 
-    /**
-     * Lấy thông tin chi tiết điểm sạc
-     */
+
+    //Lấy thông tin chi tiết điểm sạc
     public ChargingPoint getChargingPoint(Long pointId) {
         return chargingPointRepo.findById(pointId)
                 .orElseThrow(() -> new RuntimeException("Charging point not found"));
     }
 
-    /**
-     * Tìm điểm sạc theo loại connector
-     */
+
+      //Tìm điểm sạc theo loại connector
     public List<ChargingPoint> findByConnectorType(ConnectorType connectorType) {
         return chargingPointRepo.findByConnectorType(connectorType);
     }
 
-    /**
-     * Xác định tốc độ sạc dựa trên công suất
-     */
+
+      //Xác định tốc độ sạc dựa trên công suất
     private ChargingSpeed determineChargingSpeed(Integer maxPower) {
         if (maxPower < 22) {
             return ChargingSpeed.SLOW;

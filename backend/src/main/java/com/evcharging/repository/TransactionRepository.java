@@ -19,4 +19,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     );
     List<Transaction> findAllByDriverId(Long driverId);
     Optional<Transaction> findBySessionId(Long sessionId);
+    Optional<Transaction> findByInvoiceNumber(String invoiceNumber);
+
 }

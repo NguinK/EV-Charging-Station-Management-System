@@ -11,7 +11,6 @@ public class DriverProfileDTO {
     private String vehicleNumber;
     private String vehicleType;
 
-
     private String phone;
     private String email;
     private String password;

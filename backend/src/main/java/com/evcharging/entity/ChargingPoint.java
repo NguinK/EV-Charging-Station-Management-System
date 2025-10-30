@@ -2,7 +2,7 @@ package com.evcharging.entity;
 
 import com.evcharging.enums.ConnectorType;
 import com.evcharging.enums.ChargingSpeed;
-import com.evcharging.enums.PointStatus;
+import com.evcharging.enums.ChargingPointStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -38,7 +38,7 @@ import java.time.LocalDateTime;
 
         @Enumerated(EnumType.STRING)
         @Column(nullable = false)
-        private PointStatus status; // AVAILABLE, OCCUPIED, OFFLINE, RESERVED, MAINTENANCE
+        private ChargingPointStatus status; // AVAILABLE, OCCUPIED, OFFLINE, RESERVED, MAINTENANCE
 
         @Column(nullable = false)
         private Double pricePerKwh; // Giá theo kWh (VND)

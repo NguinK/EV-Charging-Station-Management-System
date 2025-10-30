@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 
 @RestController
@@ -69,7 +71,7 @@ public class ReservationController {
     ) {
         // Lấy EVDriver từ accountId
         EVDriver driver = driverRepository.findByAccountId(user.getId())
-                .orElseThrow(() -> new RuntimeException("Driver not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Driver not found"));
         ReservationResponseDTO response = reservationService.createReservationAutoApprove(driver.getId(), dto);
         return ResponseEntity.ok(response);
     }

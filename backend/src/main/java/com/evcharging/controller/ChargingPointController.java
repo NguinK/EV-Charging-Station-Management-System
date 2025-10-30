@@ -2,7 +2,7 @@ package com.evcharging.controller;
 
 import com.evcharging.entity.ChargingPoint;
 import com.evcharging.enums.ConnectorType;
-import com.evcharging.enums.PointStatus;
+import com.evcharging.enums.ChargingPointStatus;
 import com.evcharging.service.ChargingPointService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -54,11 +54,10 @@ public class ChargingPointController {
 
 
      // Cập nhật trạng thái điểm sạc
-
     @PutMapping("/{pointId}/status")
     public ResponseEntity<ChargingPoint> updatePointStatus(
             @PathVariable Long pointId,
-            @RequestParam PointStatus status) {
+            @RequestParam ChargingPointStatus status) {
 
         ChargingPoint point = chargingPointService.updatePointStatus(pointId, status);
         return ResponseEntity.ok(point);

@@ -4,11 +4,12 @@ package com.evcharging.entity;
 import com.evcharging.enums.PaymentMethod;
 import com.evcharging.enums.TransactionStatus;
 import com.evcharging.enums.TransactionType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-
+@JsonFormat(shape = JsonFormat.Shape.STRING)
 @Entity
 @Data
 @Table(name = "transactions")
@@ -19,7 +20,6 @@ public class Transaction {
 
     private LocalDateTime timestamp;     // Thời gian giao dịch
     private double amount;               // Số tiền
-    private String currency;             // VND, USD...
 
     @Enumerated(EnumType.STRING)
     private TransactionType type;        // TOP_UP, CHARGING_PAYMENT, SUBSCRIPTION, REFUND
@@ -33,6 +33,8 @@ public class Transaction {
     private String invoiceNumber;        // Mã hóa đơn điện tử
 
     private LocalDateTime paidAt;   // Thời điểm thanh toán thành công
+
+    private String currency;
 
     // Quan hệ
     @ManyToOne

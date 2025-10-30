@@ -1,15 +1,19 @@
 package com.evcharging.service;
 
 import com.evcharging.dto.ChargingSessionDTO;
+import com.evcharging.dto.DtoMapper;
 import com.evcharging.entity.ChargingPoint;
 import com.evcharging.entity.ChargingSession;
 import com.evcharging.entity.Reservation;
 import com.evcharging.entity.Transaction;
 import com.evcharging.enums.*;
+import com.evcharging.repository.ChargingPointRepository;
 import com.evcharging.repository.ChargingSessionRepository;
 import com.evcharging.repository.ReservationRepository;
 import com.evcharging.repository.TransactionRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -19,20 +23,27 @@ import java.util.List;
 
 @Service
 public class ChargingSessionService {
+    @Autowired
+    private ApplicationContext context;
+
+    @Autowired
+    private DtoMapper dtoMapper;
 
     private final ChargingSessionRepository sessionRepo;
     private final ReservationRepository reservationRepo;
     private final TransactionRepository transactionRepo;
     private final NotificationService notificationService;
-
+    private final ChargingPointRepository chargingPointRepo;
     public ChargingSessionService(ChargingSessionRepository sessionRepo,
                                   ReservationRepository reservationRepo,
                                   TransactionRepository transactionRepo,
-                                  NotificationService notificationService) {
+                                  NotificationService notificationService,
+                                  ChargingPointRepository chargingPointRepo) {
         this.sessionRepo = sessionRepo;
         this.reservationRepo = reservationRepo;
         this.transactionRepo = transactionRepo;
         this.notificationService = notificationService;
+        this.chargingPointRepo = chargingPointRepo;
     }
 
     // Bắt đầu phiên sạc từ một Reservation hợp lệ
@@ -55,6 +66,7 @@ public class ChargingSessionService {
         session.setStartTime(LocalDateTime.now());
         session.setStartSoc(startSoc);
         session.setStatus(SessionStatus.CHARGING);
+        session.setChargingPoint(reservation.getChargingPoint());
 
         session = sessionRepo.save(session);
 
@@ -77,6 +89,9 @@ public class ChargingSessionService {
         session.setCost(cost);
         session.setStatus(SessionStatus.COMPLETED);
 
+        ChargingPoint point = session.getChargingPoint();
+        point.setStatus(ChargingPointStatus.AVAILABLE);
+        chargingPointRepo.save(point);
         notificationService.sendChargingComplete(session.getDriver());
 
         // Tạo Transaction gắn với session
@@ -116,12 +131,12 @@ public class ChargingSessionService {
                 session.getStatus()
         );
     }
-    public void checkAndAutoEnd(ChargingSession session, int currentSoc, double currentPower) {
-        if (currentSoc >= 100 && currentPower < 1.0) {
-            endSession(session.getId(), currentSoc, session.getEnergyConsumed(), session.getCost());
+    public void checkAndAutoEnd(ChargingSession session, int currentSoc) {
+        if (currentSoc == 100 ) {
+            context.getBean(ChargingSessionService.class).endSession(session.getId(), currentSoc, session.getEnergyConsumed(), session.getCost());
         }
     }
-    @Scheduled(fixedRate = 5000) // chạy mỗi 5 giây
+    @Scheduled(fixedRate = 4000) // chạy mỗi 4 giây
     public void autoUpdateChargingSessions() {
         List<ChargingSession> activeSessions = sessionRepo.findByStatus(SessionStatus.CHARGING);
 
@@ -158,7 +173,7 @@ public class ChargingSessionService {
             sessionRepo.save(session);
 
             // Gọi auto end nếu đủ điều kiện
-            checkAndAutoEnd(session, newSoc, power);
+            checkAndAutoEnd(session, newSoc);
         }
     }
 }

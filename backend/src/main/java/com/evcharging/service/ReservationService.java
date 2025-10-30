@@ -6,17 +6,21 @@ import com.evcharging.entity.ChargingPoint;
 import com.evcharging.entity.ChargingStation;
 import com.evcharging.entity.EVDriver;
 import com.evcharging.entity.Reservation;
+import com.evcharging.enums.ChargingPointStatus;
 import com.evcharging.enums.ReservationStatus;
 import com.evcharging.repository.ChargingPointRepository;
 import com.evcharging.repository.ChargingStationRepository;
 import com.evcharging.repository.EVDriverRepository;
 import com.evcharging.repository.ReservationRepository;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Service
 public class ReservationService {
@@ -25,6 +29,8 @@ public class ReservationService {
     private final EVDriverRepository driverRepository;
     private final ChargingStationRepository stationRepository;
     private final ChargingPointRepository chargingPointRepository;
+    private static final double RESERVATION_FEE_PER_HOUR = 10000.0;
+
     public ReservationService(ReservationRepository reservationRepository,
                               EVDriverRepository driverRepository,
                               ChargingStationRepository stationRepository,
@@ -32,7 +38,22 @@ public class ReservationService {
         this.reservationRepository = reservationRepository;
         this.driverRepository = driverRepository;
         this.stationRepository = stationRepository;
-        this.chargingPointRepository=chargingPointRepository;
+        this.chargingPointRepository = chargingPointRepository;
+    }
+
+    // Hàm dùng chung để map Entity -> DTO
+    private ReservationResponseDTO mapToDTO(Reservation res) {
+        return new ReservationResponseDTO(
+                res.getId(),
+                res.getStation().getName(),
+                res.getConnectorType(),
+                res.getStatus(),
+                res.getStartTime(),
+                res.getExpireTime(),
+                res.getChargingPoint().getId(), // nếu bạn muốn trả về id trụ
+                res.getStation().getId(),
+                res.getHoldingFee()
+        );
     }
 
     @Transactional
@@ -43,21 +64,30 @@ public class ReservationService {
         ChargingStation station = stationRepository.findById(dto.getStationId())
                 .orElseThrow(() -> new RuntimeException("Station not found"));
 
-        LocalDateTime startTime = dto.getStartTime();
-        LocalDateTime expireTime = startTime.plusMinutes(30);
+        // Lấy giờ hiện tại theo múi giờ Việt Nam
+        LocalDateTime nowVN = LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
 
-        List<ChargingPoint> stationPoints = chargingPointRepository.findByStationId(
-                dto.getStationId());
+        LocalDateTime startTime = dto.getStartTime();
+        LocalDateTime endTime = dto.getEndTime() != null ? dto.getEndTime() : startTime.plusHours(1);
+
+        if (startTime.isBefore(nowVN)) {
+            throw new RuntimeException("Start time must be in the future (VN time)");
+        }
+
+        // Lấy tất cả trụ trong trạm
+        List<ChargingPoint> stationPoints = chargingPointRepository.findByStationId(dto.getStationId());
         List<ChargingPoint> filteredPoints = stationPoints.stream()
                 .filter(p -> p.getConnectorType().equals(dto.getConnectorType()))
-                .collect(Collectors.toList());
+                .filter(p -> p.getStatus() == ChargingPointStatus.AVAILABLE)
+                .toList();
 
-        for (ChargingPoint point : stationPoints) {
+        for (ChargingPoint point : filteredPoints) {
+            // Chỉ check trùng trên cùng 1 trụ
             boolean isOccupied = reservationRepository.existsByChargingPointAndStatusInAndTimeOverlap(
                     point,
                     List.of(ReservationStatus.CONFIRMED),
                     startTime,
-                    expireTime
+                    endTime
             );
 
             if (!isOccupied) {
@@ -67,25 +97,75 @@ public class ReservationService {
                 reservation.setStation(station);
                 reservation.setConnectorType(dto.getConnectorType());
                 reservation.setStartTime(startTime);
-                reservation.setExpireTime(expireTime);
-                reservation.setStatus(ReservationStatus.CONFIRMED);
+                reservation.setExpireTime(endTime);
+                reservation.setStatus(ReservationStatus.CONFIRMED); // auto approve
+
+                //Tính phí giữ chỗ theo số giờ đặt trước
+                long hoursBetween = Duration.between(nowVN, startTime).toHours();
+                if (hoursBetween < 0) hoursBetween = 0; // tránh âm nếu lệch mili giây
+                double holdingFee = hoursBetween * RESERVATION_FEE_PER_HOUR;
+                reservation.setHoldingFee(holdingFee);
+
+                point.setStatus(ChargingPointStatus.RESERVED);
+                chargingPointRepository.save(point);
 
                 Reservation saved = reservationRepository.save(reservation);
-
-                return new ReservationResponseDTO(
-                        saved.getId(),
-                        station.getName(),
-                        saved.getConnectorType(),
-                        saved.getStatus(),
-                        saved.getStartTime(),
-                        saved.getExpireTime()
-                );
+                return mapToDTO(saved);
             }
         }
 
-        throw new RuntimeException("Không còn điểm sạc nào trống tại thời điểm này");
+        throw new RuntimeException("Không còn trụ sạc nào trống tại thời điểm này");
     }
-//    @Transactional
+
+
+    public ReservationResponseDTO getReservationDetails(Long reservationId) {
+        Reservation res = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new RuntimeException("Reservation not found"));
+        return mapToDTO(res);
+    }
+
+    @Scheduled(fixedRate = 5 * 60 * 1000) // mỗi 5 phút
+    public void cancelExpiredReservations() {
+        LocalDateTime now = LocalDateTime.now();
+        List<Reservation> expired = reservationRepository.findByStatusAndExpireTimeBefore(
+                ReservationStatus.CONFIRMED, now
+        );
+
+        for (Reservation r : expired) {
+            r.setStatus(ReservationStatus.CANCELLED);
+            ChargingPoint point = r.getChargingPoint();
+            point.setStatus(ChargingPointStatus.AVAILABLE);
+
+            chargingPointRepository.save(point);
+            reservationRepository.save(r);
+        }
+    }
+
+    @Transactional
+    public void cancelReservation(Long id) {
+        Reservation res = reservationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Reservation not found"));
+        res.setStatus(ReservationStatus.CANCELLED);
+
+        ChargingPoint point = res.getChargingPoint();
+        point.setStatus(ChargingPointStatus.AVAILABLE);
+        chargingPointRepository.save(point);
+
+        reservationRepository.save(res);
+    }
+
+    public List<ReservationResponseDTO> getReservationList(Long accountId) {
+        EVDriver driver = driverRepository.findByAccountId(accountId)
+                .orElseThrow(() -> new RuntimeException("Driver not found"));
+
+        List<Reservation> reservations = reservationRepository.findByDriver(driver);
+        return reservations.stream()
+                .map(this::mapToDTO)
+                .toList();
+    }
+}
+
+//    @Transactional tạo thủ công
 //    public ReservationResponseDTO createReservation(Long driverId, ReservationCreateDTO dto) {
 //        EVDriver driver = driverRepository.findById(driverId)
 //                .orElseThrow(() -> new RuntimeException("Driver not found"));
@@ -112,44 +192,3 @@ public class ReservationService {
 //        );
 //    }
 
-    public ReservationResponseDTO getReservationDetails(Long driverId) {
-
-        Reservation res = reservationRepository.findById(driverId)
-                .orElseThrow(() -> new RuntimeException("Reservation not found"));
-        return new ReservationResponseDTO(
-                res.getId(),
-                res.getStation().getName(),
-                res.getConnectorType(),
-                res.getStatus(),
-                res.getStartTime(),
-                res.getExpireTime()
-        );
-    }
-
-    @Transactional
-    public void cancelReservation(Long id) {
-        Reservation res = reservationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Reservation not found"));
-        res.setStatus(ReservationStatus.CANCELLED);
-        reservationRepository.save(res);
-    }
-
-    public List<ReservationResponseDTO> getReservationList(Long accountId) {
-        EVDriver driver = driverRepository.findByAccountId(accountId)
-                .orElseThrow(() -> new RuntimeException("Driver not found"));
-
-        List<Reservation> reservations = reservationRepository.findByDriver(driver);
-
-        return reservations.stream()
-                .map(res -> new ReservationResponseDTO(
-                        res.getId(),
-                        res.getStation().getName(),
-                        res.getConnectorType(),
-                        res.getStatus(),
-                        res.getStartTime(),
-                        res.getExpireTime()
-                ))
-                .collect(Collectors.toList());
-
-    }
-}

@@ -6,10 +6,14 @@ import com.evcharging.dto.EVDriverResponseDTO;
 import com.evcharging.dto.LoginDTO;
 import com.evcharging.dto.LoginResponseDTO;
 import com.evcharging.entity.Account;
+import com.evcharging.entity.Admin;
+import com.evcharging.entity.CS_Staff;
 import com.evcharging.entity.EVDriver;
 import com.evcharging.enums.Role;
 import com.evcharging.repository.AccountRepository;
+import com.evcharging.repository.AdminRepository;
 import com.evcharging.repository.EVDriverRepository;
+import com.evcharging.repository.CS_StaffRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,15 +27,21 @@ public class AuthService {
     private final EVDriverRepository evDriverRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final AdminRepository adminRepository;
+    private final CS_StaffRepository CSStaffRepository;
 
     public AuthService(AccountRepository accountRepository,
                        EVDriverRepository evDriverRepository,
                        PasswordEncoder passwordEncoder,
-                       JwtUtil jwtUtil) {
+                       JwtUtil jwtUtil,
+                       AdminRepository adminRepository,
+                       CS_StaffRepository CSStaffRepository) {
         this.accountRepository = accountRepository;
         this.evDriverRepository = evDriverRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
+        this.adminRepository = adminRepository;
+        this.CSStaffRepository = CSStaffRepository;
     }
 
     @Transactional
@@ -80,13 +90,19 @@ public class AuthService {
         String token = jwtUtil.generateToken(account.getEmail(), account.getRole());
         Instant expiresAt = jwtUtil.getExpirationFromToken(token);
 
-        // 4. Lấy fullName nếu là EV Driver
-        String fullName = null;
-        if (account.getRole() == Role.EV_DRIVER) {
-            fullName = evDriverRepository.findByAccountId(account.getId())
+        // 4. Lấy fullName
+        String fullName = switch (account.getRole()) {
+            case EV_DRIVER -> evDriverRepository.findByAccountId(account.getId())
                     .map(EVDriver::getFullName)
                     .orElse(null);
-        }
+            case ADMIN -> adminRepository.findByAccountId(account.getId())
+                    .map(Admin::getFullName)
+                    .orElse(null);
+            case CS_STAFF -> CSStaffRepository.findByAccountId(account.getId())
+                    .map(CS_Staff::getFullName)
+                    .orElse(null);
+            default -> null;
+        };
 
         return new LoginResponseDTO(token, fullName, account.getEmail(), account.getRole(), expiresAt);
     }

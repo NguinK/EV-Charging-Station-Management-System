@@ -62,16 +62,26 @@ public class EVDriverService {
     private TransactionDTO mapToTransactionDTO(Transaction tx) {
         TransactionDTO dto = new TransactionDTO();
         dto.setId(tx.getId());
-        dto.setUserId(tx.getDriver().getId());
-        dto.setChargingSessionId(
-                tx.getSession() != null ? tx.getSession().getId() : null
-        );
+
+        if (tx.getDriver() != null) {
+            dto.setDriverId(tx.getDriver().getId());
+            dto.setDriverName(tx.getDriver().getFullName());
+        }
+
+        if (tx.getSession() != null) {
+            dto.setSessionId(tx.getSession().getId());
+        }
+
         dto.setAmount(tx.getAmount());
+        dto.setCurrency(tx.getCurrency());
         dto.setPaymentMethod(tx.getPaymentMethod().name());
         dto.setPaymentType(tx.getType().name()); // map enum type vào paymentType
         dto.setTransactionTime(tx.getTimestamp());
         dto.setStatus(tx.getStatus().name());
+        dto.setInvoiceNumber(tx.getInvoiceNumber());
+        dto.setPaidAt(tx.getPaidAt());
         dto.setDescription("Invoice: " + tx.getInvoiceNumber());
+
         return dto;
     }
 }
