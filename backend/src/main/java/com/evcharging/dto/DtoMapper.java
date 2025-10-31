@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DtoMapper {
-    public PaymentDTO toPaymentDTO(Payment payment) {
+    public static PaymentDTO toPaymentDTO(Payment payment) {
         PaymentDTO dto = new PaymentDTO();
         dto.setId(payment.getId());
         dto.setSessionId(payment.getSession().getId());
@@ -26,7 +26,7 @@ public class DtoMapper {
         return dto;
     }
 
-    public InvoiceDTO toInvoiceDTO(Invoice invoice) {
+    public static InvoiceDTO toInvoiceDTO(Invoice invoice) {
         InvoiceDTO dto = new InvoiceDTO();
         dto.setId(invoice.getId());
         dto.setInvoiceNumber(invoice.getInvoiceNumber());
@@ -56,7 +56,7 @@ public class DtoMapper {
         return dto;
     }
 
-    public TransactionDTO toTransactionDTO(Transaction tx) {
+    public static TransactionDTO toTransactionDTO(Transaction tx) {
         TransactionDTO dto = new TransactionDTO();
         dto.setId(tx.getId());
         dto.setTransactionTime(tx.getTimestamp()); // đổi tên cho khớp DTO
@@ -81,21 +81,4 @@ public class DtoMapper {
         return dto;
     }
 
-    private ChargingSessionDTO toDTO(ChargingSession session) {
-        return new ChargingSessionDTO(
-                session.getId(),
-                session.getStation().getName(),
-                session.getDriver().getFullName(),
-                session.getReservation() != null && session.getReservation().getChargingPoint() != null
-                        ? session.getReservation().getChargingPoint().getPointCode()
-                        : null,
-                session.getStartTime(),
-                session.getEndTime(),
-                session.getStartSoc(),
-                session.getEndSoc(),
-                session.getEnergyConsumed(),
-                session.getCost(),
-                session.getStatus()
-        );
-    }
 }

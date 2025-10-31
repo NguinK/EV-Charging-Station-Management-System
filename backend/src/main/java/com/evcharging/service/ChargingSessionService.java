@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -83,7 +84,7 @@ public class ChargingSessionService {
             throw new IllegalStateException("Session is not active");
         }
 
-        session.setEndTime(LocalDateTime.now());
+        session.setEndTime(LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")));
         session.setEndSoc(endSoc);
         session.setEnergyConsumed(energy);
         session.setCost(cost);
@@ -102,13 +103,11 @@ public class ChargingSessionService {
         tx.setAmount(cost);
         tx.setCurrency("VND");
         tx.setType(TransactionType.PAYMENT);
-        tx.setPaymentMethod(PaymentMethod.EWALLET); // hoặc BANKING/CASH tuỳ
         tx.setStatus(TransactionStatus.PENDING);
         tx.setInvoiceNumber("INV-" + System.currentTimeMillis());
 
-        transactionRepo.save(tx);
-
         session = sessionRepo.save(session);
+        transactionRepo.save(tx);
 
         return toDTO(session); // trả về DTO
     }
