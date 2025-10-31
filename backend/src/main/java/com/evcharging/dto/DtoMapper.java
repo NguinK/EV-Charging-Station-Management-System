@@ -26,35 +26,35 @@ public class DtoMapper {
         return dto;
     }
 
-    public static InvoiceDTO toInvoiceDTO(Invoice invoice) {
-        InvoiceDTO dto = new InvoiceDTO();
-        dto.setId(invoice.getId());
-        dto.setInvoiceNumber(invoice.getInvoiceNumber());
-        dto.setIssueDate(invoice.getIssueDate());
-
-        dto.setCustomerName(invoice.getCustomerName());
-        dto.setTaxCode(invoice.getTaxCode());
-
-        dto.setStationName(invoice.getStationName());
-        dto.setPointCode(invoice.getPointCode());
-        dto.setChargingStartTime(invoice.getChargingStartTime());
-        dto.setChargingEndTime(invoice.getChargingEndTime());
-        dto.setEnergyDelivered(invoice.getEnergyDelivered());
-        dto.setDuration(invoice.getDuration());
-
-        dto.setEnergyCost(invoice.getEnergyCost());
-        dto.setTimeCost(invoice.getTimeCost());
-        dto.setDiscount(invoice.getDiscount());
-        dto.setTotalAmount(invoice.getTotalAmount());
-
-        dto.setVatRate(invoice.getVatRate());
-        dto.setVatAmount(invoice.getVatAmount());
-        dto.setFinalAmount(invoice.getFinalAmount());
-
-        dto.setNotes(invoice.getNotes());
-
-        return dto;
-    }
+//    public static InvoiceDTO toInvoiceDTO(Invoice invoice) {
+//        InvoiceDTO dto = new InvoiceDTO();
+//        dto.setId(invoice.getId());
+//        dto.setInvoiceNumber(invoice.getInvoiceNumber());
+//        dto.setIssueDate(invoice.getIssueDate());
+//
+//        dto.setCustomerName(invoice.getCustomerName());
+//        dto.setTaxCode(invoice.getTaxCode());
+//
+//        dto.setStationName(invoice.getStationName());
+//        dto.setPointCode(invoice.getPointCode());
+//        dto.setChargingStartTime(invoice.getChargingStartTime());
+//        dto.setChargingEndTime(invoice.getChargingEndTime());
+//        dto.setEnergyDelivered(invoice.getEnergyDelivered());
+//        dto.setDuration(invoice.getDuration());
+//
+//        dto.setEnergyCost(invoice.getEnergyCost());
+//        dto.setTimeCost(invoice.getTimeCost());
+//        dto.setDiscount(invoice.getDiscount());
+//        dto.setTotalAmount(invoice.getTotalAmount());
+//
+//        dto.setVatRate(invoice.getVatRate());
+//        dto.setVatAmount(invoice.getVatAmount());
+//        dto.setFinalAmount(invoice.getFinalAmount());
+//
+//        dto.setNotes(invoice.getNotes());
+//
+//        return dto;
+//    }
 
     public static TransactionDTO toTransactionDTO(Transaction tx) {
         TransactionDTO dto = new TransactionDTO();

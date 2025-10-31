@@ -1,6 +1,8 @@
 package com.evcharging.controller;
 
+import com.evcharging.dto.TransactionDTO;
 import com.evcharging.entity.Transaction;
+import com.evcharging.enums.PaymentMethod;
 import com.evcharging.service.TransactionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,11 +31,12 @@ public class TransactionController {
         return ResponseEntity.ok(transactionService.getTransactionBySession(sessionId));
     }
 
-    // Xác nhận thanh toán
-    @PostMapping("/{transactionId}/confirmPayment")
-    public ResponseEntity<Transaction> confirmPayment(
-            @PathVariable Long transactionId,
+    @PostMapping("/transactions/{id}/pay")
+    public ResponseEntity<TransactionDTO> pay(
+            @PathVariable Long id,
+            @RequestParam PaymentMethod method,
             @RequestParam boolean success) {
-        return ResponseEntity.ok(transactionService.confirmPayment(transactionId, success));
+        TransactionDTO dto = transactionService.updateTransaction(id, method, success);
+        return ResponseEntity.ok(dto);
     }
 }

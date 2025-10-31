@@ -33,27 +33,18 @@ public class Invoice {
 
     // Thông tin khách hàng
     private String customerName;
-    private String taxCode; // Mã số thuế (nếu có)
 
     // Thông tin hóa đơn
     private String stationName;
-    private String pointCode;
+    private String pointId;
     private LocalDateTime chargingStartTime;
     private LocalDateTime chargingEndTime;
     private Double energyDelivered;
-    private Integer duration;
 
     // Chi phí
     private Double energyCost;
-    private Double timeCost;
     private Double discount;
     private Double totalAmount;
-
-    // VAT
-    private Double vatRate; // Thuế VAT (%)
-    private Double vatAmount;
-    private Double finalAmount; // Tổng cộng sau VAT
-
 
 
     @Column(length = 1000)
