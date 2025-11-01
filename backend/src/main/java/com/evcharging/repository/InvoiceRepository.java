@@ -9,11 +9,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
+public interface InvoiceRepository extends JpaRepository<Invoice,Long> {
 
     Optional<Invoice> findByInvoiceNumber(String invoiceNumber);
 
     List<Invoice> findByCustomerNameContainingIgnoreCase(String customerName);
 
     List<Invoice> findByIssueDateBetween(LocalDateTime from, LocalDateTime to);
+
 }
+

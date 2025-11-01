@@ -2,15 +2,16 @@ package com.evcharging.entity;
 
 import com.evcharging.enums.*;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.time.LocalDateTime;
 @Entity
 @Table(name = "invoices")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,18 +34,28 @@ public class Invoice {
 
     // Thông tin khách hàng
     private String customerName;
+    private String customerEmail;
+    private String customerPhone;
+    private String customerAddress;
+    private String taxCode;
 
     // Thông tin hóa đơn
     private String stationName;
-    private String pointId;
+    private String pointCode;
     private LocalDateTime chargingStartTime;
     private LocalDateTime chargingEndTime;
     private Double energyDelivered;
+    private Integer duration;
 
     // Chi phí
     private Double energyCost;
+    private Double timeCost;
     private Double discount;
     private Double totalAmount;
+
+    private Double vatRate; // Thuế VAT (%)
+    private Double vatAmount;
+    private Double finalAmount;
 
 
     @Column(length = 1000)

@@ -16,9 +16,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.List;
 
 
@@ -64,14 +62,16 @@ public class ReservationService {
         ChargingStation station = stationRepository.findById(dto.getStationId())
                 .orElseThrow(() -> new RuntimeException("Station not found"));
 
-        // Lấy giờ hiện tại theo múi giờ Việt Nam
-        LocalDateTime nowVN = LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+        // Lấy giờ hiện tại theo UTC
+        OffsetDateTime nowUTC = OffsetDateTime.now(ZoneOffset.UTC);
+        OffsetDateTime endTime = dto.getEndTime();
 
-        LocalDateTime startTime = dto.getStartTime();
-        LocalDateTime endTime = dto.getEndTime() != null ? dto.getEndTime() : startTime.plusHours(1);
+        if (endTime == null) {
+            throw new RuntimeException("Vui lòng nhập thời điểm bạn dự kiến đến trạm sạc");
+        }
 
-        if (startTime.isBefore(nowVN)) {
-            throw new RuntimeException("Start time must be in the future (VN time)");
+        if (endTime.isBefore(nowUTC)) {
+            throw new RuntimeException("End time must be in the future (UTC)");
         }
 
         // Lấy tất cả trụ trong trạm
@@ -82,11 +82,10 @@ public class ReservationService {
                 .toList();
 
         for (ChargingPoint point : filteredPoints) {
-            // Chỉ check trùng trên cùng 1 trụ
             boolean isOccupied = reservationRepository.existsByChargingPointAndStatusInAndTimeOverlap(
                     point,
                     List.of(ReservationStatus.CONFIRMED),
-                    startTime,
+                    nowUTC,
                     endTime
             );
 
@@ -96,14 +95,13 @@ public class ReservationService {
                 reservation.setChargingPoint(point);
                 reservation.setStation(station);
                 reservation.setConnectorType(dto.getConnectorType());
-                reservation.setStartTime(startTime);
-                reservation.setExpireTime(endTime);
-                reservation.setStatus(ReservationStatus.CONFIRMED); // auto approve
+                reservation.setStartTime(nowUTC); // thời điểm đặt
+                reservation.setExpireTime(endTime); // thời điểm driver dự kiến đến
+                reservation.setStatus(ReservationStatus.CONFIRMED);
 
-                //Tính phí giữ chỗ theo số giờ đặt trước
-                long hoursBetween = Duration.between(nowVN, startTime).toHours();
-                if (hoursBetween < 0) hoursBetween = 0; // tránh âm nếu lệch mili giây
-                double holdingFee = hoursBetween * RESERVATION_FEE_PER_HOUR;
+                // Tính phí giữ chỗ theo số phút giữ
+                long minutesBetween = Duration.between(nowUTC, endTime).toMinutes();
+                double holdingFee = (minutesBetween / 60.0) * RESERVATION_FEE_PER_HOUR;
                 reservation.setHoldingFee(holdingFee);
 
                 point.setStatus(ChargingPointStatus.RESERVED);
@@ -117,7 +115,6 @@ public class ReservationService {
         throw new RuntimeException("Không còn trụ sạc nào trống tại thời điểm này");
     }
 
-
     public ReservationResponseDTO getReservationDetails(Long reservationId) {
         Reservation res = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new RuntimeException("Reservation not found"));
@@ -126,13 +123,15 @@ public class ReservationService {
 
     @Scheduled(fixedRate = 5 * 60 * 1000) // mỗi 5 phút
     public void cancelExpiredReservations() {
-        LocalDateTime now = LocalDateTime.now();
+        OffsetDateTime nowUTC = OffsetDateTime.now(ZoneOffset.UTC);
+
         List<Reservation> expired = reservationRepository.findByStatusAndExpireTimeBefore(
-                ReservationStatus.CONFIRMED, now
+                ReservationStatus.CONFIRMED, nowUTC
         );
 
         for (Reservation r : expired) {
             r.setStatus(ReservationStatus.CANCELLED);
+
             ChargingPoint point = r.getChargingPoint();
             point.setStatus(ChargingPointStatus.AVAILABLE);
 

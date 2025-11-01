@@ -1,5 +1,7 @@
 package com.evcharging.service;
 
+package com.evcharging.service;
+
 import com.evcharging.entity.*;
 import com.evcharging.enums.*;
 import com.evcharging.repository.*;
@@ -42,7 +44,7 @@ public class PaymentService {
 
         // Tính toán chi phí
         ChargingPoint point = session.getChargingPoint();
-        double energyCost = session.getEnergyDelivered() * point.getPricePerKwh();
+        double energyCost = session.getEnergyConsumed() * point.getPricePerKwh();
         double timeCost = session.getDuration() * point.getPricePerMinute();
         double totalAmount = energyCost + timeCost;
 

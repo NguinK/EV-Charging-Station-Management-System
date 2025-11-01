@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Entity
 @Data
@@ -41,13 +42,11 @@ public class Reservation {
     @Column(nullable = false)
     private ReservationStatus status; // PENDING, CONFIRMED, CANCELLED, EXPIRED
 
-    @JsonFormat(pattern = "dd-MM-yyyy mm:HH", timezone = "Asia/Ho_Chi_Minh")
     @Column(name = "start_time", nullable = false)
-    private LocalDateTime startTime;
+    private OffsetDateTime startTime;
 
-    @JsonFormat(pattern = "dd-MM-yyyy mm:HH", timezone = "Asia/Ho_Chi_Minh")
     @Column(name = "expire_time", nullable = false)
-    private LocalDateTime expireTime;
+    private OffsetDateTime expireTime;
 
     // Quan hệ 1-1 với ChargingSession
     @OneToOne(mappedBy = "reservation", cascade = CascadeType.ALL)
@@ -55,7 +54,4 @@ public class Reservation {
 
     @ManyToOne
     private ChargingPoint chargingPoint;
-
-
-
 }

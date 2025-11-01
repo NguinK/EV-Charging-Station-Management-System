@@ -10,17 +10,18 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-    List<Reservation> findByStatusAndExpireTimeBefore(ReservationStatus status, LocalDateTime time);
+    List<Reservation> findByStatusAndExpireTimeBefore(ReservationStatus status, OffsetDateTime time);
     List<Reservation> findByDriver(EVDriver driver);
     @Query("SELECT COUNT(r)>0 FROM Reservation r WHERE r.chargingPoint = :point AND r.status IN :statuses AND r.startTime < :newExpireTime AND r.expireTime > :newStartTime")
     Boolean existsByChargingPointAndStatusInAndTimeOverlap(
             @Param("point") ChargingPoint point,
             @Param("statuses") List<ReservationStatus> statuses,
-            @Param("newStartTime") LocalDateTime newStartTime,
-            @Param("newExpireTime") LocalDateTime newExpireTime
+            @Param("newStartTime") OffsetDateTime newStartTime,
+            @Param("newExpireTime") OffsetDateTime newExpireTime
     );
 }

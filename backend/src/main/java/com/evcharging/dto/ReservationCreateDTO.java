@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Data
 @Getter
@@ -15,10 +16,5 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ReservationCreateDTO {
     private Long stationId;          // ID trạm sạc muốn đặt
-    private ConnectorType connectorType;    // CCS, CHAdeMO, AC
-
-
-    private LocalDateTime startTime;
-
-
-    private LocalDateTime endTime;}
+    private ConnectorType connectorType;// CCS, CHAdeMO, AC
+    private OffsetDateTime endTime;}
