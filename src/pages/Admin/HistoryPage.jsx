@@ -16,10 +16,8 @@ const HistoryPage = () => {
 
       {/* HEADER */}
       <div>
-        <h1 className="text-3xl font-bold">History </h1>
-        <p className="text-gray-600 text-sm mt-1">
-          Theo dõi lịch sử sạc, doanh thu và thông tin người dùng theo ngày/tháng.
-        </p>
+        <h1 className="text-3xl font-bold">📊History </h1>
+        
       </div>
 
       {/* FILTER BAR */}

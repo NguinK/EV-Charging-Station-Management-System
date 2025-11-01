@@ -6,10 +6,11 @@ import {
   UserOutlined,
   WalletOutlined,
 } from "@ant-design/icons";
-import { Breadcrumb, ConfigProvider, Layout, Menu, theme } from "antd";
+import { Breadcrumb, ConfigProvider, Layout, Menu, } from "antd";
 import HistoryPage from "./HistoryPage";
 import BookingPage from "../BookingPage";
 import EditProfile from "./EditAccount";
+import ChargingStation from "./ChargingStation";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -18,7 +19,7 @@ function getItem(label, key, icon, children) {
 }
 
 const items = [
-  getItem("Station", "booking", <PieChartOutlined />),
+  getItem("Station", "station", <PieChartOutlined />),
   getItem("History", "history", <DesktopOutlined />),
   getItem("Account", "account", <UserOutlined />),
   getItem("Wallet", "Wallet", <WalletOutlined />),
@@ -30,13 +31,10 @@ const Admin = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKey, setSelectedKey] = useState("booking");
 
-  const {
-    token: { colorBgContainer },
-  } = theme.useToken();
-  const renderContent = () => {
+   const renderContent = () => {
     switch (selectedKey) {
-      case "booking":
-        return <BookingPage />;
+      case "station":
+        return <ChargingStation />;
       case "history":
         return <HistoryPage />;
       case "account":
@@ -83,7 +81,7 @@ const Admin = () => {
 
         {/* MAIN LAYOUT */}
         <Layout>
-          <Header style={{ padding: 0, background: colorBgContainer }} />
+         
 
           <Content style={{ margin: "0 16px" }}>
             <Breadcrumb style={{ margin: "16px 0" }}>

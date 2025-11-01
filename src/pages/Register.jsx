@@ -14,9 +14,7 @@ const formItemClassName =
   [&_.ant-input-affix-wrapper]:!border-[#1f2a24] \
   [&_.ant-input-affix-wrapper]:!text-[#e9ffee]";
 
-  const handleClick = () => {
-      Navigate("/login");
-    };
+  
 function RegisterPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#798583] px-4 text-white">
@@ -144,7 +142,7 @@ function RegisterPage() {
               type="primary"
               htmlType="submit"
               className="h-12 w-full rounded-full border-none bg-gradient-to-r from-[#2729b8] to-[#49eb85] text-base font-semibold text-[#042410] shadow-[0_15px_30px_rgba(18,70,38,0.35)] transition hover:from-[#34c759] hover:to-[#45e47d]"
-              onSubmit={handleClick}
+              
             >
               Register
             </Button>
