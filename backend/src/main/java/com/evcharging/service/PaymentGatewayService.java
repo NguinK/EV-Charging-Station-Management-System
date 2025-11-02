@@ -1,5 +1,6 @@
 package com.evcharging.service;
 
+import com.evcharging.entity.Transaction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,20 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class PaymentGatewayService {
+    public String redirectToGateway(Transaction tx, String returnUrl) {
+        double amount = tx.getAmount();
+        Long paymentId = tx.getId();
 
+        switch (tx.getPaymentMethod()) {
+            case EWALLET:
+                return createMomoPaymentUrl(paymentId, amount, returnUrl);
+            // hoặc chọn mặc định 1 ví điện tử bạn tích hợp
+            case BANKING:
+                return createVNPayPaymentUrl(paymentId, amount, returnUrl);
+            default:
+                throw new IllegalArgumentException("Unsupported payment method: " + tx.getPaymentMethod());
+        }
+    }
     /**
      * Tạo URL thanh toán VNPay
      */

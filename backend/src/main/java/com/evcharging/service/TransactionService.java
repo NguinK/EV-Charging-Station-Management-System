@@ -2,32 +2,41 @@ package com.evcharging.service;
 
 import com.evcharging.dto.DtoMapper;
 import com.evcharging.dto.TransactionDTO;
+import com.evcharging.entity.ChargingSession;
 import com.evcharging.entity.Invoice;
 import com.evcharging.entity.Transaction;
 import com.evcharging.enums.PaymentMethod;
 import com.evcharging.enums.TransactionStatus;
+import com.evcharging.enums.TransactionType;
 import com.evcharging.repository.InvoiceRepository;
 import com.evcharging.repository.TransactionRepository;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
-
+@Slf4j
 @Service
 public class TransactionService {
 
     private final TransactionRepository transactionRepo;
     private final InvoiceRepository invoiceRepo;
     private final DtoMapper dtoMapper;
+    private final WalletService walletService;
+    private final InvoiceService invoiceService;
 
     public TransactionService(TransactionRepository transactionRepo
     , InvoiceRepository invoiceRepo,
-                              DtoMapper dtoMapper) {
+                              DtoMapper dtoMapper,
+                              WalletService walletService,
+                              InvoiceService invoiceService) {
         this.transactionRepo = transactionRepo;
         this.invoiceRepo = invoiceRepo;
         this.dtoMapper = dtoMapper;
+        this.walletService = walletService;
+        this.invoiceService = invoiceService;
     }
 
     // Lấy lịch sử giao dịch của 1 driver
@@ -41,31 +50,21 @@ public class TransactionService {
                 .orElseThrow(() -> new IllegalArgumentException("Transaction not found for session"));
     }
 
-    @Transactional
-    public TransactionDTO updateTransaction(Long transactionId, PaymentMethod method, boolean success) {
-        Transaction tx = transactionRepo.findById(transactionId)
-                .orElseThrow(() -> new RuntimeException("Transaction not found"));
 
-        if (tx.getStatus() != TransactionStatus.PENDING) {
-            throw new IllegalStateException("Transaction is not pending");
-        }
+    public Transaction createTransaction(ChargingSession session,
+                                         double finalCost,
+                                         TransactionStatus status) {
+        Transaction tx = new Transaction();
+        tx.setSession(session);
+        tx.setDriver(session.getDriver());
+        tx.setAmount(finalCost);
+        tx.setCurrency("VND");
+        tx.setInvoiceNumber("INV-" + System.currentTimeMillis());
+        tx.setTimestamp(LocalDateTime.now());
+        tx.setStatus(status);
+        tx.setType(TransactionType.PAYMENT);
 
-        tx.setPaymentMethod(method);
-        tx.setPaidAt(LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")));
-        tx.setStatus(success ? TransactionStatus.SUCCESS : TransactionStatus.FAILED);
-
-        Transaction saved = transactionRepo.save(tx);
-
-        // Nếu thành công thì sinh invoice
-        if (success) {
-            Invoice invoice = new Invoice();
-            invoice.setTransaction(saved);
-            invoice.setInvoiceNumber(saved.getInvoiceNumber());
-            invoice.setCreatedAt(LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")));
-            invoiceRepo.save(invoice);
-        }
-
-        return DtoMapper.toTransactionDTO(saved);
+        return tx;
     }
 
 }

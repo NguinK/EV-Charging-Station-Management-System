@@ -2,8 +2,8 @@ package com.evcharging.controller;
 
 import com.evcharging.dto.ChargingSessionDTO;
 import com.evcharging.dto.ChargingStatusDTO;
-import com.evcharging.dto.EndSessionCreateDTO;
 import com.evcharging.entity.ChargingSession;
+import com.evcharging.enums.PaymentMethod;
 import com.evcharging.repository.ChargingSessionRepository;
 import com.evcharging.service.ChargingSessionService;
 import org.springframework.http.ResponseEntity;
@@ -31,12 +31,14 @@ public class ChargingSessionController {
 
 
     // Kết thúc phiên sạc
+    // Controller
     @PutMapping("/{sessionId}/endManual")
-    public ResponseEntity<ChargingSessionDTO> endSession(
+    public ChargingSessionDTO endManual(
             @PathVariable Long sessionId,
-            @RequestBody EndSessionCreateDTO req) {
-        return ResponseEntity.ok(sessionService.endSession(sessionId, req.getEndSoc(), req.getEnergy(), req.getCost()));
+            @RequestParam(required = false) PaymentMethod method) {
+        return sessionService.endSession(sessionId, method);
     }
+
 
     @GetMapping("/sessions/{id}/status")
     public ChargingStatusDTO getSessionStatus(@PathVariable Long id) {

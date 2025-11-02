@@ -1,17 +1,14 @@
 package com.evcharging.entity;
 
+import com.evcharging.enums.PaymentMethod;
 import com.evcharging.enums.SessionStatus;
 import jakarta.persistence.*;
-import lombok.Data;
 
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -36,10 +33,10 @@ public class ChargingSession {
     private double cost;                 // Chi phí tạm tính
 
     @Column(name = "start_soc")
-    private int startSoc;                // SOC % lúc bắt đầu
+    private Integer startSoc;                // SOC % lúc bắt đầu
 
     @Column(name = "end_soc")
-    private int endSoc;                  // SOC % lúc kết thúc
+    private Integer endSoc;                  // SOC % lúc kết thúc
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -69,7 +66,8 @@ public class ChargingSession {
     @ManyToOne
     @JoinColumn(name = "charging_point_id")
     private ChargingPoint chargingPoint;
-
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod paymentMethod;
     @PreUpdate
     protected void onUpdate() {
         lastUpdatedTime = LocalDateTime.now();

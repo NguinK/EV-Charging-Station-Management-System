@@ -1,8 +1,10 @@
 package com.evcharging.controller;
 
+import com.evcharging.dto.DtoMapper;
 import com.evcharging.dto.TransactionDTO;
 import com.evcharging.entity.Transaction;
 import com.evcharging.enums.PaymentMethod;
+import com.evcharging.service.PaymentService;
 import com.evcharging.service.TransactionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +16,11 @@ import java.util.List;
 public class TransactionController {
 
     private final TransactionService transactionService;
+    private final PaymentService paymentService;
 
-    public TransactionController(TransactionService transactionService) {
+    public TransactionController(TransactionService transactionService, PaymentService paymentService) {
         this.transactionService = transactionService;
+        this.paymentService = paymentService;
     }
 
     // Lấy lịch sử giao dịch của driver
@@ -31,12 +35,10 @@ public class TransactionController {
         return ResponseEntity.ok(transactionService.getTransactionBySession(sessionId));
     }
 
-    @PostMapping("/transactions/{id}/pay")
-    public ResponseEntity<TransactionDTO> pay(
-            @PathVariable Long id,
-            @RequestParam PaymentMethod method,
-            @RequestParam boolean success) {
-        TransactionDTO dto = transactionService.updateTransaction(id, method, success);
-        return ResponseEntity.ok(dto);
+    @PostMapping("/{id}/pay-EWallet")
+    public TransactionDTO payWithEWallet(@PathVariable("id") Long transactionId) {
+        Transaction tx = paymentService.payWithEWallet(transactionId);
+        return DtoMapper.toTransactionDTO(tx);
     }
+
 }

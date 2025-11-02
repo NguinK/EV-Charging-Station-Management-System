@@ -10,22 +10,14 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
+
 public class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "payment_id", nullable = false)
-    private Payment payment;
-
     @Column(nullable = false, unique = true)
     private String invoiceNumber; // Số hóa đơn
-
-    @Column(nullable = false)
-    private LocalDateTime issueDate; // Ngày phát hành
 
     @OneToOne
     @JoinColumn(name = "transaction_id")
@@ -34,32 +26,17 @@ public class Invoice {
 
     // Thông tin khách hàng
     private String customerName;
-    private String customerEmail;
-    private String customerPhone;
-    private String customerAddress;
-    private String taxCode;
 
     // Thông tin hóa đơn
     private String stationName;
     private String pointCode;
-    private LocalDateTime chargingStartTime;
-    private LocalDateTime chargingEndTime;
-    private Double energyDelivered;
-    private Integer duration;
+    private Double energyConsumed;
+
 
     // Chi phí
-    private Double energyCost;
-    private Double timeCost;
     private Double discount;
-    private Double totalAmount;
-
-    private Double vatRate; // Thuế VAT (%)
-    private Double vatAmount;
     private Double finalAmount;
 
-
-    @Column(length = 1000)
-    private String notes;
 
     private LocalDateTime createdAt;
 

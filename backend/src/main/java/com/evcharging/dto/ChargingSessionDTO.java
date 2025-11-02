@@ -1,5 +1,6 @@
 package com.evcharging.dto;
 
+import com.evcharging.enums.PaymentMethod;
 import com.evcharging.enums.SessionStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,4 +24,7 @@ public class ChargingSessionDTO {
     private double energyConsumed;
     private double cost;
     private SessionStatus status;
+    private Long transactionId;
+    private String paymentUrl;
+
 }

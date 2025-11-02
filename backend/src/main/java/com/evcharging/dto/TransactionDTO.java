@@ -29,6 +29,6 @@ public class TransactionDTO {
     private String invoiceNumber;          // Mã hóa đơn
     private LocalDateTime paidAt;          // Thời điểm thanh toán thành công
     private String description;            // Ghi chú thêm (VD: “Thanh toán phiên sạc tại trạm FPT”)
-
+    private String paymentUrl;
 }
 
