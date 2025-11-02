@@ -13,7 +13,6 @@ import HistoryPage from "./pages/Admin/HistoryPage";
 import Dashboard from "./pages/Admin/AdminPage";
 import Charge from "./pages/User/Charge";
 import UserPage from "./pages/User/UserPage";
-import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -22,7 +21,17 @@ function App() {
       <Route path="/price" element={<PricePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      <Route
+      <Route path="/user" element={<UserPage />} />
+      <Route path="/admin" element={<AdminR />} />
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
+  );
+}
+
+export default App;
+
+{
+  /* <Route
         path="/user"
         element={
           <ProtectedRoute allowedRoles={["USER", "ADMIN"]}>
@@ -30,6 +39,7 @@ function App() {
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/admin"
         element={
@@ -37,10 +47,5 @@ function App() {
             <AdminR />
           </ProtectedRoute>
         }
-      />
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
-  );
+      /> */
 }
-
-export default App;

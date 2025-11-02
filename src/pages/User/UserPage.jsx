@@ -54,7 +54,8 @@ export default function UserPage() {
   const menuItems = [
     { key: "booking", icon: <PieChartOutlined />, label: "Booking" },
     { key: "history", icon: <DesktopOutlined />, label: "History" },
-    { key: "wallet", icon: <WalletOutlined />, label: "Wallet" },
+     { key: "Plan", icon: <WalletOutlined />, label: "Plan" },
+     { key: "wallet", icon: <WalletOutlined />, label: "Wallet" },
   ];
 
   return (

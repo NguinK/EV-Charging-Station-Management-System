@@ -8,7 +8,6 @@ import {
 } from "@ant-design/icons";
 import { Breadcrumb, ConfigProvider, Layout, Menu, } from "antd";
 import HistoryPage from "./HistoryPage";
-import BookingPage from "../BookingPage";
 import EditProfile from "./EditAccount";
 import ChargingStation from "./ChargingStation";
 
@@ -29,7 +28,7 @@ const items = [
 
 const Admin = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const [selectedKey, setSelectedKey] = useState("booking");
+  const [selectedKey, setSelectedKey] = useState("station");
 
    const renderContent = () => {
     switch (selectedKey) {
@@ -72,7 +71,7 @@ const Admin = () => {
           <div className="demo-logo-vertical" />
           <Menu
             theme="dark"
-            defaultSelectedKeys={["booking"]}
+            defaultSelectedKeys={["station"]}
             mode="inline"
             items={items}
             onClick={({ key }) => setSelectedKey(key)}
