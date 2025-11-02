@@ -13,16 +13,31 @@ import HistoryPage from "./pages/Admin/HistoryPage";
 import Dashboard from "./pages/Admin/AdminPage";
 import Charge from "./pages/User/Charge";
 import UserPage from "./pages/User/UserPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Homepage />} />
-      <Route path="/user" element={<UserPage />} />
       <Route path="/price" element={<PricePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      <Route path="/admin" element={<AdminR />} />
+      <Route
+        path="/user"
+        element={
+          <ProtectedRoute allowedRoles={["USER", "ADMIN"]}>
+            <UserPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute allowedRoles={["ADMIN"]}>
+            <AdminR />
+          </ProtectedRoute>
+        }
+      />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
