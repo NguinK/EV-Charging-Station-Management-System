@@ -42,7 +42,7 @@ const ModalMessage = () => {
         onCancel={handleCancel}
         
       >
-        {open && <BookingPage onSuccess={handleBookingSuccess} />}
+          <BookingPage onSuccess={handleBookingSuccess} />
       </Modal>
     </div>
   );

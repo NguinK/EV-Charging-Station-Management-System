@@ -55,11 +55,12 @@ function LoginPage() {
       localStorage.setItem("userInfo", JSON.stringify(userInfo));
 
       message.success("Login successful!");
-      if (userInfo.role === "ADMIN") {
-        navigate("/admin");
-      } else {
-        navigate("/user");
-      }
+       navigate("/user");
+      // if (userInfo.role === "ADMIN") {
+      //   navigate("/admin");
+      // } else {
+      //   navigate("/user");
+      // }
     } catch (error) {
       console.error("❌ Login error:", error.response?.data || error.message);
 

@@ -33,7 +33,8 @@ const Admin = () => {
    const renderContent = () => {
     switch (selectedKey) {
       case "station":
-        return <ChargingStation />;
+        // return <ChargingStation />;
+        return;
       case "history":
         return <HistoryPage />;
       case "account":
