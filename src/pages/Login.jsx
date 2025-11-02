@@ -82,7 +82,7 @@ function LoginPage() {
       <div className="mx-auto grid w-full max-w-6xl gap8 md:grid-cols-[1fr,0.95fr]">
         <Card className="bg-[#020203]/95 !border-[#254135] !shadow-[0_30px_80px_rgba(8,19,15,0.55)]">
           <div className="flex flex-col gap-6">
-            <div className="flex items-center gap-3">
+            <div className="text-center mb-2">
               {/* <img src="/ev_logo.png" alt="EV Station" className="h-6 w-auto" /> */}
               <Title level={3} className="text-3xl font-bold !text-[#4ef58b]">
                 EV Station
