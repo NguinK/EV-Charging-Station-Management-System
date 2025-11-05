@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import {
   DesktopOutlined,
+  LogoutOutlined,
   PieChartOutlined,
   ToolOutlined,
   UserOutlined,
   WalletOutlined,
 } from "@ant-design/icons";
-import { Breadcrumb, ConfigProvider, Layout, Menu, } from "antd";
+import { Breadcrumb, ConfigProvider, Layout, Menu } from "antd";
 import HistoryPage from "./HistoryPage";
 import EditProfile from "./EditAccount";
 import ChargingStation from "./ChargingStation";
@@ -22,15 +23,14 @@ const items = [
   getItem("History", "history", <DesktopOutlined />),
   getItem("Account", "account", <UserOutlined />),
   getItem("Wallet", "Wallet", <WalletOutlined />),
-  
-
+  getItem("Logout", "logout", <LogoutOutlined />),
 ];
 
 const Admin = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKey, setSelectedKey] = useState("station");
 
-   const renderContent = () => {
+  const renderContent = () => {
     switch (selectedKey) {
       case "station":
         // return <ChargingStation />;
@@ -56,7 +56,7 @@ const Admin = () => {
             itemHeight: 70, // ✅ tăng chiều cao item sidebar
             fontSize: 20, // ✅ chữ to
             iconSize: 20, // ✅ icon to
-            itemPaddingInline:60
+            itemPaddingInline: 60,
           },
         },
       }}
@@ -64,7 +64,7 @@ const Admin = () => {
       <Layout style={{ minHeight: "100vh" }}>
         {/* SIDEBAR */}
         <Sider
-          width={300} 
+          width={300}
           collapsible
           collapsed={collapsed}
           onCollapse={(value) => setCollapsed(value)}
@@ -75,14 +75,20 @@ const Admin = () => {
             defaultSelectedKeys={["station"]}
             mode="inline"
             items={items}
-            onClick={({ key }) => setSelectedKey(key)}
+            onClick={({ key }) => {
+              if (key === "logout") {
+                localStorage.removeItem("token");
+                localStorage.removeItem("userInfo");
+                window.location.href = "/login"; // ✅ chuyển về trang login
+                return;
+              }
+              setSelectedKey(key);
+            }}
           />
         </Sider>
 
         {/* MAIN LAYOUT */}
         <Layout>
-         
-
           <Content style={{ margin: "0 16px" }}>
             <Breadcrumb style={{ margin: "16px 0" }}>
               <Breadcrumb.Item>Dashboard</Breadcrumb.Item>

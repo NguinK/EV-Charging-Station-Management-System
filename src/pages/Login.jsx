@@ -56,11 +56,11 @@ function LoginPage() {
 
       message.success("Login successful!");
        navigate("/user");
-      // if (userInfo.role === "ADMIN") {
-      //   navigate("/admin");
-      // } else {
-      //   navigate("/user");
-      // }
+      if (userInfo.role === "ADMIN") {
+        navigate("/admin");
+      } else {
+        navigate("/user");
+      }
     } catch (error) {
       console.error("❌ Login error:", error.response?.data || error.message);
 
