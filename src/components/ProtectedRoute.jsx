@@ -12,7 +12,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   // Nếu vai trò không đúng -> chặn
   if (!allowedRoles.includes(userInfo.role)) {
     // Nếu user cố vào admin
-    if (userInfo.role === "USER") return <Navigate to="/user" replace />;
+    if (userInfo.role === "EV_DRIVER") return <Navigate to="/user" replace />;
     // Nếu admin cố vào user (tuỳ bạn có cho phép hay không)
     return <Navigate to="/admin" replace />;
   }
