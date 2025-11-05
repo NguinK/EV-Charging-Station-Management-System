@@ -14,6 +14,18 @@ export const startReservation = createAsyncThunk(
   }
 );
 
+//Lấy chỗ đặt
+export const getReservationDetails = createAsyncThunk(
+  "reservation/getReservationDetails",
+  async (id, { rejectWithValue }) => {
+    try {
+      const res = await reservationAPI.getReservationDetails(id);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
 // Slice
 const reservationSlice = createSlice({
   name: "reservation",
@@ -39,7 +51,12 @@ const reservationSlice = createSlice({
       .addCase(startReservation.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+
+      })
+      .addCase(getReservationDetails.fulfilled, (state, action) => {
+       state.bookings = [action.payload];
+     });
+      
   },
 });
 

@@ -5,38 +5,45 @@ import utc from "dayjs/plugin/utc";
 import { useDispatch, useSelector } from "react-redux";
 import { startReservation } from "../features/reservationSlice";
 import chargingStationAPI from "../api/chargingStationAPI";
+import {  useNavigate } from "react-router-dom";
 dayjs.extend(utc);
 
 function BookingPage() {
+  const navigate = useNavigate();
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.reservation);
-  const [stations, setStations] = useState([]);
+  // const [stations, setStations] = useState([]);
 
   // ✅ Lấy danh sách trạm sạc khi component mount
-  useEffect(() => {
-    const fetchStations = async () => {
-      try {
-        const res = await chargingStationAPI.getAllStations();
-        setStations(res.data || []); // res.data = mảng trạm sạc
-      } catch (error) {
-        message.error("Không thể tải danh sách trạm sạc!");
-        console.error("Lỗi getAllStations:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchStations = async () => {
+  //     try {
+  //       const res = await chargingStationAPI.getAllStations();
+  //       setStations(res.data || []); // res.data = mảng trạm sạc
+  //     } catch (error) {
+  //       message.error("Không thể tải danh sách trạm sạc!");
+  //       console.error("Lỗi getAllStations:", error);
+  //     }
+  //   };
 
-    fetchStations();
-  }, []);
+  //   fetchStations();
+  // }, []);
 
   // ✅ Gửi form
   const onFinish = async (values) => {
-    const startIso = dayjs(values.startTime)
-      .utc()
-      .format("YYYY-MM-DDTHH:mm:ss[Z]");
+    const start = values.endTime; // đây là dayjs object từ DatePicker
+
+    if (!start || !dayjs(start).isValid()) {
+      message.error("Vui lòng chọn thời gian bắt đầu hợp lệ!");
+      return;
+    }
+    const startIsoUtc = dayjs(start).toDate().toISOString();
+
     const payload = {
       stationId: Number(values.stationId),
       connectorType: values.connectorType,
-      startTime: startIso,
+      endTime: startIsoUtc,
     };
 
     console.log("Payload gửi Redux:", payload);
@@ -47,6 +54,11 @@ function BookingPage() {
         message.success("Đặt xe thành công!");
         console.log("Kết quả API:", res);
         form.resetFields();
+
+        localStorage.setItem("latestBookingId", res.reservationId);
+        setTimeout(() => {
+          navigate("/user");
+        }, 300);
       })
       .catch((err) => {
         console.error("Lỗi khi gửi yêu cầu:", err);
@@ -101,7 +113,7 @@ function BookingPage() {
         </Select>
       </Form.Item>
 
-      <Form.Item label="Thời gian bắt đầu " name="startTime">
+      <Form.Item label="Thời gian giữ chỗ đến :" name="endTime">
         <DatePicker
           showTime={{ format: "HH:mm", minuteStep: 15 }}
           format="YYYY-MM-DD HH:mm"
