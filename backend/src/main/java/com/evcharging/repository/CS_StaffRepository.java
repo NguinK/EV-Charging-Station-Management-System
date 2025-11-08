@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface CS_StaffRepository extends JpaRepository<CS_Staff,Long> {
-    Optional<CS_Staff>findByAccountId(Long id);
+public interface CS_StaffRepository extends JpaRepository<CS_Staff, Long> {
+    Optional<CS_Staff> findByAccountId(Long id);
 }
