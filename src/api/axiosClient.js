@@ -3,7 +3,8 @@ import axios from "axios";
 const axiosClient = axios.create({
     baseURL:"http://localhost:8080", // day la URL goc API  moi goi la phai xu ly CORS cross-origin resource sharing
     headers: {
-        "Content-Type":"application/json", // ban gui du lieu dang json 
+        "Content-Type":"application/json",
+        // ban gui du lieu dang json 
 
     } ,
     timeout: 1000, // thoi gian cho phep de ket noi toi API
