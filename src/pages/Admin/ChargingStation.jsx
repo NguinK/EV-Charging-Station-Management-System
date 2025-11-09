@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import {
   Table,
@@ -6,18 +5,20 @@ import {
   Button,
   Tag,
   Space,
-  message,
   Row,
   Col,
-  Modal,
+  Modal as AntModal,
   Form,
   Input,
   InputNumber,
   Select,
+  Modal,
 } from "antd";
+
 import chargingStationAPI from "../../api/chargingStationAPI";
 import chargingPointAPI from "../../api/chargingPointAPI";
 import chargingSessionAPI from "../../api/chargingSessionAPI";
+import { App } from "antd";
 
 const ChargingStation = () => {
   const [stations, setStations] = useState([]);
@@ -27,6 +28,7 @@ const ChargingStation = () => {
   const [loadingPoints, setLoadingPoints] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [form] = Form.useForm();
+  const { modal, message } = App.useApp();
 
   // ==============================
   // 🔄 FETCH API
@@ -51,7 +53,7 @@ const ChargingStation = () => {
       const res = await chargingPointAPI.getPointsByStation(stationId);
       setPoints(res.data || []);
     } catch (err) {
-      message.error("Không thể tải trụ sạc",err);
+      message.error("Không thể tải trụ sạc", err);
     } finally {
       setLoadingPoints(false);
     }
@@ -102,7 +104,7 @@ const ChargingStation = () => {
   // 🗑️ XOÁ TRỤ SẠC
   // ==============================
   const handleDeletePoint = async (pointId) => {
-    Modal.confirm({
+    modal.confirm({
       title: "Xác nhận xoá trụ sạc",
       content: "Bạn có chắc chắn muốn xoá trụ này không?",
       okText: "Xoá",
@@ -112,7 +114,7 @@ const ChargingStation = () => {
         try {
           await chargingPointAPI.deletePoint(pointId);
           message.success("Đã xoá trụ sạc!");
-          fetchPoints(selectedStation.id);
+          await fetchPoints(selectedStation.id);
         } catch (err) {
           message.error("Lỗi khi xoá trụ sạc!", err);
         }
@@ -125,15 +127,15 @@ const ChargingStation = () => {
   // ==============================
 
   // 🚗 Bắt đầu sạc — cần reservationId (ví dụ từ DB booking)
-  const handleStartCharging = async (reservationId) => {
-    try {
-      await chargingSessionAPI.startSession(reservationId);
-      message.success("⚡ Bắt đầu sạc!");
-      fetchPoints(selectedStation.id);
-    } catch (err) {
-      message.error("Không thể bắt đầu sạc!", err);
-    }
-  };
+  // const handleStartCharging = async (reservationId) => {
+  //   try {
+  //     await chargingSessionAPI.startSession(reservationId);
+  //     message.success("⚡ Bắt đầu sạc!");
+  //     fetchPoints(selectedStation.id);
+  //   } catch (err) {
+  //     message.error("Không thể bắt đầu sạc!", err);
+  //   }
+  // };
 
   // 🛑 Dừng sạc
   const handleStopCharging = async (sessionId) => {
@@ -160,7 +162,7 @@ const ChargingStation = () => {
         ),
       });
     } catch (err) {
-      message.error("Không thể lấy trạng thái!",err);
+      message.error("Không thể lấy trạng thái!", err);
     }
   };
 
@@ -207,14 +209,14 @@ const ChargingStation = () => {
       key: "actions",
       render: (_, record) => (
         <Space>
-          {record.status === "AVAILABLE" && (
+          {/* {record.status === "AVAILABLE" && (
             <Button
               type="primary"
               onClick={() => handleStartCharging(record.reservationId || 1)}
             >
               Bắt đầu
             </Button>
-          )}
+          )} */}
           {record.status === "CHARGING" && (
             <Button danger onClick={() => handleStopCharging(record.sessionId)}>
               Dừng
@@ -225,7 +227,7 @@ const ChargingStation = () => {
               Kiểm tra
             </Button>
           )}
-          <Button danger onClick={() => handleDeletePoint(record.pointId)}>
+          <Button danger onClick={() => handleDeletePoint(record.id)}>
             Xoá
           </Button>
         </Space>
@@ -302,7 +304,7 @@ const ChargingStation = () => {
       </Row>
 
       {/* Modal thêm trụ */}
-      <Modal
+      <AntModal
         title="Thêm trụ sạc mới"
         open={openModal}
         onCancel={() => setOpenModal(false)}
@@ -357,7 +359,7 @@ const ChargingStation = () => {
             <InputNumber min={0} step={100} className="w-full" />
           </Form.Item>
         </Form>
-      </Modal>
+      </AntModal>
     </div>
   );
 };

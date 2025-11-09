@@ -11,9 +11,11 @@ import {
   Row,
   Col,
   DatePicker,
+  Tag,
 } from "antd";
 import dayjs from "dayjs";
 import adminDriverAPI from "../../api/adminDriverAPI";
+import { App } from "antd";
 
 const EditAccount = () => {
   const [drivers, setDrivers] = useState([]);
@@ -21,12 +23,14 @@ const EditAccount = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingDriver, setEditingDriver] = useState(null);
   const [form] = Form.useForm();
-
+  const { message, modal } = App.useApp();
   // 🔹 Lấy danh sách tài xế
   const fetchDrivers = async () => {
     setLoading(true);
     try {
       const res = await adminDriverAPI.getAllDrivers();
+      const onlyDrivers = res.data.filter((u) => u.role === "EV_DRIVER");
+      setDrivers(onlyDrivers);
       setDrivers(res.data || []);
     } catch (error) {
       console.error(error);
@@ -58,13 +62,26 @@ const EditAccount = () => {
   };
 
   // 🔹 Xoá tài xế
-  const handleDelete = async (id) => {
+  const handleDelete = async (record) => {
+    // ✅ Lấy ID từ nhiều trường hợp khác nhau, ưu tiên account.id
+    const accountId =
+      record?.driver?.account?.id || record?.driver?.id || record?.id;
+
+    if (!accountId) {
+      message.warning("Không thể xóa vì ID chưa hợp lệ.");
+      console.log("record nhận được:", record);
+      return;
+    }
+
+    console.log("🧨 Xóa tài xế với ID:", accountId);
+
     try {
-      await adminDriverAPI.deleteDriver(id);
+      await adminDriverAPI.deleteDriver(accountId); // DELETE /api/admin/drivers/{accountId}
       message.success("Đã xóa tài xế thành công");
       fetchDrivers();
     } catch (error) {
-      message.error("Xóa thất bại", error);
+      console.error("Delete driver error:", error);
+      message.error("Xóa thất bại, vui lòng thử lại!");
     }
   };
 
@@ -98,7 +115,7 @@ const EditAccount = () => {
   const columns = [
     {
       title: "ID",
-      dataIndex: "id",
+      dataIndex: ["driver", "id"],
       key: "id",
       width: 80,
     },
@@ -147,7 +164,7 @@ const EditAccount = () => {
             title="Xác nhận xóa tài xế này?"
             okText="Xóa"
             cancelText="Hủy"
-            onConfirm={() => handleDelete(record.id)}
+            onConfirm={() => handleDelete(record)}
           >
             <Button danger size="small" type="link">
               Xóa
