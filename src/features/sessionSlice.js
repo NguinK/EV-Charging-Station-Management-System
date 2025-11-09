@@ -8,6 +8,15 @@ export const fetchSessionByReservation = createAsyncThunk(
     return res.data;
   }
 );
+//
+// sessionSlice.js
+export const endSessionManual = createAsyncThunk(
+  "session/endSessionManual",
+  async (sessionId) => {
+    const res = await chargingSessionAPI.endManual(sessionId);
+    return res.data;
+  }
+);
 
 const sessionSlice = createSlice({
   name: "session",
@@ -28,6 +37,9 @@ const sessionSlice = createSlice({
       .addCase(fetchSessionByReservation.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
+      })
+      .addCase(endSessionManual.fulfilled, (state, action) => {
+        state.info = action.payload;
       });
   },
 });

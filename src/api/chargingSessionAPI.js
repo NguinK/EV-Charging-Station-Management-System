@@ -6,7 +6,7 @@ const chargingSessionAPI = {
     axiosClient.post(`/sessions/start/${reservationId}?startSoc=${startSoc}`),
 
   // 🔌 Kết thúc phiên sạc
-  endSession: (sessionId) =>
+  endManual: (sessionId) =>
     axiosClient.put(`/sessions/${sessionId}/endManual`),
 
  getByReservation: (id) => 
