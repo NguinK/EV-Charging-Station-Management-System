@@ -13,8 +13,8 @@ import HistoryPage from "./pages/Admin/HistoryPage";
 import Dashboard from "./pages/Admin/AdminPage";
 import Charge from "./pages/User/Charge";
 import UserPage from "./pages/User/UserPage";
-import Dpp from "./pages/Admin/adj";
 import ProtectedRoute from "./components/ProtectedRoute";
+import HistoryCharge from "./pages/User/HistoryCharge";
 
 function App() {
   return (
@@ -24,13 +24,16 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route
-        path="/user"
+        path="/user/*"
         element={
           <ProtectedRoute allowedRoles={["EV_DRIVER", "ADMIN"]}>
             <UserPage />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route path="charge" element={<Charge />} />
+        <Route path="history" element={<HistoryCharge />} />
+      </Route>
 
       <Route
         path="/admin"
