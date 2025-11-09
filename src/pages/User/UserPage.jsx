@@ -17,7 +17,7 @@ import {
   Space,
   Button,
 } from "antd";
-import { useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import Charge from "./Charge";
 
 const { Title, Text } = Typography;
@@ -52,7 +52,7 @@ export default function UserPage() {
   };
 
   const menuItems = [
-    { key: "booking", icon: <PieChartOutlined />, label: "Booking" },
+    { key: "booking", icon: <PieChartOutlined />, label: "Booking" ,  },
     { key: "history", icon: <DesktopOutlined />, label: "History" },
      { key: "Plan", icon: <WalletOutlined />, label: "Plan" },
      { key: "wallet", icon: <WalletOutlined />, label: "Wallet" },
@@ -281,6 +281,7 @@ export default function UserPage() {
               )}
             </div>
           </Space>
+          {/* <Outlet /> */}
         </Content>
       </Layout>
     </Layout>

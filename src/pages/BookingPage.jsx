@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from "react";
 import { Form, Input, Button, DatePicker, Select, message } from "antd";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useDispatch, useSelector } from "react-redux";
 import { startReservation } from "../features/reservationSlice";
-import chargingStationAPI from "../api/chargingStationAPI";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 dayjs.extend(utc);
 
 function BookingPage() {
@@ -53,6 +51,12 @@ function BookingPage() {
       .then((res) => {
         message.success("Đặt xe thành công!");
         console.log("Kết quả API:", res);
+        // ✅ Lưu ID đặt xe theo tài khoản hiện tại
+        const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+        if (userInfo && userInfo.id) {
+          const key = `latestBookingId_${userInfo.id}`;
+          localStorage.setItem(key, res.reservationId);
+        }
         form.resetFields();
 
         localStorage.setItem("latestBookingId", res.reservationId);
