@@ -15,6 +15,7 @@ import Charge from "./pages/User/Charge";
 import UserPage from "./pages/User/UserPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import HistoryCharge from "./pages/User/HistoryCharge";
+import SessionInfo from "./pages/User/Seesion";
 
 function App() {
   return (
@@ -31,8 +32,10 @@ function App() {
           </ProtectedRoute>
         }
       >
-        <Route path="charge" element={<Charge />} />
+        <Route index element={<Charge />} />
         <Route path="history" element={<HistoryCharge />} />
+        <Route path="charge" element={<Charge />} />
+        <Route path="session" element={<SessionInfo />} />
       </Route>
 
       <Route
