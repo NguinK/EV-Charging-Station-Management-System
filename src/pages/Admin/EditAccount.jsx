@@ -63,24 +63,23 @@ const EditAccount = () => {
 
   // 🔹 Xoá tài xế
   const handleDelete = async (record) => {
-    // ✅ Lấy ID từ nhiều trường hợp khác nhau, ưu tiên account.id
-    const accountId =
-      record?.driver?.account?.id || record?.driver?.id || record?.id;
+    const id = record?.id || record?.driverId; // Ưu tiên record.id vì API nhận {id}
 
-    if (!accountId) {
-      message.warning("Không thể xóa vì ID chưa hợp lệ.");
-      console.log("record nhận được:", record);
+    if (!id) {
+      message.warning("Không thể xóa vì ID không hợp lệ");
+      console.log("⚠️ record không có ID:", record);
       return;
     }
 
-    console.log("🧨 Xóa tài xế với ID:", accountId);
+    console.log("🧨 Gọi API xóa tài xế ID:", id);
 
     try {
-      await adminDriverAPI.deleteDriver(accountId); // DELETE /api/admin/drivers/{accountId}
-      message.success("Đã xóa tài xế thành công");
+      const res = await adminDriverAPI.deleteDriver(id);
+      console.log("✅ Phản hồi từ server:", res);
+      message.success("Đã xóa tài xế thành công!");
       fetchDrivers();
     } catch (error) {
-      console.error("Delete driver error:", error);
+      console.error("❌ Lỗi khi xóa tài xế:", error);
       message.error("Xóa thất bại, vui lòng thử lại!");
     }
   };
@@ -115,7 +114,7 @@ const EditAccount = () => {
   const columns = [
     {
       title: "ID",
-      dataIndex: ["driver", "id"],
+      dataIndex: "id",
       key: "id",
       width: 80,
     },
@@ -189,7 +188,7 @@ const EditAccount = () => {
       </Row>
 
       <Table
-        rowKey="id"
+        rowKey={(record) => record.id || record.driverId}
         loading={loading}
         dataSource={drivers}
         columns={columns}
@@ -260,7 +259,7 @@ const EditAccount = () => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item label="Loại xe" name="vehicleType">
-                <Input placeholder="Xe máy / Ô tô" />
+                <Input placeholder=" Ô tô" />
               </Form.Item>
             </Col>
             {!editingDriver && (

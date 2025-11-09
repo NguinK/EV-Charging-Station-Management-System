@@ -22,7 +22,7 @@ const items = [
   getItem("Station", "station", <PieChartOutlined />),
   getItem("History", "history", <DesktopOutlined />),
   getItem("Account", "account", <UserOutlined />),
-  getItem("Wallet", "Wallet", <WalletOutlined />),
+  getItem("Revenue", "Wallet", <WalletOutlined />),
   getItem("Logout", "logout", <LogoutOutlined />),
 ];
 
