@@ -18,7 +18,7 @@ public class ChargingSessionController {
 
     public ChargingSessionController(ChargingSessionService sessionService, ChargingSessionRepository sessionRepository) {
         this.sessionService = sessionService;
-        this.sessionRepository=sessionRepository    ;
+        this.sessionRepository = sessionRepository;
     }
 
     // Bắt đầu phiên sạc (tài xế quét QR)

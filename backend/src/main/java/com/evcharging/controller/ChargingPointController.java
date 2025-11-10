@@ -1,12 +1,13 @@
 package com.evcharging.controller;
 
 import com.evcharging.entity.ChargingPoint;
-import com.evcharging.enums.ConnectorType;
 import com.evcharging.enums.ChargingPointStatus;
+import com.evcharging.enums.ConnectorType;
 import com.evcharging.service.ChargingPointService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -35,25 +36,21 @@ public class ChargingPointController {
         List<ChargingPoint> points = chargingPointService.getPointsByStation(stationId);
         return ResponseEntity.ok(points);
     }
-
-
+    
     @GetMapping("/station/{stationId}/available")
     public ResponseEntity<List<ChargingPoint>> getAvailablePoints(@PathVariable Long stationId) {
         List<ChargingPoint> points = chargingPointService.getAvailablePoints(stationId);
         return ResponseEntity.ok(points);
     }
 
-
-     //Lấy thông tin điểm sạc
-
+    //Lấy thông tin điểm sạc
     @GetMapping("/{pointId}")
     public ResponseEntity<ChargingPoint> getChargingPoint(@PathVariable Long pointId) {
         ChargingPoint point = chargingPointService.getChargingPoint(pointId);
         return ResponseEntity.ok(point);
     }
 
-
-     // Cập nhật trạng thái điểm sạc
+    // Cập nhật trạng thái điểm sạc
     @PutMapping("/{pointId}/status")
     public ResponseEntity<ChargingPoint> updatePointStatus(
             @PathVariable Long pointId,
@@ -63,9 +60,7 @@ public class ChargingPointController {
         return ResponseEntity.ok(point);
     }
 
-
-     //Cập nhật giá của điểm sạc
-
+    //Cập nhật giá của điểm sạc
     @PutMapping("/{pointId}/pricing")
     public ResponseEntity<ChargingPoint> updatePricing(
             @PathVariable Long pointId,
@@ -76,10 +71,7 @@ public class ChargingPointController {
         return ResponseEntity.ok(point);
     }
 
-    /**
-     * Tìm điểm sạc theo loại connector
-     * GET /api/charging-points/search
-     */
+    //Tìm điểm sạc theo connector type
     @GetMapping("/search")
     public ResponseEntity<List<ChargingPoint>> findByConnectorType(
             @RequestParam ConnectorType connectorType) {
@@ -88,10 +80,7 @@ public class ChargingPointController {
         return ResponseEntity.ok(points);
     }
 
-    /**
-     * Xóa điểm sạc
-     * DELETE /api/charging-points/{pointId}
-     */
+    //Xóa điểm sạc
     @DeleteMapping("/{pointId}")
     public ResponseEntity<Void> deleteChargingPoint(@PathVariable Long pointId) {
         chargingPointService.deleteChargingPoint(pointId);
