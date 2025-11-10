@@ -5,9 +5,9 @@
 //import lombok.AllArgsConstructor;
 //import lombok.Data;
 //import lombok.NoArgsConstructor;
-//import java.time.LocalDateTime;
+//import java.time.OffsetDateTime;
 //
-///**
+/// **
 // * Entity thanh toán
 // */
 //@Entity
@@ -52,12 +52,12 @@
 //    @JoinColumn(name = "invoice_id")
 //    private Invoice invoice;
 //
-//    private LocalDateTime paymentTime;
-//    private LocalDateTime createdAt;
+//    private OffsetDateTime paymentTime;
+//    private OffsetDateTime createdAt;
 //
 //    @PrePersist
 //    protected void onCreate() {
-//        createdAt = LocalDateTime.now();
+//        createdAt = OffsetDateTime.now();
 //    }
 //
 //

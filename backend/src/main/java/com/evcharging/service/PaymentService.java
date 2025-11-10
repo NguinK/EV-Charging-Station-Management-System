@@ -1,4 +1,3 @@
-
 package com.evcharging.service;
 
 import com.evcharging.entity.Transaction;
@@ -8,7 +7,7 @@ import com.evcharging.repository.TransactionRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Service
 public class PaymentService {
@@ -35,12 +34,12 @@ public class PaymentService {
         }
 
         tx.setPaymentMethod(PaymentMethod.EWALLET);
-        tx.setPaidAt(LocalDateTime.now());
+        tx.setPaidAt(OffsetDateTime.now());
 
         // Nếu trừ tiền fail -> rollback, transaction vẫn PENDING
         walletService.deductBalance(
                 tx.getDriver().getAccount().getId(),
-                tx.getAmount(),
+                tx.getAmount().doubleValue(),
                 "Thanh toán phiên sạc #" + tx.getSession().getId()
         );
 

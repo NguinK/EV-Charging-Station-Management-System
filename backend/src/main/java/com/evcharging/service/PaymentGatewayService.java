@@ -4,6 +4,8 @@ import com.evcharging.entity.Transaction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,19 +18,20 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PaymentGatewayService {
     public String redirectToGateway(Transaction tx, String returnUrl) {
-        double amount = tx.getAmount();
+        BigDecimal amount = tx.getAmount();
         Long paymentId = tx.getId();
 
         switch (tx.getPaymentMethod()) {
             case EWALLET:
-                return createMomoPaymentUrl(paymentId, amount, returnUrl);
+                return createMomoPaymentUrl(paymentId, amount.doubleValue(), returnUrl);
             // hoặc chọn mặc định 1 ví điện tử bạn tích hợp
             case BANKING:
-                return createVNPayPaymentUrl(paymentId, amount, returnUrl);
+                return createVNPayPaymentUrl(paymentId, amount.doubleValue(), returnUrl);
             default:
                 throw new IllegalArgumentException("Unsupported payment method: " + tx.getPaymentMethod());
         }
     }
+
     /**
      * Tạo URL thanh toán VNPay
      */
@@ -46,7 +49,7 @@ public class PaymentGatewayService {
         params.put("vnp_Version", "2.1.0");
         params.put("vnp_Command", "pay");
         params.put("vnp_TmnCode", "YOUR_TMN_CODE");
-        params.put("vnp_Amount", String.valueOf((long)(amount * 100))); // VNPay yêu cầu x100
+        params.put("vnp_Amount", String.valueOf((long) (amount * 100))); // VNPay yêu cầu x100
         params.put("vnp_CurrCode", "VND");
         params.put("vnp_TxnRef", "PAY" + paymentId);
         params.put("vnp_OrderInfo", "Thanh toan phi sac xe dien");
@@ -94,7 +97,7 @@ public class PaymentGatewayService {
         requestBody.put("partnerCode", "YOUR_PARTNER_CODE");
         requestBody.put("accessKey", "YOUR_ACCESS_KEY");
         requestBody.put("requestId", "PAY" + paymentId);
-        requestBody.put("amount", (long)amount);
+        requestBody.put("amount", (long) amount);
         requestBody.put("orderId", "PAY" + paymentId);
         requestBody.put("orderInfo", "Thanh toan phi sac xe dien");
         requestBody.put("returnUrl", returnUrl);

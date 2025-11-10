@@ -6,7 +6,7 @@ package com.evcharging.repository;
 //import org.springframework.data.jpa.repository.Query;
 //import org.springframework.data.repository.query.Param;
 //import org.springframework.stereotype.Repository;
-//import java.time.LocalDateTime;
+//import java.time.OffsetDateTime;
 //import java.util.List;
 //import java.util.Optional;
 //
@@ -27,6 +27,6 @@ package com.evcharging.repository;
 //            "WHERE p.status = 'COMPLETED' " +
 //            "AND p.paymentTime BETWEEN :startDate AND :endDate")
 //    Double calculateTotalRevenue(
-//            @Param("startDate") LocalDateTime startDate,
-//            @Param("endDate") LocalDateTime endDate);
+//            @Param("startDate") OffsetDateTime startDate,
+//            @Param("endDate") OffsetDateTime endDate);
 //}

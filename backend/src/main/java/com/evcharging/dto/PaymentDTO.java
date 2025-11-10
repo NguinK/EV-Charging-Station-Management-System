@@ -6,7 +6,7 @@
 //import lombok.Getter;
 //import lombok.Setter;
 //
-//import java.time.LocalDateTime;
+//import java.time.OffsetDateTime;
 //@Getter
 //@Setter
 //public class PaymentDTO {
@@ -22,6 +22,6 @@
 //        private PaymentStatus status;
 //        private String transactionId;
 //        private String invoiceNumber; // giữ String thôi
-//        private LocalDateTime paymentTime;
+//        private OffsetDateTime paymentTime;
 //}
 //
