@@ -1,7 +1,10 @@
 package com.evcharging.service;
 
 import com.evcharging.dto.ChargingSessionDTO;
-import com.evcharging.entity.*;
+import com.evcharging.entity.ChargingPoint;
+import com.evcharging.entity.ChargingSession;
+import com.evcharging.entity.Reservation;
+import com.evcharging.entity.Transaction;
 import com.evcharging.enums.*;
 import com.evcharging.repository.*;
 import jakarta.transaction.Transactional;
@@ -11,10 +14,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.List;
+
 @Slf4j
 @Service
 public class ChargingSessionService {
@@ -25,14 +30,11 @@ public class ChargingSessionService {
     @Autowired
     private WalletService walletService;
     @Autowired
-    private  PaymentGatewayService paymentGatewayService;
+    private PaymentGatewayService paymentGatewayService;
     @Autowired
-    private  InvoiceService invoiceService;
+    private InvoiceService invoiceService;
     @Autowired
     private InvoiceRepository invoiceRepository;
-
-
-
 
     private final ChargingSessionRepository sessionRepo;
     private final ReservationRepository reservationRepo;
@@ -67,13 +69,13 @@ public class ChargingSessionService {
         }
 
         // Đánh dấu Reservation đã được sử dụng
-        reservation.setStatus(ReservationStatus.USED);
+        reservation.setStatus(ReservationStatus.COMPLETED);
 
         ChargingSession session = new ChargingSession();
         session.setReservation(reservation);
         session.setDriver(reservation.getDriver());
         session.setStation(reservation.getStation());
-        session.setStartTime(LocalDateTime.now());
+        session.setStartTime(OffsetDateTime.now());
         session.setStartSoc(startSoc);
         session.setEndSoc(startSoc);
         session.setStatus(SessionStatus.CHARGING);
@@ -99,14 +101,14 @@ public class ChargingSessionService {
         double energy = session.getEnergyConsumed();
 
         // Cập nhật session
-        session.setEndTime(LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")));
+        session.setEndTime(OffsetDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")));
         session.setEndSoc(endSoc);
         session.setEnergyConsumed(energy);
         session.setStatus(SessionStatus.COMPLETED);
 
         // Tính phí
-        double finalCost = pricingService.calculateChargingFee(session);
-        session.setCost(finalCost);
+        BigDecimal finalCost = pricingService.calculateChargingFee(session);
+        session.setCost(finalCost.doubleValue());
 
         // Giải phóng trụ
         ChargingPoint point = session.getChargingPoint();
@@ -126,7 +128,7 @@ public class ChargingSessionService {
             tx.setPaymentMethod(method);
 
             if (method == PaymentMethod.EWALLET) {
-                walletService.deductBalance(session.getDriver().getId(), finalCost,
+                walletService.deductBalance(session.getDriver().getId(), finalCost.doubleValue(),
                         "Thanh toán phiên sạc #" + session.getId());
                 tx.setStatus(TransactionStatus.SUCCESS);
                 invoiceService.createInvoice(tx);
@@ -146,6 +148,7 @@ public class ChargingSessionService {
         dto.setPaymentUrl(paymentUrl);
         return dto;
     }
+
     // Mapper entity -> DTO
     private ChargingSessionDTO toDTO(ChargingSession session) {
         Long transactionId = session.getTransaction() != null ? session.getTransaction().getId() : null;
@@ -155,7 +158,7 @@ public class ChargingSessionService {
                 session.getStation().getName(),
                 session.getDriver().getFullName(),
                 session.getReservation() != null && session.getReservation().getChargingPoint() != null
-                        ? session.getReservation().getChargingPoint().getPointCode()
+                        ? session.getReservation().getChargingPoint().getCode()
                         : null,
                 session.getStartTime(),
                 session.getEndTime(),
@@ -183,8 +186,8 @@ public class ChargingSessionService {
         List<ChargingSession> activeSessions = sessionRepo.findByStatus(SessionStatus.CHARGING);
 
         for (ChargingSession session : activeSessions) {
-            LocalDateTime now = LocalDateTime.now();
-            LocalDateTime lastUpdate = session.getLastUpdatedTime() != null
+            OffsetDateTime now = OffsetDateTime.now();
+            OffsetDateTime lastUpdate = session.getLastUpdatedTime() != null
                     ? session.getLastUpdatedTime()
                     : session.getStartTime();
 
@@ -207,24 +210,24 @@ public class ChargingSessionService {
             // Giả lập dung lượng pin xe (ví dụ 50 kWh)
             double batteryCapacity = 50.0;
             int startSoc = session.getStartSoc();
-            int newSoc = Math.min(100, (int)(startSoc + (totalEnergy / batteryCapacity) * 100));
+            int newSoc = Math.min(100, (int) (startSoc + (totalEnergy / batteryCapacity) * 100));
             session.setEndSoc(newSoc);
 
             //  Tính chi phí tạm tính
-            double energyFee = totalEnergy * point.getPricePerKwh();
-            long minutes = Duration.between(session.getStartTime(), now).toMinutes();
-            double timeFee = minutes * point.getPricePerMinute();
+//            double energyFee = totalEnergy * point.getPricePerKwh();
+//            long minutes = Duration.between(session.getStartTime(), now).toMinutes();
+//            double timeFee = minutes * point.getPricePerMinute();
 
             // Nếu có reservation thì cộng thêm phí giữ chỗ
-            double reservationFee = 0;
-            if (session.getReservation() != null) {
-                Reservation reservation = session.getReservation();
-                long hours = Duration.between(reservation.getStartTime(), reservation.getExpireTime()).toHours();
-                reservationFee = hours * 10_000; // 10k VND mỗi giờ
-            }
+//            double reservationFee = 0;
+//            if (session.getReservation() != null) {
+//                Reservation reservation = session.getReservation();
+//                long hours = Duration.between(reservation.getStartTime(), reservation.getExpireTime()).toHours();
+//                reservationFee = hours * 10_000; // 10k VND mỗi giờ
+//            }
 
-            double tempCost = energyFee + timeFee + reservationFee;
-            session.setCost(tempCost);
+            BigDecimal tempCost = pricingService.calculateChargingFee(session);
+            session.setCost(tempCost.doubleValue());
 
             // Cập nhật thời gian
             session.setLastUpdatedTime(now);
@@ -234,6 +237,4 @@ public class ChargingSessionService {
             checkAndAutoEnd(session, newSoc);
         }
     }
-
-
 }

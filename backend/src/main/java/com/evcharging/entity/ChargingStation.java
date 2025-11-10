@@ -1,22 +1,48 @@
 package com.evcharging.entity;
 
+import com.evcharging.enums.StationStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "stations")
 @Data
 public class ChargingStation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;            // Tên trạm (VD: Trạm Vincom Thủ Đức)
-    private String location;        // Địa chỉ hoặc tọa độ GPS
-    private String status;          // ONLINE, OFFLINE, MAINTENANCE
-    private int totalPoints;        // Tổng số điểm sạc
+    @Column(nullable = false, length = 200)
+    private String name;
+
+    @Column(nullable = false, length = 500)
+    private String location;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private StationStatus status;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private OffsetDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private OffsetDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = OffsetDateTime.now();
+        updatedAt = OffsetDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = OffsetDateTime.now();
+    }
+
     private String operator;
     private double latitude;
     private double longitude;

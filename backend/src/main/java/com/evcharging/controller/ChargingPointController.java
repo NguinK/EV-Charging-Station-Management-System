@@ -36,7 +36,7 @@ public class ChargingPointController {
         List<ChargingPoint> points = chargingPointService.getPointsByStation(stationId);
         return ResponseEntity.ok(points);
     }
-    
+
     @GetMapping("/station/{stationId}/available")
     public ResponseEntity<List<ChargingPoint>> getAvailablePoints(@PathVariable Long stationId) {
         List<ChargingPoint> points = chargingPointService.getAvailablePoints(stationId);

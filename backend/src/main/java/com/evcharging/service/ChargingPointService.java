@@ -1,13 +1,17 @@
 package com.evcharging.service;
 
-import com.evcharging.entity.*;
-import com.evcharging.enums.*;
+import com.evcharging.entity.ChargingPoint;
+import com.evcharging.entity.ChargingStation;
+import com.evcharging.enums.ChargingPointStatus;
+import com.evcharging.enums.ChargingSpeed;
+import com.evcharging.enums.ConnectorType;
 import com.evcharging.repository.ChargingPointRepository;
 import com.evcharging.repository.ChargingStationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDateTime;
+
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Service
@@ -17,9 +21,7 @@ public class ChargingPointService {
     private final ChargingPointRepository chargingPointRepo;
     private final ChargingStationRepository stationRepo;
 
-    /**
-     * Tạo điểm sạc mới
-     */
+    //Tạo điểm sạc mới
     @Transactional
     public ChargingPoint createChargingPoint(Long stationId, String pointCode,
                                              ConnectorType connectorType, Integer maxPower,
@@ -30,28 +32,26 @@ public class ChargingPointService {
 
         ChargingPoint point = new ChargingPoint();
         point.setStation(station);
-        point.setPointCode(pointCode);
+        point.setCode(pointCode);
         point.setConnectorType(connectorType);
         point.setMaxPower(maxPower);
         point.setSpeed(determineChargingSpeed(maxPower));
         point.setStatus(ChargingPointStatus.AVAILABLE);
         point.setPricePerKwh(pricePerKwh);
         point.setPricePerMinute(pricePerMinute);
-        point.setCreatedAt(LocalDateTime.now());
-        point.setUpdatedAt(LocalDateTime.now());
+        point.setCreatedAt(OffsetDateTime.now());
+        point.setUpdatedAt(OffsetDateTime.now());
 
         return chargingPointRepo.save(point);
     }
 
-    /**
-     * Lấy tất cả điểm sạc của một trạm
-     */
+    //Lấy tất cả điểm sạc của một trạm
     public List<ChargingPoint> getPointsByStation(Long stationId) {
         return chargingPointRepo.findByStationId(stationId);
     }
 
 
-     // Lấy các điểm sạc có sẵn của một trạm
+    // Lấy các điểm sạc có sẵn của một trạm
     public List<ChargingPoint> getAvailablePoints(Long stationId) {
         return chargingPointRepo.findByStationIdAndStatus(stationId, ChargingPointStatus.AVAILABLE);
     }
@@ -62,7 +62,7 @@ public class ChargingPointService {
         ChargingPoint point = chargingPointRepo.findById(pointId)
                 .orElseThrow(() -> new RuntimeException("Charging point not found"));
         point.setStatus(status);
-        point.setUpdatedAt(LocalDateTime.now());
+        point.setUpdatedAt(OffsetDateTime.now());
         return chargingPointRepo.save(point);
     }
 
@@ -75,7 +75,7 @@ public class ChargingPointService {
 
         point.setPricePerKwh(pricePerKwh);
         point.setPricePerMinute(pricePerMinute);
-        point.setUpdatedAt(LocalDateTime.now());
+        point.setUpdatedAt(OffsetDateTime.now());
 
         return chargingPointRepo.save(point);
     }
@@ -102,13 +102,13 @@ public class ChargingPointService {
     }
 
 
-      //Tìm điểm sạc theo loại connector
+    //Tìm điểm sạc theo loại connector
     public List<ChargingPoint> findByConnectorType(ConnectorType connectorType) {
         return chargingPointRepo.findByConnectorType(connectorType);
     }
 
 
-      //Xác định tốc độ sạc dựa trên công suất
+    //Xác định tốc độ sạc dựa trên công suất
     private ChargingSpeed determineChargingSpeed(Integer maxPower) {
         if (maxPower < 22) {
             return ChargingSpeed.SLOW;

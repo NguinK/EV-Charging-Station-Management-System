@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 /**
  * DTO cho lịch sử sạc của người dùng (EV Driver).
@@ -30,6 +30,6 @@ public class ChargingHistoryDTO {
     private double socEnd;         // SOC lúc kết thúc (%)
     private String paymentMethod;  // Hình thức thanh toán (E-Wallet, Banking, On-site)
     private String status;         // COMPLETED, FAILED, CANCELLED
-    private LocalDateTime startTime;  // Thời gian bắt đầu
-    private LocalDateTime endTime;    // Thời gian kết thúc
+    private OffsetDateTime startTime;  // Thời gian bắt đầu
+    private OffsetDateTime endTime;    // Thời gian kết thúc
 }

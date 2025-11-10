@@ -1,62 +1,68 @@
 package com.evcharging.entity;
 
-import com.evcharging.enums.ConnectorType;
-import com.evcharging.enums.ChargingSpeed;
 import com.evcharging.enums.ChargingPointStatus;
+import com.evcharging.enums.ChargingSpeed;
+import com.evcharging.enums.ConnectorType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
+
+import java.time.OffsetDateTime;
 
 @Entity
-@Table(name = "charging_points")
+@Table(name = "charging_point", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"station_id", "code"})
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-    public class ChargingPoint {
+public class ChargingPoint {
 
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-        @ManyToOne
-        @JoinColumn(name = "station_id", nullable = false)
-        private ChargingStation station;
+    @Column(name = "point_code", unique = true, nullable = false)
+    private String pointCode;
 
-        @Column(nullable = false)
-        private String pointCode; // Mã điểm sạc (ví dụ: CP-001, CP-002)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "station_id", nullable = false)
+    private ChargingStation station;
 
-        @Enumerated(EnumType.STRING)
-        @Column(nullable = false)
-        private ConnectorType connectorType; // CCS, CHADEMO, AC_TYPE2
+    @Column(nullable = false, length = 50)
+    private String code; // Mã điểm sạc (ví dụ: CP-001, CP-002)
 
-        private Integer maxPower; // Công suất tối đa (kW)
+    //    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 50)
+    private ConnectorType connectorType; // CCS, CHADEMO, AC_TYPE2
 
-        @Enumerated(EnumType.STRING)
-        private ChargingSpeed speed; // SLOW, FAST, ULTRA_FAST
+    private Integer maxPower; // Công suất tối đa (kW)
 
-        @Enumerated(EnumType.STRING)
-        @Column(nullable = false)
-        private ChargingPointStatus status; // AVAILABLE, OCCUPIED, OFFLINE, RESERVED, MAINTENANCE
+    @Enumerated(EnumType.STRING)
+    private ChargingSpeed speed; // SLOW, FAST, ULTRA_FAST
 
-        @Column(nullable = false)
-        private Double pricePerKwh; // Giá theo kWh (VND)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    private ChargingPointStatus status; // AVAILABLE, OCCUPIED, OFFLINE, RESERVED, MAINTENANCE
 
-        @Column(nullable = false)
-        private Double pricePerMinute; // Giá theo phút (VND)
+    @Column(nullable = false)
+    private Double pricePerKwh; // Giá theo kWh (VND)
 
-        private LocalDateTime createdAt;
-        private LocalDateTime updatedAt;
+    @Column(nullable = false)
+    private Double pricePerMinute; // Giá theo phút (VND)
 
-        @PrePersist
-        protected void onCreate() {
-            createdAt = LocalDateTime.now();
-            updatedAt = LocalDateTime.now();
-        }
+    private OffsetDateTime createdAt;
+    private OffsetDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = OffsetDateTime.now();
+        updatedAt = OffsetDateTime.now();
+    }
 
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+        updatedAt = OffsetDateTime.now();
     }
 }
