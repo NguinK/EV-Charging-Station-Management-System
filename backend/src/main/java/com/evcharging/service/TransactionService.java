@@ -1,22 +1,19 @@
 package com.evcharging.service;
 
 import com.evcharging.dto.DtoMapper;
-import com.evcharging.dto.TransactionDTO;
 import com.evcharging.entity.ChargingSession;
-import com.evcharging.entity.Invoice;
 import com.evcharging.entity.Transaction;
-import com.evcharging.enums.PaymentMethod;
 import com.evcharging.enums.TransactionStatus;
 import com.evcharging.enums.TransactionType;
 import com.evcharging.repository.InvoiceRepository;
 import com.evcharging.repository.TransactionRepository;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.List;
+
 @Slf4j
 @Service
 public class TransactionService {
@@ -28,7 +25,7 @@ public class TransactionService {
     private final InvoiceService invoiceService;
 
     public TransactionService(TransactionRepository transactionRepo
-    , InvoiceRepository invoiceRepo,
+            , InvoiceRepository invoiceRepo,
                               DtoMapper dtoMapper,
                               WalletService walletService,
                               InvoiceService invoiceService) {
@@ -52,7 +49,7 @@ public class TransactionService {
 
 
     public Transaction createTransaction(ChargingSession session,
-                                         double finalCost,
+                                         BigDecimal finalCost,
                                          TransactionStatus status) {
         Transaction tx = new Transaction();
         tx.setSession(session);
@@ -60,7 +57,7 @@ public class TransactionService {
         tx.setAmount(finalCost);
         tx.setCurrency("VND");
         tx.setInvoiceNumber("INV-" + System.currentTimeMillis());
-        tx.setTimestamp(LocalDateTime.now());
+        tx.setTimestamp(OffsetDateTime.now());
         tx.setStatus(status);
         tx.setType(TransactionType.PAYMENT);
 

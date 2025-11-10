@@ -6,6 +6,6 @@ public enum TransactionType {
     WITHDRAWAL,     // Rút tiền
     PAYMENT,        // Thanh toán phí sạc
     REFUND,         // Hoàn tiền
-    TRANSFER        // Chuyển khoản
+    TRANSFER,       // Chuyển khoản
+    PENALTY         // Phạt vi phạm
 }
-

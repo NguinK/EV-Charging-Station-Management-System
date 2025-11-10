@@ -4,7 +4,7 @@ import com.evcharging.entity.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,11 +14,14 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     // Lấy danh sách giao dịch của 1 driver trong khoảng thời gian
     List<Transaction> findByDriverIdAndTimestampBetween(
             Long driverId,
-            LocalDateTime from,
-            LocalDateTime to
+            OffsetDateTime from,
+            OffsetDateTime to
     );
+
     List<Transaction> findAllByDriverId(Long driverId);
+
     Optional<Transaction> findBySessionId(Long sessionId);
+
     Optional<Transaction> findByInvoiceNumber(String invoiceNumber);
 
 }

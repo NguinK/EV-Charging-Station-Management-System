@@ -3,7 +3,6 @@ package com.evcharging.controller;
 import com.evcharging.dto.DtoMapper;
 import com.evcharging.dto.TransactionDTO;
 import com.evcharging.entity.Transaction;
-import com.evcharging.enums.PaymentMethod;
 import com.evcharging.service.PaymentService;
 import com.evcharging.service.TransactionService;
 import org.springframework.http.ResponseEntity;
