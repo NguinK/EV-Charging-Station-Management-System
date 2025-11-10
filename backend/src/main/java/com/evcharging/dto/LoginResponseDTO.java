@@ -1,7 +1,8 @@
 package com.evcharging.dto;
 
 import com.evcharging.enums.Role;
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
 
 import java.time.Instant;
 
@@ -18,7 +19,8 @@ public class LoginResponseDTO {
     private Role role;   // EV_DRIVER / CS_STAFF / ADMIN
     private Instant expiresAt; // optional
 
-    public LoginResponseDTO() {}
+    public LoginResponseDTO() {
+    }
 
     public LoginResponseDTO(String token, String fullName, String email, Role role, Instant expiresAt) {
         this.token = token;
