@@ -4,17 +4,17 @@ import com.evcharging.config.JwtUtil;
 import com.evcharging.dto.*;
 import com.evcharging.entity.Account;
 import com.evcharging.entity.Admin;
-import com.evcharging.repository.AccountRepository;
 import com.evcharging.repository.AdminRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+
 import java.util.Optional;
 
 @Service
@@ -77,26 +77,26 @@ public class AdminService {
         return mapToResponse(saved);
     }
 
-        // Hàm map sang DTO trả về
-        private AdminResponseDTO mapToResponse(Admin admin){
-            AdminResponseDTO response = new AdminResponseDTO();
-            response.setId(admin.getId());
-            response.setFullName(admin.getFullName());
+    // Hàm map sang DTO trả về
+    private AdminResponseDTO mapToResponse(Admin admin) {
+        AdminResponseDTO response = new AdminResponseDTO();
+        response.setId(admin.getId());
+        response.setFullName(admin.getFullName());
 
-            Account acc = admin.getAccount();
-            response.setEmail(acc.getEmail());
-            response.setPhone(acc.getPhone());
-            response.setRole(acc.getRole());
-            response.setActive(acc.isEnabled());
+        Account acc = admin.getAccount();
+        response.setEmail(acc.getEmail());
+        response.setPhone(acc.getPhone());
+        response.setRole(acc.getRole());
+        response.setActive(acc.isEnabled());
 
-            if (admin.getCreatedAt() != null) {
-                response.setCreatedAt(admin.getCreatedAt());
-            }
-            if (admin.getUpdatedAt() != null) {
-                response.setUpdatedAt(admin.getUpdatedAt());
-            }
-            return response;
+        if (admin.getCreatedAt() != null) {
+            response.setCreatedAt(admin.getCreatedAt());
         }
+        if (admin.getUpdatedAt() != null) {
+            response.setUpdatedAt(admin.getUpdatedAt());
+        }
+        return response;
+    }
 
     @Transactional
     public Optional<AdminResponseDTO> updateAdmin(Long id, @Valid AdminUpdateDTO dto) {

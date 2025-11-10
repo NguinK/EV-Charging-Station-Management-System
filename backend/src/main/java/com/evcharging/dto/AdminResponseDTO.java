@@ -2,9 +2,12 @@ package com.evcharging.dto;
 
 import com.evcharging.enums.Role;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 /**
  * DTO phản hồi khi lấy thông tin Admin (GET API)
@@ -22,6 +25,6 @@ public class AdminResponseDTO {
     private Role role; // ví dụ: ADMIN, SUPER_ADMIN
     private boolean active;
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private OffsetDateTime createdAt;
+    private OffsetDateTime updatedAt;
 }

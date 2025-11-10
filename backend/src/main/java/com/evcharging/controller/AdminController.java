@@ -2,14 +2,14 @@ package com.evcharging.controller;
 
 import com.evcharging.dto.*;
 import com.evcharging.service.AdminService;
+import jakarta.validation.Valid;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
-import jakarta.validation.Valid;
 import java.util.Optional;
 
 @RestController
@@ -31,6 +31,7 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login failed");
         }
     }
+
     // GET ALL ADMINS (có phân trang)
     @GetMapping("/auth/getAllAdmins")
     public Page<AdminResponseDTO> getAllAdmins(@ParameterObject Pageable pageable) {
@@ -68,7 +69,6 @@ public class AdminController {
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
     }
-
 
 
 }
