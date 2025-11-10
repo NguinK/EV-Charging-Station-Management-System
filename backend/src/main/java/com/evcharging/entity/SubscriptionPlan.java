@@ -1,11 +1,13 @@
 package com.evcharging.entity;
 
-import com.evcharging.enums.*;
+import com.evcharging.enums.PlanStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
+
+import java.time.OffsetDateTime;
+
 @Entity
 @Table(name = "subscription_plans")
 @Data
@@ -34,11 +36,11 @@ public class SubscriptionPlan {
     @Enumerated(EnumType.STRING)
     private PlanStatus status;
 
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
+        createdAt = OffsetDateTime.now();
     }
 }
 

@@ -8,7 +8,7 @@
 //import lombok.extern.slf4j.Slf4j;
 //import org.springframework.stereotype.Service;
 //import org.springframework.transaction.annotation.Transactional;
-//import java.time.LocalDateTime;
+//import java.time.OffsetDateTime;
 //import java.util.List;
 //
 //@Slf4j
@@ -46,7 +46,7 @@
 //        }
 //
 //        // Kiểm tra đã có subscription active chưa
-//        userSubscriptionRepo.findActiveSubscription(accountId, LocalDateTime.now())
+//        userSubscriptionRepo.findActiveSubscription(accountId, OffsetDateTime.now())
 //                .ifPresent(sub -> {
 //                    throw new RuntimeException("User already has an active subscription");
 //                });
@@ -58,8 +58,8 @@
 //                "Subscription payment: " + plan.getName());
 //
 //        // Tạo subscription
-//        LocalDateTime startDate = LocalDateTime.now();
-//        LocalDateTime endDate = startDate.plusMonths(1);
+//        OffsetDateTime startDate = OffsetDateTime.now();
+//        OffsetDateTime endDate = startDate.plusMonths(1);
 //
 //        UserSubscription subscription = new UserSubscription();
 //        subscription.setAccount(account);
@@ -121,8 +121,8 @@
 //                "Subscription renewal: " + plan.getName());
 //
 //        // Tạo subscription mới
-//        LocalDateTime startDate = oldSubscription.getEndDate();
-//        LocalDateTime endDate = startDate.plusMonths(1);
+//        OffsetDateTime startDate = oldSubscription.getEndDate();
+//        OffsetDateTime endDate = startDate.plusMonths(1);
 //
 //        UserSubscription newSubscription = new UserSubscription();
 //        newSubscription.setAccount(oldSubscription.getAccount());
@@ -150,7 +150,7 @@
 //     */
 //    @Transactional
 //    public void updateUsage(Long accountId, double minutes, double kwh) {
-//        userSubscriptionRepo.findActiveSubscription(accountId, LocalDateTime.now())
+//        userSubscriptionRepo.findActiveSubscription(accountId, OffsetDateTime.now())
 //                .ifPresent(subscription -> {
 //                    subscription.setUsedMinutes(subscription.getUsedMinutes() + minutes);
 //                    subscription.setUsedKwh(subscription.getUsedKwh() + kwh);
@@ -165,7 +165,7 @@
 //     * Kiểm tra còn quota không (cho free minutes/kwh)
 //     */
 //    public boolean hasQuota(Long accountId, double minutes, double kwh) {
-//        return userSubscriptionRepo.findActiveSubscription(accountId, LocalDateTime.now())
+//        return userSubscriptionRepo.findActiveSubscription(accountId, OffsetDateTime.now())
 //                .map(subscription -> {
 //                    SubscriptionPlan plan = subscription.getPlan();
 //
@@ -184,7 +184,7 @@
 //     * Lấy subscription active của user
 //     */
 //    public UserSubscription getActiveSubscription(Long accountId) {
-//        return userSubscriptionRepo.findActiveSubscription(accountId, LocalDateTime.now())
+//        return userSubscriptionRepo.findActiveSubscription(accountId, OffsetDateTime.now())
 //                .orElse(null);
 //    }
 //

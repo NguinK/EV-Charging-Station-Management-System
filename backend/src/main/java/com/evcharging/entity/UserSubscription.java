@@ -1,11 +1,13 @@
 package com.evcharging.entity;
 
-import com.evcharging.enums.*;
+import com.evcharging.enums.SubscriptionStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
+
+import java.time.OffsetDateTime;
+
 @Entity
 @Table(name = "user_subscriptions")
 @Data
@@ -26,10 +28,10 @@ public class UserSubscription {
     private SubscriptionPlan plan;
 
     @Column(nullable = false)
-    private LocalDateTime startDate;
+    private OffsetDateTime startDate;
 
     @Column(nullable = false)
-    private LocalDateTime endDate;
+    private OffsetDateTime endDate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -41,10 +43,10 @@ public class UserSubscription {
     @Column(nullable = false)
     private Boolean autoRenew; // Tự động gia hạn
 
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
+        createdAt = OffsetDateTime.now();
     }
 }
