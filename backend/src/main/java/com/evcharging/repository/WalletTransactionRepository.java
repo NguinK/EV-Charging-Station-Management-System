@@ -1,14 +1,13 @@
 package com.evcharging.repository;
 
-import com.evcharging.entity.Wallet;
 import com.evcharging.entity.WalletTransaction;
 import com.evcharging.enums.TransactionType;
-import com.evcharging.enums.WalletStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import java.time.LocalDateTime;
+
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,8 +25,8 @@ public interface WalletTransactionRepository extends JpaRepository<WalletTransac
             "ORDER BY wt.createdAt DESC")
     List<WalletTransaction> findByWalletIdAndDateRange(
             @Param("walletId") Long walletId,
-            @Param("startDate") LocalDateTime startDate,
-            @Param("endDate") LocalDateTime endDate);
+            @Param("startDate") OffsetDateTime startDate,
+            @Param("endDate") OffsetDateTime endDate);
 
     List<WalletTransaction> findByType(TransactionType type);
 

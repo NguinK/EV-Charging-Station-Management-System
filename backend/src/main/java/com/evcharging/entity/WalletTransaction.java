@@ -1,11 +1,12 @@
 package com.evcharging.entity;
 
-import com.evcharging.enums.*;
+import com.evcharging.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
+
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "wallet_transactions")
@@ -37,10 +38,10 @@ public class WalletTransaction {
 
     private String referenceId; // ID tham chiếu (payment_id, session_id...)
 
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
+        createdAt = OffsetDateTime.now();
     }
 }

@@ -1,13 +1,19 @@
 package com.evcharging.service;
 
-import com.evcharging.entity.*;
-import com.evcharging.enums.*;
-import com.evcharging.repository.*;
+import com.evcharging.entity.Account;
+import com.evcharging.entity.Wallet;
+import com.evcharging.entity.WalletTransaction;
+import com.evcharging.enums.TransactionType;
+import com.evcharging.enums.WalletStatus;
+import com.evcharging.repository.AccountRepository;
+import com.evcharging.repository.WalletRepository;
+import com.evcharging.repository.WalletTransactionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDateTime;
+
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Slf4j
@@ -220,8 +226,8 @@ public class WalletService {
      * Lấy lịch sử giao dịch theo khoảng thời gian
      */
     public List<WalletTransaction> getTransactionHistory(Long accountId,
-                                                         LocalDateTime startDate,
-                                                         LocalDateTime endDate) {
+                                                         OffsetDateTime startDate,
+                                                         OffsetDateTime endDate) {
         Wallet wallet = getWallet(accountId);
         return transactionRepo.findByWalletIdAndDateRange(wallet.getId(), startDate, endDate);
     }
