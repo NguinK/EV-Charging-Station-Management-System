@@ -2,13 +2,12 @@ package com.evcharging.entity;
 
 import com.evcharging.enums.ConnectorType;
 import com.evcharging.enums.ReservationStatus;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 @Entity
@@ -22,9 +21,16 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "driver_id", nullable = false)
+    private Long driverId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "charging_point_id")
+    private ChargingPoint chargingPoint;
+
     // Driver đặt chỗ
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "driver_id", nullable = false)
+    @JoinColumn(name = "driver", nullable = false)
     private EVDriver driver;
 
     // Trạm sạc được đặt
@@ -32,15 +38,28 @@ public class Reservation {
     @JoinColumn(name = "station_id", nullable = false)
     private ChargingStation station;
 
-    private Double holdingFee;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "connector_type", nullable = false, length = 50)
     private ConnectorType connectorType; // CCS, CHAdeMO, AC
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 30)
     private ReservationStatus status; // PENDING, CONFIRMED, CANCELLED, EXPIRED
+
+    @Column(name = "holding_fee", precision = 10, scale = 2)
+    private BigDecimal holdingFee;
+
+    @Column(name = "driver_name", length = 200)
+    private String driverName;
+
+    @Column(name = "driver_phone", length = 20)
+    private String driverPhone;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private OffsetDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private OffsetDateTime updatedAt;
 
     @Column(name = "start_time", nullable = false)
     private OffsetDateTime startTime;
@@ -52,6 +71,14 @@ public class Reservation {
     @OneToOne(mappedBy = "reservation", cascade = CascadeType.ALL)
     private ChargingSession chargingSession;
 
-    @ManyToOne
-    private ChargingPoint chargingPoint;
+    @PrePersist
+    protected void onCreate() {
+        createdAt = OffsetDateTime.now();
+        updatedAt = OffsetDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = OffsetDateTime.now();
+    }
 }

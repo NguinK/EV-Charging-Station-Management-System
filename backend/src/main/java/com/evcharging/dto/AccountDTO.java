@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 /**
@@ -43,6 +43,6 @@ public class AccountDTO {
 
     // ----------- Thông tin quản trị (Admin) -----------
     private boolean active;            // Tài khoản đang hoạt động hay không
-    private LocalDateTime createdAt;   // Ngày tạo tài khoản
-    private LocalDateTime updatedAt;   // Lần cập nhật gần nhất
+    private OffsetDateTime createdAt;   // Ngày tạo tài khoản
+    private OffsetDateTime updatedAt;   // Lần cập nhật gần nhất
 }

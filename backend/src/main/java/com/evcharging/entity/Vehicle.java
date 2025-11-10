@@ -1,10 +1,13 @@
 package com.evcharging.entity;
+
 import com.evcharging.enums.ConnectorType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
+
+import java.time.OffsetDateTime;
+
 @Entity
 @Table(name = "vehicles")
 @Data
@@ -28,10 +31,10 @@ public class Vehicle {
     @Enumerated(EnumType.STRING)
     private ConnectorType connectorType;
 
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
+        createdAt = OffsetDateTime.now();
     }
 }

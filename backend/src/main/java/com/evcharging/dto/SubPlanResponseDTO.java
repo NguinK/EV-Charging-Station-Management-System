@@ -3,7 +3,7 @@ package com.evcharging.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 /**
  * DTO phản hồi cho thông tin gói thuê bao (Subscription Plan).
@@ -22,8 +22,8 @@ public class SubPlanResponseDTO {
     private Integer durationDays;  // Thời hạn (ngày)
 
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
-    private LocalDateTime createdAt;  // Ngày tạo gói
+    private OffsetDateTime createdAt;  // Ngày tạo gói
 
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
-    private LocalDateTime updatedAt;  // Ngày cập nhật gần nhất
+    private OffsetDateTime updatedAt;  // Ngày cập nhật gần nhất
 }

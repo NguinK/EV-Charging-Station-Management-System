@@ -1,10 +1,12 @@
 package com.evcharging.entity;
 
-import com.evcharging.enums.*;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+
 @Entity
 @Table(name = "invoices")
 @Data
@@ -38,10 +40,10 @@ public class Invoice {
     private Double finalAmount;
 
 
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
+        createdAt = OffsetDateTime.now();
     }
 }

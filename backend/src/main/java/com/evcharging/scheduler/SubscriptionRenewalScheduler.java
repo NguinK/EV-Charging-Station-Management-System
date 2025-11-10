@@ -8,10 +8,10 @@
 //import org.springframework.scheduling.annotation.Scheduled;
 //import org.springframework.stereotype.Component;
 //import org.springframework.transaction.annotation.Transactional;
-//import java.time.LocalDateTime;
+//import java.time.OffsetDateTime;
 //import java.util.List;
 //
-///**
+/// **
 // * Scheduler tự động gia hạn subscription
 // */
 //@Slf4j
@@ -31,7 +31,7 @@
 //        log.info("Starting auto-renewal process...");
 //
 //        // Tìm các subscription cần gia hạn (hết hạn trong 1 ngày tới và có autoRenew = true)
-//        LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
+//        OffsetDateTime tomorrow = OffsetDateTime.now().plusDays(1);
 //        List<UserSubscription> subscriptionsToRenew =
 //                subscriptionRepo.findSubscriptionsForRenewal(tomorrow);
 //
@@ -63,8 +63,8 @@
 //    public void sendExpiryReminders() {
 //        log.info("Sending subscription expiry reminders...");
 //
-//        LocalDateTime now = LocalDateTime.now();
-//        LocalDateTime threeDaysLater = now.plusDays(3);
+//        OffsetDateTime now = OffsetDateTime.now();
+//        OffsetDateTime threeDaysLater = now.plusDays(3);
 //
 //        // Tìm các subscription sẽ hết hạn trong 3 ngày tới
 //        List<UserSubscription> expiringSubscriptions =

@@ -68,11 +68,30 @@ public class Account implements UserDetails {
         return (role != null) ? role.getGrantedAuthorities() : Collections.emptyList();
     }
 
-    @Override public String getUsername() { return email; }
-    @Override public boolean isAccountNonExpired() { return accountNonExpired; }
-    @Override public boolean isAccountNonLocked() { return accountNonLocked; }
-    @Override public boolean isCredentialsNonExpired() { return credentialsNonExpired; }
-    @Override public boolean isEnabled() { return enabled; }
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return accountNonExpired;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return accountNonLocked;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return credentialsNonExpired;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
 
     @PrePersist
     @PreUpdate

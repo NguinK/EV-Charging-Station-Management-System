@@ -1,6 +1,9 @@
 package com.evcharging.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * DTO phản hồi thông tin người dùng (Admin, EV Driver, CS Staff)

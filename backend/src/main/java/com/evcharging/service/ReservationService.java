@@ -16,7 +16,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Duration;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 
@@ -27,7 +31,7 @@ public class ReservationService {
     private final EVDriverRepository driverRepository;
     private final ChargingStationRepository stationRepository;
     private final ChargingPointRepository chargingPointRepository;
-    private static final double RESERVATION_FEE_PER_HOUR = 10000.0;
+    private static final BigDecimal RESERVATION_FEE_PER_HOUR = BigDecimal.valueOf(10000);
 
     public ReservationService(ReservationRepository reservationRepository,
                               EVDriverRepository driverRepository,
@@ -50,7 +54,7 @@ public class ReservationService {
                 res.getExpireTime(),
                 res.getChargingPoint().getId(), // nếu bạn muốn trả về id trụ
                 res.getStation().getId(),
-                res.getHoldingFee()
+                res.getHoldingFee().doubleValue()
         );
     }
 
@@ -101,7 +105,10 @@ public class ReservationService {
 
                 // Tính phí giữ chỗ theo số phút giữ
                 long minutesBetween = Duration.between(nowUTC, endTime).toMinutes();
-                double holdingFee = (minutesBetween / 60.0) * RESERVATION_FEE_PER_HOUR;
+                BigDecimal holdingFee = BigDecimal.valueOf(minutesBetween)
+                        .divide(BigDecimal.valueOf(60), 2, RoundingMode.HALF_UP) //phút -> giờ, giữ 2 chữ số thập phân
+                        .multiply(RESERVATION_FEE_PER_HOUR) //nhân phí mỗi giờ
+                        .setScale(0, RoundingMode.HALF_UP); // làm tròn tới đồng
                 reservation.setHoldingFee(holdingFee);
 
                 point.setStatus(ChargingPointStatus.RESERVED);

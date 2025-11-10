@@ -9,8 +9,9 @@ import com.evcharging.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,19 +31,30 @@ public class EVDriverService {
 
     // Lấy lịch sử giao dịch
     public List<TransactionDTO> getTransactions(Long driverId, LocalDate from, LocalDate to) {
+        ZoneOffset vnOffset = ZoneOffset.ofHours(7);
+
+        OffsetDateTime start = from
+                .atStartOfDay()
+                .atOffset(vnOffset);
+
+        OffsetDateTime end = to
+                .plusDays(1)
+                .atStartOfDay()
+                .minusNanos(1)
+                .atOffset(vnOffset);
+
         return transactionRepository
                 .findByDriverIdAndTimestampBetween(
                         driverId,
-                        from.atStartOfDay(),
-                        to.atTime(23, 59, 59)
+                        start,
+                        end
                 )
                 .stream()
                 .map(this::mapToTransactionDTO)
                 .collect(Collectors.toList());
     }
 
-    // ----------------- Mapper methods -----------------
-
+    //Mapper methods
     private DriverProfileDTO mapToProfileDTO(EVDriver driver) {
         DriverProfileDTO dto = new DriverProfileDTO();
         dto.setFullName(driver.getFullName());
@@ -72,7 +84,7 @@ public class EVDriverService {
             dto.setSessionId(tx.getSession().getId());
         }
 
-        dto.setAmount(tx.getAmount());
+        dto.setAmount(tx.getAmount().doubleValue());
         dto.setCurrency(tx.getCurrency());
         dto.setPaymentMethod(tx.getPaymentMethod().name());
         dto.setPaymentType(tx.getType().name()); // map enum type vào paymentType

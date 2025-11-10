@@ -1,20 +1,20 @@
--- CREATE TABLE system_configurations (
---                                        id BIGINT IDENTITY(1,1) PRIMARY KEY,
---                                        config_key NVARCHAR(100) NOT NULL UNIQUE,
---                                        config_value NVARCHAR(500) NOT NULL,
---                                        description NVARCHAR(500),
---                                        data_type NVARCHAR(20),
---                                        category NVARCHAR(50),
---                                        is_editable BIT NOT NULL DEFAULT 1,
---                                        created_at DATETIME2 NOT NULL DEFAULT GETDATE(),
---                                        updated_at DATETIME2,
---                                        updated_by NVARCHAR(100)
--- );
---
--- -- Insert giá cả mặc định
--- INSERT INTO system_configurations (config_key, config_value, description, data_type, category, is_editable)
--- VALUES
---     ('reservation.hold.fee.per.hour', '10000', 'Phí giữ chỗ mỗi giờ (VND)', 'DECIMAL', 'PRICING', 1),
---     ('reservation.penalty.amount', '10000', 'Phí phạt khi no-show (VND)', 'DECIMAL', 'PENALTY', 1),
---     ('charging.service.fee', '15000', 'Phí dịch vụ sạc (VND)', 'DECIMAL', 'PRICING', 1),
---     ('system.currency.default', 'VND', 'Đơn vị tiền tệ mặc định', 'STRING', 'SYSTEM', 1);
+CREATE TABLE system_configurations (
+                                       id BIGINT IDENTITY(1,1) PRIMARY KEY,
+                                       config_key NVARCHAR(100) NOT NULL UNIQUE,
+                                       config_value NVARCHAR(500) NOT NULL,
+                                       description NVARCHAR(500),
+                                       data_type NVARCHAR(20),
+                                       category NVARCHAR(50),
+                                       is_editable BIT NOT NULL DEFAULT 1,
+                                       created_at DATETIME2 NOT NULL DEFAULT GETDATE(),
+                                       updated_at DATETIME2,
+                                       updated_by NVARCHAR(100)
+);
+
+-- Insert giá cả mặc định
+INSERT INTO system_configurations (config_key, config_value, description, data_type, category, is_editable)
+VALUES
+    ('reservation.hold.fee.per.hour', '10000', 'Phí giữ chỗ mỗi giờ (VND)', 'DECIMAL', 'PRICING', 1),
+    ('reservation.penalty.amount', '10000', 'Phí phạt khi no-show (VND)', 'DECIMAL', 'PENALTY', 1),
+    ('charging.service.fee', '15000', 'Phí dịch vụ sạc (VND)', 'DECIMAL', 'PRICING', 1),
+    ('system.currency.default', 'VND', 'Đơn vị tiền tệ mặc định', 'STRING', 'SYSTEM', 1);

@@ -22,7 +22,7 @@ public class ReservationController {
     private final EVDriverRepository driverRepository;
 
 
-    public ReservationController(ReservationService reservationService,  EVDriverRepository driverRepository) {
+    public ReservationController(ReservationService reservationService, EVDriverRepository driverRepository) {
         this.reservationService = reservationService;
         this.driverRepository = driverRepository;
     }

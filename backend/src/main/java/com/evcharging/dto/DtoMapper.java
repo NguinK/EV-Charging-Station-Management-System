@@ -1,6 +1,5 @@
 package com.evcharging.dto;
 
-import com.evcharging.entity.ChargingSession;
 import com.evcharging.entity.Invoice;
 import com.evcharging.entity.Transaction;
 import org.springframework.stereotype.Component;
@@ -41,7 +40,7 @@ public class DtoMapper {
         TransactionDTO dto = new TransactionDTO();
         dto.setId(tx.getId());
         dto.setTransactionTime(tx.getTimestamp()); // đổi tên cho khớp DTO
-        dto.setAmount(tx.getAmount());
+        dto.setAmount(tx.getAmount().doubleValue());
         dto.setCurrency(tx.getCurrency());
         dto.setPaymentType(tx.getType().name()); // Enum -> String
         dto.setPaymentMethod(tx.getPaymentMethod().name()); // Enum -> String
