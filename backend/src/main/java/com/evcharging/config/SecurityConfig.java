@@ -2,45 +2,75 @@ package com.evcharging.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
+
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true) //enable @PreAuthorize
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtFilter;
 
-
     public SecurityConfig(JwtAuthenticationFilter jwtFilter) {
         this.jwtFilter = jwtFilter;
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+        roleHierarchy.setHierarchy("ROLE_ADMIN > ROLE_STAFF > ROLE_EV_DRIVER");
+        return roleHierarchy;
+    }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/auth/**"))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //JWT is stateless
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/admin/auth/**",
+                                "/auth/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
-                                "/v3/api-docs/**",
-                                "/auth/**"
+                                "/v3/api-docs/**"
 
                         ).permitAll()
-                        .requestMatchers("/drivers/**", "/drivers/reservations/**","/api/stations/**","/api/sessions/**","/api/wallets/**","/api/transactions/**").hasRole("EV_DRIVER")
-                        .requestMatchers("/staff/**").hasRole("STAFF")
+
+                        //Admin endpoints
+                        .requestMatchers("/api/admin/drivers/**").hasRole("ADMIN")
+                        .requestMatchers("/api/charging-points/*/status").hasRole("ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/admin/drivers/**","api/charging-points/{pointId}/status").hasRole("ADMIN")
+
+                        //Staff endpoints
+                        .requestMatchers("/staff/**").hasRole("STAFF")
+
+                        //Driver endpoints
+                        .requestMatchers(
+                                "/drivers/**",
+                                "/api/stations/**",
+                                "/api/sessions/**",
+                                "/api/wallets/**",
+                                "/api/transactions/**"
+                        ).hasRole("EV_DRIVER")
+
+                        //All other requests must be authenticated
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
