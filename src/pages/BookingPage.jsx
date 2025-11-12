@@ -4,6 +4,8 @@ import utc from "dayjs/plugin/utc";
 import { useDispatch, useSelector } from "react-redux";
 import { startReservation } from "../features/reservationSlice";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import chargingStationAPI from "../api/chargingStationAPI";
 dayjs.extend(utc);
 
 function BookingPage() {
@@ -27,6 +29,22 @@ function BookingPage() {
 
   //   fetchStations();
   // }, []);
+  // ✅ State lưu danh sách trạm
+  const [stations, setStations] = useState([]);
+
+  // ✅ Lấy danh sách trạm sạc khi component mount
+  useEffect(() => {
+    const fetchStations = async () => {
+      try {
+        const res = await chargingStationAPI.getAllStations();
+        setStations(res.data || []);
+      } catch (error) {
+        message.error("Không thể tải danh sách trạm sạc!");
+        console.error("Lỗi getAllStations:", error);
+      }
+    };
+    fetchStations();
+  }, []);
 
   // ✅ Gửi form
   const onFinish = async (values) => {
@@ -39,7 +57,7 @@ function BookingPage() {
     const startIsoUtc = dayjs(start).toDate().toISOString();
 
     const payload = {
-      stationId: Number(values.stationId),
+      stationId: values.stationName,
       connectorType: values.connectorType,
       endTime: startIsoUtc,
     };
@@ -77,47 +95,50 @@ function BookingPage() {
       onFinish={onFinish}
       style={{ maxWidth: 500, margin: "0 auto", marginTop: 30 }}
     >
-      {/* ✅ Trạm sạc chọn từ danh sách */}
-      {/* <Form.Item
-        label="Trạm sạc"
-        name="stationId"
-        rules={[{ required: true, message: "Vui lòng chọn trạm sạc!" }]}
+      {/* ✅ Danh sách trạm sạc */}
+      <Form.Item
+        label="Station"
+        name="stationName"
+        rules={[{ required: true, message: "Please select station" }]}
       >
         <Select
-          placeholder="Chọn trạm sạc"
+          placeholder="Station"
           loading={stations.length === 0}
           showSearch
           optionFilterProp="children"
         >
-          {stations.map((station) => (
-            <Select.Option key={station.id} value={station.id}>
-              {station.name} – {station.location}
-            </Select.Option>
-          ))}
+          {stations
+            .filter((s) => s.status !== "OFFLINE")
+            .map((station) => (
+              <Select.Option key={station.id} value={station.id}>
+                {station.name} – {" "}
+                <span
+                style={{
+                  color: station.status === "OFFLINE" ? "red" : "green",
+                  fontWeight: 500,
+                }}
+              >
+                {station.status}
+              </span>
+              </Select.Option>
+              
+            ))}
         </Select>
-      </Form.Item> */}
-      <Form.Item
-        label="Mã trạm "
-        name="stationId"
-        rules={[{ required: true, message: "Vui lòng nhập mã trạm!" }]}
-      >
-        <Input type="number" placeholder="Nhập mã trạm..." />
       </Form.Item>
       {/* ✅ Loại cổng sạc */}
 
       <Form.Item
-        label="Loại cổng sạc (connectorType)"
+        label="Connector Type "
         name="connectorType"
-        rules={[{ message: "Vui lòng chọn loại cổng sạc!" }]}
       >
-        <Select placeholder="Chọn loại cổng">
+        <Select placeholder="Select connector type">
           <Select.Option value="CCS">CCS</Select.Option>
           <Select.Option value="CHADEMO">CHADEMO</Select.Option>
           <Select.Option value="AC">AC</Select.Option>
         </Select>
       </Form.Item>
 
-      <Form.Item label="Thời gian giữ chỗ đến :" name="endTime">
+      <Form.Item label="Time " name="endTime">
         <DatePicker
           showTime={{ format: "HH:mm", minuteStep: 15 }}
           format="YYYY-MM-DD HH:mm"

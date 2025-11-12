@@ -161,13 +161,7 @@ function LoginPage() {
               or continue with
             </Divider>
 
-            <Space size="middle" className="justify-center">
-              <Button
-                shape="circle"
-                icon={<GoogleOutlined />}
-                className="h-12 w-12 !bg-[#0c1113] !text-[#34a853] hover:!bg-[#172026]"
-              />
-            </Space>
+         
           </div>
         </Card>
       </div>

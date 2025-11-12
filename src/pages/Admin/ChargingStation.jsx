@@ -122,21 +122,6 @@ const ChargingStation = () => {
     });
   };
 
-  // ==============================
-  // ⚡ SESSION HANDLERS
-  // ==============================
-
-  // 🚗 Bắt đầu sạc — cần reservationId (ví dụ từ DB booking)
-  // const handleStartCharging = async (reservationId) => {
-  //   try {
-  //     await chargingSessionAPI.startSession(reservationId);
-  //     message.success("⚡ Bắt đầu sạc!");
-  //     fetchPoints(selectedStation.id);
-  //   } catch (err) {
-  //     message.error("Không thể bắt đầu sạc!", err);
-  //   }
-  // };
-
   // 🛑 Dừng sạc
   const handleStopCharging = async (sessionId) => {
     try {
@@ -330,7 +315,7 @@ const ChargingStation = () => {
               options={[
                 { value: "CCS", label: "CCS" },
                 { value: "CHAdeMO", label: "CHAdeMO" },
-                { value: "AC Type 2", label: "AC Type 2" },
+                { value: "AC", label: "AC" },
               ]}
             />
           </Form.Item>
