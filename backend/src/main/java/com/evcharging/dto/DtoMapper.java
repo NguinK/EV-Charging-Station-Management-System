@@ -1,8 +1,12 @@
 package com.evcharging.dto;
 
+import com.evcharging.dto.admin.ChargingPointResponse;
 import com.evcharging.entity.Invoice;
 import com.evcharging.entity.Transaction;
 import org.springframework.stereotype.Component;
+import com.evcharging.entity.ChargingPoint;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class DtoMapper {
@@ -60,5 +64,37 @@ public class DtoMapper {
                 + (tx.getSession() != null ? tx.getSession().getStation().getName() : ""));
         return dto;
     }
+    /**
+     * Convert ChargingPoint entity to ChargingPointResponseDTO
+     */
+    public ChargingPointResponse toChargingPointDTO(ChargingPoint point) {
+        if (point == null) {
+            return null;
+        }
 
+        return ChargingPointResponse.builder()
+                .id(point.getId())
+                .pointCode(point.getPointCode())
+                .connectorType(point.getConnectorType())
+                .maxPower(point.getMaxPower())
+                .speed(point.getSpeed())
+                .status(point.getStatus())
+                .pricePerKwh(point.getPricePerKwh())
+                .pricePerMinute(point.getPricePerMinute())
+                .createdAt(point.getCreatedAt())
+                .updatedAt(point.getUpdatedAt())
+                .stationId(point.getStation().getId())
+                .stationName(point.getStation().getName())
+                .location(point.getStation().getLocation())
+                .build();
+    }
+    public List<ChargingPointResponse> toChargingPointDTOList(List<ChargingPoint> points) {
+        if (points == null) {
+            return List.of();
+        }
+
+        return points.stream()
+                .map(this::toChargingPointDTO)
+                .collect(Collectors.toList());
+    }
 }
