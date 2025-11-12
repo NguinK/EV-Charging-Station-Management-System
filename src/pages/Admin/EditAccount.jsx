@@ -114,8 +114,8 @@ const EditAccount = () => {
   const columns = [
     {
       title: "ID",
-      dataIndex: "id",
-      key: "id",
+      dataIndex: "driverId",
+      key: "driverId",
       width: 80,
     },
     {

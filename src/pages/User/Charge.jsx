@@ -89,15 +89,15 @@ function Charge() {
 
   // ✅ Tạo QR để quét bắt đầu sạc
   const qrUrl = latestBooking
-    ? `http://192.168.1.64:5173/user/charge?reservationId=${latestBooking.reservationId}`
+    ? `http://localhost:5173/user/charge?reservationId=${latestBooking.reservationId}`
     : "";
 
   return (
     <div className="w-full flex justify-center mt-10">
       <Card
-        title="Reservation"
+        title="🗓️ Reservation"
         size="default"
-        className="w-[500px] h-auto shadow-lg"
+        className="w-[480px] shadow-lg text-center"
       >
         {loading && (
           <div className="flex justify-center items-center py-10">
@@ -153,7 +153,7 @@ function Charge() {
         {!loading && !latestBooking && (
           <div className="flex flex-col items-center justify-center gap-3">
             <Empty
-              description="Bạn chưa có đặt xe nào"
+              description="Reservation empty."
               image={Empty.PRESENTED_IMAGE_SIMPLE}
             />
             <div className="mt-4 w-full flex justify-center">

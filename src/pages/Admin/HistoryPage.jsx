@@ -49,8 +49,6 @@ const HistoryPage = () => {
           <Button type="primary" className="px-5">
             Áp dụng
           </Button>
-
-          <Button className="px-5">⬇ Export CSV</Button>
         </Space>
       </Card>
 
