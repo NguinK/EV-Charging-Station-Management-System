@@ -6,8 +6,8 @@ CREATE TABLE system_configurations (
                                        data_type NVARCHAR(20),
                                        category NVARCHAR(50),
                                        is_editable BIT NOT NULL DEFAULT 1,
-                                       created_at DATETIME2 NOT NULL DEFAULT GETDATE(),
-                                       updated_at DATETIME2,
+                                       created_at DATETIMEOFFSET(7) NOT NULL DEFAULT SYSDATETIMEOFFSET(),
+                                       updated_at DATETIMEOFFSET(7) NULL,
                                        updated_by NVARCHAR(100)
 );
 
