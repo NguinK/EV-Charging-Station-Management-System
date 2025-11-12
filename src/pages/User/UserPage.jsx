@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   DesktopOutlined,
   PieChartOutlined,
   WalletOutlined,
   LogoutOutlined,
+  CarOutlined,
 } from "@ant-design/icons";
 import { Layout, Avatar, message, Menu, Space, Button, Typography } from "antd";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
@@ -14,7 +15,7 @@ const { Header, Sider, Content } = Layout;
 export default function UserPage() {
   const navigate = useNavigate();
   const location = useLocation();
-
+ const [selectedKey, setSelectedKey] = useState("profile");
   const userInfo = useMemo(
     () => JSON.parse(localStorage.getItem("userInfo")) || {},
     []
@@ -68,6 +69,7 @@ export default function UserPage() {
             border: "1px solid #e5e7eb",
             borderRadius: "18px",
             boxShadow: "0 12px 40px rgba(0,0,0,0.06)",
+             height: "fit-content"
           }}
         >
           <div className="px-6 pt-5 pb-10 border-b border-[#f0f0f0]">
@@ -104,6 +106,7 @@ export default function UserPage() {
               danger
               className="w-full justify-start"
               onClick={handleLogout}
+              style={{left:13}}
             >
               Log out
             </Button>
