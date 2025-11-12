@@ -1,71 +1,100 @@
 package com.evcharging.entity;
 
+import com.evcharging.enums.AccountStatus;
 import com.evcharging.enums.Role;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.Collections;
 
+/**
+ * Entity đại diện cho tài khoản người dùng
+ */
 @Entity
-@Table(
-        name = "account",
-        indexes = {
-                @Index(name = "idx_account_email", columnList = "email", unique = true),
-                @Index(name = "idx_account_phone", columnList = "phone", unique = true)
-        }
-)
+@Table(name = "accounts")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Account implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Email
-    @NotBlank
-    @Column(nullable = false, unique = true, length = 150)
+    @Column(nullable = false, unique = true, length = 100)
     private String email;
 
-    // Cho phép số 0xxxxxxxxx hoặc +84xxxxxxxxx
-    @Pattern(regexp = "^(\\+84|0)\\d{9,10}$", message = "Phone number should be valid")
-    @Column(nullable = false, length = 15, unique = true)
+    @Column(length = 20)
     private String phone;
 
-    @NotBlank
-    @Size(min = 6)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column(nullable = false, length = 100)
+    private String fullName;
+
+    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false, length = 20)
     private Role role;
 
-    @Builder.Default
-    private boolean accountNonExpired = true;
-    @Builder.Default
-    private boolean accountNonLocked = true;
-    @Builder.Default
-    private boolean credentialsNonExpired = true;
-    @Builder.Default
-    private boolean enabled = true;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private AccountStatus status;
 
-    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
-    private EVDriver driver;
+    @Column(nullable = false)
+    private Boolean accountNonExpired = true;
+
+    @Column(nullable = false)
+    private Boolean accountNonLocked = true;
+
+    @Column(nullable = false)
+    private Boolean credentialsNonExpired = true;
+
+    @Column(nullable = false)
+    private Boolean enabled = true;
+
+    @Column(nullable = false, updatable = false)
+    private OffsetDateTime createdAt;
+
+    @Column(nullable = false)
+    private OffsetDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = OffsetDateTime.now();
+        updatedAt = OffsetDateTime.now();
+        if (status == null) {
+            status = AccountStatus.ACTIVE;
+        }
+        if (role == null) {
+            role = Role.EV_DRIVER;
+        }
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = OffsetDateTime.now();
+    }
+
+    // ========== UserDetails Implementation ==========
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return (role != null) ? role.getGrantedAuthorities() : Collections.emptyList();
+        return Collections.singletonList(
+                new SimpleGrantedAuthority("ROLE_" + role.name())
+        );
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
     }
 
     @Override
@@ -91,12 +120,5 @@ public class Account implements UserDetails {
     @Override
     public boolean isEnabled() {
         return enabled;
-    }
-
-    @PrePersist
-    @PreUpdate
-    private void normalize() {
-        if (email != null) email = email.trim().toLowerCase();
-        if (phone != null) phone = phone.trim();
     }
 }

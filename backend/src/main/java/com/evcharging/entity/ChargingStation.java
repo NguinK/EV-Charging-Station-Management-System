@@ -3,7 +3,9 @@ package com.evcharging.entity;
 import com.evcharging.enums.StationStatus;
 import jakarta.persistence.*;
 import lombok.Data;
-
+import lombok.AllArgsConstructor;
+import com.evcharging.enums.StationStatus;
+import lombok.NoArgsConstructor;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +49,33 @@ public class ChargingStation {
     private double latitude;
     private double longitude;
 
+    public String getAddress() {
+        return this.location;
+    }
+
+    public void setAddress(String address) {
+        this.location = address;
+    }
+
+    public List<ChargingPoint> getChargingPoints() {
+        return this.points;
+    }
+
+    public String getOperatorName() {
+        return this.operator;
+    }
+
+    public void setOperatorName(String operatorName) {
+        this.operator = operatorName;
+    }
+
+    public String getContactPhone() {
+        return this.operator;
+    }
+
+    public void setContactPhone(String contactPhone) {
+        this.operator = contactPhone;
+    }
 
     @OneToMany(mappedBy = "station", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChargingPoint> points = new ArrayList<>();
