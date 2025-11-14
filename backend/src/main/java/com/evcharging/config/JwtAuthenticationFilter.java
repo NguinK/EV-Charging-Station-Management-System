@@ -13,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-@Configuration
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
