@@ -1,6 +1,8 @@
 package com.evcharging.controller;
 
-import com.evcharging.dto.admin.ChargingPointResponse;
+import com.evcharging.dto.ChargingPointCreateDTO;
+import com.evcharging.dto.ChargingPointResponseDTO;
+import com.evcharging.dto.DtoMapper;
 import com.evcharging.entity.ChargingPoint;
 import com.evcharging.enums.ConnectorType;
 import com.evcharging.enums.ChargingPointStatus;
@@ -16,59 +18,40 @@ import java.util.List;
 public class ChargingPointController {
 
     private final ChargingPointService chargingPointService;
+    private final DtoMapper dtoMapper;
 
-    /**
-     * POST /api/charging-points
-     * Tạo điểm sạc mới
-     */
-    @PostMapping
-    public ResponseEntity<ChargingPoint> createChargingPoint(
-            @RequestParam Long stationId,
-            @RequestParam String pointCode,
-            @RequestParam ConnectorType connectorType,
-            @RequestParam Integer maxPower,
-            @RequestParam Double pricePerKwh,
-            @RequestParam Double pricePerMinute) {
+    //Tạo điểm sạc mới
+    @PostMapping("/charging-points")
+    public ResponseEntity<ChargingPointResponseDTO> createChargingPoint(
+            @RequestBody ChargingPointCreateDTO request) {
+        ChargingPoint point = chargingPointService.createChargingPoint(request);
+        ChargingPointResponseDTO response = dtoMapper.toChargingPointDTO(point);
 
-        ChargingPoint point = chargingPointService.createChargingPoint(
-                stationId, pointCode, connectorType, maxPower, pricePerKwh, pricePerMinute);
-        return ResponseEntity.ok(point);
+        return ResponseEntity.ok(response);
     }
 
-    /**
-     * GET /api/charging-points/station/{stationId}
-     * Lấy tất cả điểm sạc của một trạm
-     */
+    //Lấy tất cả trụ của trạm
     @GetMapping("/station/{stationId}")
-    public ResponseEntity<List<ChargingPointResponse>> getPointsByStation(@PathVariable Long stationId) {
-        List<ChargingPointResponse> points = chargingPointService.getPointsByStation(stationId);
-        return ResponseEntity.ok(points);
+    public ResponseEntity<List<ChargingPointResponseDTO>> getPointsByStation(@PathVariable Long stationId) {
+        List<ChargingPointResponseDTO> responseList = chargingPointService.getPointsByStation(stationId);
+        return ResponseEntity.ok(responseList);
     }
 
-    /**
-     * GET /api/charging-points/station/{stationId}/available
-     * Lấy các điểm sạc có sẵn của một trạm
-     */
+    //Lấy các điểm sạc có sẵn của một trạm
     @GetMapping("/station/{stationId}/available")
-    public ResponseEntity<List<ChargingPointResponse>> getAvailablePoints(@PathVariable Long stationId) {
-        List<ChargingPointResponse> points = chargingPointService.getAvailablePoints(stationId);
+    public ResponseEntity<List<ChargingPointResponseDTO>> getAvailablePoints(@PathVariable Long stationId) {
+        List<ChargingPointResponseDTO> points = chargingPointService.getAvailablePoints(stationId);
         return ResponseEntity.ok(points);
     }
 
-    /**
-     * GET /api/charging-points/{pointId}
-     * Lấy thông tin chi tiết một điểm sạc
-     */
+    //Lấy thông tin chi tiết một điểm sạc
     @GetMapping("/{pointId}")
-    public ResponseEntity<ChargingPointResponse> getChargingPoint(@PathVariable Long pointId) {
-        ChargingPointResponse point = chargingPointService.getChargingPointDTO(pointId);
+    public ResponseEntity<ChargingPointResponseDTO> getChargingPoint(@PathVariable Long pointId) {
+        ChargingPointResponseDTO point = chargingPointService.getChargingPointDTO(pointId);
         return ResponseEntity.ok(point);
     }
 
-    /**
-     * PUT /api/charging-points/{pointId}/status
-     * Cập nhật trạng thái điểm sạc
-     */
+    //Cập nhật trạng thái điểm sạc
     @PutMapping("/{pointId}/status")
     public ResponseEntity<ChargingPoint> updatePointStatus(
             @PathVariable Long pointId,
@@ -78,10 +61,7 @@ public class ChargingPointController {
         return ResponseEntity.ok(point);
     }
 
-    /**
-     * PUT /api/charging-points/{pointId}/pricing
-     * Cập nhật giá của điểm sạc
-     */
+    //Cập nhật giá của điểm sạc
     @PutMapping("/{pointId}/pricing")
     public ResponseEntity<ChargingPoint> updatePricing(
             @PathVariable Long pointId,
@@ -92,22 +72,16 @@ public class ChargingPointController {
         return ResponseEntity.ok(point);
     }
 
-    /**
-     * GET /api/charging-points/search
-     * Tìm điểm sạc theo loại connector
-     */
+    //Tìm điểm sạc theo loại connector
     @GetMapping("/search")
-    public ResponseEntity<List<ChargingPointResponse>> findByConnectorType(
+    public ResponseEntity<List<ChargingPointResponseDTO>> findByConnectorType(
             @RequestParam ConnectorType connectorType) {
 
-        List<ChargingPointResponse> points = chargingPointService.findByConnectorType(connectorType);
+        List<ChargingPointResponseDTO> points = chargingPointService.findByConnectorType(connectorType);
         return ResponseEntity.ok(points);
     }
 
-    /**
-     * DELETE /api/charging-points/{pointId}
-     * Xóa điểm sạc
-     */
+    //Xóa điểm sạc
     @DeleteMapping("/{pointId}")
     public ResponseEntity<Void> deleteChargingPoint(@PathVariable Long pointId) {
         chargingPointService.deleteChargingPoint(pointId);
