@@ -57,6 +57,7 @@ public class EVDriverService {
     //Mapper methods
     private DriverProfileDTO mapToProfileDTO(EVDriver driver) {
         DriverProfileDTO dto = new DriverProfileDTO();
+        dto.setDriverId(driver.getId());
         dto.setFullName(driver.getFullName());
         dto.setDateOfBirth(driver.getDateOfBirth());
         dto.setAddress(driver.getAddress());

@@ -1,10 +1,7 @@
 package com.evcharging.service;
 
 import com.evcharging.dto.ChargingSessionDTO;
-import com.evcharging.entity.ChargingPoint;
-import com.evcharging.entity.ChargingSession;
-import com.evcharging.entity.Reservation;
-import com.evcharging.entity.Transaction;
+import com.evcharging.entity.*;
 import com.evcharging.enums.*;
 import com.evcharging.repository.*;
 import jakarta.transaction.Transactional;
@@ -13,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -28,13 +24,7 @@ public class ChargingSessionService {
     @Autowired
     private TransactionService transactionService;
     @Autowired
-    private WalletService walletService;
-    @Autowired
-    private PaymentGatewayService paymentGatewayService;
-    @Autowired
-    private InvoiceService invoiceService;
-    @Autowired
-    private InvoiceRepository invoiceRepository;
+    private EVDriverRepository evDriverRepository;
 
     private final ChargingSessionRepository sessionRepo;
     private final ReservationRepository reservationRepo;
@@ -80,15 +70,42 @@ public class ChargingSessionService {
         session.setEndSoc(startSoc);
         session.setStatus(SessionStatus.CHARGING);
         session.setChargingPoint(reservation.getChargingPoint());
-
+        session.setEnergyConsumed(0.0);
+        session.setCost(0.0);
         session = sessionRepo.save(session);
 
         return toDTO(session); // trả về DTO
     }
 
+    @Transactional
+    public ChargingSessionDTO startDirectSession(Long pointId, Long driverId, int startSoc) {
+        ChargingPoint point = chargingPointRepo.findById(pointId)
+                .orElseThrow(() -> new IllegalArgumentException("Charging point not found"));
+        EVDriver driver = evDriverRepository.findById(driverId)
+                .orElseThrow(() -> new IllegalArgumentException("Driver not found"));
+
+        ChargingSession session = new ChargingSession();
+        session.setDriver(driver);
+        session.setStation(point.getStation());
+        session.setChargingPoint(point);
+        session.setStartTime(OffsetDateTime.now());
+        session.setStartSoc(startSoc);
+        session.setEndSoc(startSoc);
+        session.setStatus(SessionStatus.CHARGING);
+        session.setEnergyConsumed(0.0);
+        session.setCost(0.0);
+
+        // Đánh dấu trụ đang bận
+        point.setStatus(ChargingPointStatus.OCCUPIED);
+        chargingPointRepo.save(point);
+
+        session = sessionRepo.save(session);
+        return toDTO(session);
+    }
+
     // Kết thúc phiên sạc thủ công, cập nhật thông tin và tạo Transaction
     @Transactional
-    public ChargingSessionDTO endSession(Long sessionId, PaymentMethod method) {
+    public ChargingSessionDTO endSession(Long sessionId) {
         ChargingSession session = sessionRepo.findById(sessionId)
                 .orElseThrow(() -> new IllegalArgumentException("Session not found"));
 
@@ -122,30 +139,12 @@ public class ChargingSessionService {
         Transaction tx = transactionService.createTransaction(session, finalCost, TransactionStatus.PENDING);
         session.setTransaction(tx);
 
-        // Xử lý thanh toán
-        String paymentUrl = null;
-        if (method != null) {
-            tx.setPaymentMethod(method);
-
-            if (method == PaymentMethod.EWALLET) {
-                walletService.deductBalance(session.getDriver().getId(), finalCost.doubleValue(),
-                        "Thanh toán phiên sạc #" + session.getId());
-                tx.setStatus(TransactionStatus.SUCCESS);
-                invoiceService.createInvoice(tx);
-            } else if (method == PaymentMethod.BANKING) {
-                tx.setStatus(TransactionStatus.PENDING);
-                String returnUrl = "https://your-frontend.com/payment/result";
-                paymentUrl = paymentGatewayService.redirectToGateway(tx, returnUrl);
-            }
-        }
-
         // Lưu session
         sessionRepo.save(session);
 
         // Trả DTO
         ChargingSessionDTO dto = toDTO(session);
         dto.setTransactionId(tx.getId());
-        dto.setPaymentUrl(paymentUrl);
         return dto;
     }
 
@@ -177,7 +176,7 @@ public class ChargingSessionService {
     public void checkAndAutoEnd(ChargingSession session, int currentSoc) {
         if (currentSoc == 100) {
             context.getBean(ChargingSessionService.class)
-                    .endSession(session.getId(), session.getPaymentMethod());
+                    .endSession(session.getId());
         }
     }
 
@@ -202,29 +201,16 @@ public class ChargingSessionService {
             // Tính lượng điện đã nạp thêm
             double addedEnergy = power * durationHours;
 
-            // Cập nhật energy
-            double currentEnergy = session.getEnergyConsumed();
+            // Fallback nếu energyConsumed đang null
+            Vehicle vehicle = session.getVehicle();
+            Double batteryCapacity = vehicle.getBatteryCapacity();
+            double currentEnergy = session.getEnergyConsumed() != null ? session.getEnergyConsumed() : 0.0;
             double totalEnergy = currentEnergy + addedEnergy;
+            int startSoc = session.getStartSoc();
             session.setEnergyConsumed(totalEnergy);
 
-            // Giả lập dung lượng pin xe (ví dụ 50 kWh)
-            double batteryCapacity = 50.0;
-            int startSoc = session.getStartSoc();
             int newSoc = Math.min(100, (int) (startSoc + (totalEnergy / batteryCapacity) * 100));
             session.setEndSoc(newSoc);
-
-            //  Tính chi phí tạm tính
-//            double energyFee = totalEnergy * point.getPricePerKwh();
-//            long minutes = Duration.between(session.getStartTime(), now).toMinutes();
-//            double timeFee = minutes * point.getPricePerMinute();
-
-            // Nếu có reservation thì cộng thêm phí giữ chỗ
-//            double reservationFee = 0;
-//            if (session.getReservation() != null) {
-//                Reservation reservation = session.getReservation();
-//                long hours = Duration.between(reservation.getStartTime(), reservation.getExpireTime()).toHours();
-//                reservationFee = hours * 10_000; // 10k VND mỗi giờ
-//            }
 
             BigDecimal tempCost = pricingService.calculateChargingFee(session);
             session.setCost(tempCost.doubleValue());

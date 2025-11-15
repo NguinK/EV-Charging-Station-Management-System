@@ -11,8 +11,10 @@ import com.evcharging.repository.*;
 import com.evcharging.service.PricingService;
 import com.evcharging.service.staff.StaffChargingSessionService;
 import com.evcharging.service.staff.StaffStationService;
+import com.evcharging.utils.InvoiceNumberGenerator;
 import com.evcharging.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,7 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class StaffChargingSessionServiceImpl implements StaffChargingSessionService {
 
@@ -140,6 +143,23 @@ public class StaffChargingSessionServiceImpl implements StaffChargingSessionServ
         transaction.setChargingSession(session);
         transaction.setDriver(session.getDriver());
         transaction.setDescription(String.format("Charging payment for %.2f kWh", request.getEnergyUsedKwh()));
+
+        if (request.getPaymentMethod() != null) {
+            try {
+                PaymentMethod method = PaymentMethod.valueOf(
+                        request.getPaymentMethod().toUpperCase()
+                );
+                transaction.setPaymentMethod(method);
+                transaction.setStatus(TransactionStatus.SUCCESS);
+                transaction.setPaidAt(OffsetDateTime.now());
+                transaction.setProcessedByStaffId(securityUtils.getCurrentStaffAccountId());
+                transaction.setInvoiceNumber(InvoiceNumberGenerator.generate());
+            } catch (IllegalArgumentException e) {
+                // Nếu payment method không hợp lệ, để PENDING
+                log.warn("Invalid payment method: {}", request.getPaymentMethod());
+            }
+        }
+
         transactionRepository.save(transaction);
 
         return mapToResponse(session);
