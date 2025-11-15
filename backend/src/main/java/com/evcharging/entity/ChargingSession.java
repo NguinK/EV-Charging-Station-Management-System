@@ -28,7 +28,7 @@ public class ChargingSession {
     private OffsetDateTime endTime;       // Thời gian kết thúc
 
     @Column(name = "energy_consumed")
-    private double energyConsumed;       // kWh đã sạc
+    private Double energyConsumed;       // kWh đã sạc
 
     @Column(name = "cost")
     private double cost;                 // Chi phí tạm tính
@@ -53,6 +53,10 @@ public class ChargingSession {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "driver_id", nullable = false)
     private EVDriver driver;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vehicle_id", nullable = false)
+    private Vehicle vehicle;
 
     // Quan hệ với Station
     @ManyToOne(fetch = FetchType.LAZY)
@@ -81,8 +85,8 @@ public class ChargingSession {
     @Column(name = "updated_at")
     private OffsetDateTime updatedAt;
 
-    @Enumerated(EnumType.STRING)
-    private PaymentMethod paymentMethod;
+//    @Enumerated(EnumType.STRING)
+//    private PaymentMethod paymentMethod;
 
     @Column(name = "total_cost")
     private Double totalCost;

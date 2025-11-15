@@ -21,6 +21,7 @@ public class EVDriver {
     private Account account;
     // liên kết tới bảng account
     private String fullName;
+    private String phone;
     private String driverLicense;
     private String vehicleNumber;
     private String vehicleType;

@@ -1,20 +1,18 @@
 package com.evcharging.entity;
 
-
 import com.evcharging.enums.PaymentMethod;
 import com.evcharging.enums.TransactionStatus;
 import com.evcharging.enums.TransactionType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 @JsonFormat(shape = JsonFormat.Shape.STRING)
 @Entity
-@Data
 @Table(name = "transactions")
+@Data
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,10 +29,17 @@ public class Transaction {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
-    private TransactionType type;        // TOP_UP, CHARGING_PAYMENT, SUBSCRIPTION, REFUND
+    private TransactionType type; // TOP_UP, CHARGING_PAYMENT, SUBSCRIPTION, REFUND
 
     @Enumerated(EnumType.STRING)
-    private PaymentMethod paymentMethod; // EWALLET, BANKING, CASH, CREDIT_CARD
+    @Column(name = "payment_method", length = 30)
+    private PaymentMethod paymentMethod; // EWALLET, BANKING, CASH
+
+    @Column(name = "payment_notes", length = 500)
+    private String paymentNotes;
+
+    @Column(name = "processed_by_staff_id")
+    private Long processedByStaffId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)

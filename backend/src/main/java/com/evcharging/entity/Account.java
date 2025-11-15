@@ -48,15 +48,19 @@ public class Account implements UserDetails {
     @Column(nullable = false, length = 20)
     private AccountStatus status;
 
+    @Builder.Default
     @Column(nullable = false)
     private Boolean accountNonExpired = true;
 
+    @Builder.Default
     @Column(nullable = false)
     private Boolean accountNonLocked = true;
 
+    @Builder.Default
     @Column(nullable = false)
     private Boolean credentialsNonExpired = true;
 
+    @Builder.Default
     @Column(nullable = false)
     private Boolean enabled = true;
 

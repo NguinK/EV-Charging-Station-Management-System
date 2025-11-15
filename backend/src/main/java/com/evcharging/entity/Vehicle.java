@@ -4,6 +4,7 @@ import com.evcharging.enums.ConnectorType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
@@ -26,7 +27,7 @@ public class Vehicle {
     private String manufacturer; // Tesla, VinFast, BYD, etc.
     private String model;
     private String licensePlate;
-    private Integer batteryCapacity; // kWh
+    private Double batteryCapacity; // kWh
 
     @Enumerated(EnumType.STRING)
     private ConnectorType connectorType;

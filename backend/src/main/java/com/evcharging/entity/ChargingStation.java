@@ -3,15 +3,12 @@ package com.evcharging.entity;
 import com.evcharging.enums.StationStatus;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.AllArgsConstructor;
-import com.evcharging.enums.StationStatus;
-import lombok.NoArgsConstructor;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "stations")
+@Table(name = "charging_stations")
 @Data
 public class ChargingStation {
     @Id
@@ -27,6 +24,9 @@ public class ChargingStation {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private StationStatus status;
+
+    @Column(name = "total_points")  // Tên cột trong DB vẫn giữ nguyên
+    private Integer totalPoints;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;

@@ -7,15 +7,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.OffsetDateTime;
 
- /**
- * Entity thanh toán
- */
 @Entity
 @Table(name = "payments")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,6 +55,5 @@ public class Payment {
     protected void onCreate() {
         createdAt = OffsetDateTime.now();
     }
-
 
 }

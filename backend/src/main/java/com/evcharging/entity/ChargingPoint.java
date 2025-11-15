@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import java.time.OffsetDateTime;
 
 @Entity
-@Table(name = "charging_point", uniqueConstraints = {
+@Table(name = "charging_points", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"station_id", "code"})
 })
 @Data
