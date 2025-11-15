@@ -1,5 +1,6 @@
 package com.evcharging.controller.admin;
 
+import com.evcharging.dto.ChargingPointResponseDTO;
 import com.evcharging.dto.admin.*;
 import com.evcharging.entity.ChargingPoint;
 import com.evcharging.entity.ChargingStation;
@@ -81,10 +82,10 @@ public class AdminStationAndPointController {
      * Lấy danh sách điểm sạc của một trạm cụ thể
      */
     @GetMapping("/stations/{stationId}/points")
-    public ResponseEntity<List<ChargingPointResponse>> getStationPoints(
+    public ResponseEntity<List<ChargingPointResponseDTO>> getStationPoints(
             @PathVariable Long stationId) {
         log.info("Getting charging points for station: {}", stationId);
-        List<ChargingPointResponse> points = chargingPointService.getPointsByStation(stationId);
+        List<ChargingPointResponseDTO> points = chargingPointService.getPointsByStation(stationId);
         return ResponseEntity.ok(points);
     }
 
@@ -93,7 +94,7 @@ public class AdminStationAndPointController {
      * Thêm điểm sạc vào trạm
      */
     @PostMapping("/stations/{stationId}/points")
-    public ResponseEntity<ChargingPointResponse> addPoint(
+    public ResponseEntity<ChargingPointResponseDTO> addPoint(
             @PathVariable Long stationId,
             @RequestBody CreateChargingPointRequest request) {
         log.info("Adding point to station: {}", stationId);
@@ -102,7 +103,7 @@ public class AdminStationAndPointController {
         ChargingPoint createdPoint = stationService.addPointToStation(stationId, request);
 
         // Convert sang DTO trước khi trả về để tránh lỗi JSON parsing
-        ChargingPointResponse dto = chargingPointService.getChargingPointDTO(createdPoint.getId());
+        ChargingPointResponseDTO dto = chargingPointService.getChargingPointDTO(createdPoint.getId());
         return ResponseEntity.ok(dto);
     }
 
