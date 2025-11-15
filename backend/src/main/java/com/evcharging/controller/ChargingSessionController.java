@@ -29,16 +29,23 @@ public class ChargingSessionController {
         return ResponseEntity.ok(sessionService.startSession(reservationId, startSoc));
     }
 
-
     // Kết thúc phiên sạc
     // Controller
     @PutMapping("/{sessionId}/endManual")
     public ChargingSessionDTO endManual(
             @PathVariable Long sessionId,
             @RequestParam(required = false) PaymentMethod method) {
-        return sessionService.endSession(sessionId, method);
+        return sessionService.endSession(sessionId);
     }
 
+    @PostMapping("/direct-start")
+    public ChargingSessionDTO startDirectSession(
+            @RequestParam Long pointId,
+            @RequestParam Long driverId,
+            @RequestParam int startSoc) {
+
+        return sessionService.startDirectSession(pointId, driverId, startSoc);
+    }
 
     @GetMapping("/sessions/{id}/status")
     public ChargingStatusDTO getSessionStatus(@PathVariable Long id) {

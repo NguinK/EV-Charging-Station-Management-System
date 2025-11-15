@@ -4,11 +4,13 @@ import com.evcharging.dto.ReservationCreateDTO;
 import com.evcharging.dto.ReservationResponseDTO;
 import com.evcharging.entity.Account;
 import com.evcharging.entity.EVDriver;
+import com.evcharging.repository.AccountRepository;
 import com.evcharging.repository.EVDriverRepository;
 import com.evcharging.service.ReservationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -20,11 +22,13 @@ public class ReservationController {
 
     private final ReservationService reservationService;
     private final EVDriverRepository driverRepository;
+    private final AccountRepository accountRepository;
 
 
-    public ReservationController(ReservationService reservationService, EVDriverRepository driverRepository) {
+    public ReservationController(ReservationService reservationService, EVDriverRepository driverRepository,  AccountRepository accountRepository) {
         this.reservationService = reservationService;
         this.driverRepository = driverRepository;
+        this.accountRepository = accountRepository;
     }
 
     // Tạo mới một reservation (driver đặt chỗ)
@@ -58,9 +62,12 @@ public class ReservationController {
 
     // Lấy danh sách reservation của driver hiện tại
     @GetMapping("/getList")
-    public ResponseEntity<List<ReservationResponseDTO>> getDriverReservations(
-            @AuthenticationPrincipal Account user) {
-        List<ReservationResponseDTO> reservations = reservationService.getReservationList(user.getId());
+    public ResponseEntity<List<ReservationResponseDTO>> getDriverReservations() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<ReservationResponseDTO> reservations = reservationService.getReservationList(account.getId());
         return ResponseEntity.ok(reservations);
     }
 
