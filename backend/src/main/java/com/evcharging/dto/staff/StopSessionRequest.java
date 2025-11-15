@@ -11,4 +11,8 @@ public class StopSessionRequest {
     @NotNull(message = "Energy used is required")
     @Positive(message = "Energy used must be positive")
     private double energyUsedKwh;
+
+    private String paymentMethod;
+    private String paymentNotes;
+
 }

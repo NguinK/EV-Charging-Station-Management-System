@@ -1,10 +1,7 @@
 package com.evcharging.dto;
 
-import com.evcharging.dto.admin.ChargingPointResponse;
-import com.evcharging.entity.Invoice;
-import com.evcharging.entity.Transaction;
+import com.evcharging.entity.*;
 import org.springframework.stereotype.Component;
-import com.evcharging.entity.ChargingPoint;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,21 +33,23 @@ public class DtoMapper {
         dto.setStationName(invoice.getStationName());
         dto.setPointCode(invoice.getPointCode());
         dto.setFinalAmount(invoice.getFinalAmount());
+        dto.setCustomerEmail(invoice.getCustomerEmail());
         return dto;
     }
 
-
-    public static TransactionDTO toTransactionDTO(Transaction tx) {
+    public TransactionDTO toTransactionDTO(Transaction tx) {
         TransactionDTO dto = new TransactionDTO();
         dto.setId(tx.getId());
         dto.setTransactionTime(tx.getTimestamp()); // đổi tên cho khớp DTO
         dto.setAmount(tx.getAmount().doubleValue());
         dto.setCurrency(tx.getCurrency());
-        dto.setPaymentType(tx.getType().name()); // Enum -> String
-        dto.setPaymentMethod(tx.getPaymentMethod().name()); // Enum -> String
-        dto.setStatus(tx.getStatus().name());
+
+        // Enum -> String, có thể null
+        dto.setPaymentType(tx.getType() != null ? tx.getType().name() : null);
+        dto.setPaymentMethod(tx.getPaymentMethod() != null ? tx.getPaymentMethod().name() : null);
+        dto.setStatus(tx.getStatus() != null ? tx.getStatus().name() : null);
         dto.setInvoiceNumber(tx.getInvoiceNumber());
-        dto.setPaidAt(tx.getPaidAt());
+        dto.setPaidAt(tx.getPaidAt()); //chỉ có sau khi thanh toán
 
         if (tx.getDriver() != null) {
             dto.setDriverId(tx.getDriver().getId());
@@ -59,20 +58,21 @@ public class DtoMapper {
 
         if (tx.getSession() != null) {
             dto.setSessionId(tx.getSession().getId());
+            dto.setDescription("Thanh toán phiên sạc tại trạm "
+                    + tx.getSession().getStation().getName());
+        } else {
+            dto.setDescription("Thanh toán phiên sạc");
         }
-        dto.setDescription("Thanh toán phiên sạc tại trạm "
-                + (tx.getSession() != null ? tx.getSession().getStation().getName() : ""));
         return dto;
     }
-    /**
-     * Convert ChargingPoint entity to ChargingPointResponseDTO
-     */
-    public ChargingPointResponse toChargingPointDTO(ChargingPoint point) {
+
+    //ChargingPoint mapping methods
+    public ChargingPointResponseDTO toChargingPointDTO(ChargingPoint point) {
         if (point == null) {
             return null;
         }
 
-        return ChargingPointResponse.builder()
+        ChargingPointResponseDTO.ChargingPointResponseDTOBuilder builder = ChargingPointResponseDTO.builder()
                 .id(point.getId())
                 .pointCode(point.getPointCode())
                 .connectorType(point.getConnectorType())
@@ -82,13 +82,18 @@ public class DtoMapper {
                 .pricePerKwh(point.getPricePerKwh())
                 .pricePerMinute(point.getPricePerMinute())
                 .createdAt(point.getCreatedAt())
-                .updatedAt(point.getUpdatedAt())
-                .stationId(point.getStation().getId())
-                .stationName(point.getStation().getName())
-                .location(point.getStation().getLocation())
-                .build();
+                .updatedAt(point.getUpdatedAt());
+
+        if (point.getStation() != null) {
+            builder.stationId(point.getStation().getId())
+                    .stationName(point.getStation().getName())
+                    .location(point.getStation().getLocation());
+        }
+
+        return builder.build();
     }
-    public List<ChargingPointResponse> toChargingPointDTOList(List<ChargingPoint> points) {
+
+    public List<ChargingPointResponseDTO> toChargingPointDTOList(List<ChargingPoint> points) {
         if (points == null) {
             return List.of();
         }
@@ -96,5 +101,63 @@ public class DtoMapper {
         return points.stream()
                 .map(this::toChargingPointDTO)
                 .collect(Collectors.toList());
+    }
+
+    //ChargingStation mapping methods
+    public ChargingStationResponseDTO toChargingStationDTO(ChargingStation station) {
+        if (station == null) {
+            return null;
+        }
+
+        return ChargingStationResponseDTO.builder()
+                .id(station.getId())
+                .name(station.getName())
+                .location(station.getLocation())
+                .status(station.getStatus().name())
+                .totalPoints(station.getChargingPoints() != null ? station.getChargingPoints().size() : 0)
+                .createdAt(station.getCreatedAt())
+                .updatedAt(station.getUpdatedAt())
+                .build();
+    }
+
+    // Wallet mapping methods
+    public WalletResponseDTO toWalletDTO(Wallet wallet) {
+        if (wallet == null) {
+            return null;
+        }
+
+        WalletResponseDTO.WalletResponseDTOBuilder builder = WalletResponseDTO.builder()
+                .id(wallet.getId())
+                .balance(wallet.getBalance())
+                .status(wallet.getStatus().name())
+                .createdAt(wallet.getCreatedAt())
+                .updatedAt(wallet.getUpdatedAt());
+
+        if (wallet.getAccount() != null) {
+            builder.accountId(wallet.getAccount().getId());
+        }
+
+        return builder.build();
+    }
+
+    public WalletTransactionResponseDTO toWalletTransactionDTO(WalletTransaction tx) {
+        if (tx == null) {
+            return null;
+        }
+
+        WalletTransactionResponseDTO.WalletTransactionResponseDTOBuilder builder = WalletTransactionResponseDTO.builder()
+                .id(tx.getId())
+                .type(tx.getType().name())
+                .amount(tx.getAmount())
+                .balanceBefore(tx.getBalanceBefore())
+                .balanceAfter(tx.getBalanceAfter())
+                .description(tx.getDescription())
+                .createdAt(tx.getCreatedAt());
+
+        if (tx.getWallet() != null) {
+            builder.walletId(tx.getWallet().getId());
+        }
+
+        return builder.build();
     }
 }
