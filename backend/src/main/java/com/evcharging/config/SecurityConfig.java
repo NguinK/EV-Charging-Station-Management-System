@@ -14,9 +14,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-@Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true) //enable @PreAuthorize
+@Configuration
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtFilter;
@@ -32,9 +32,10 @@ public class SecurityConfig {
 
     @Bean
     public RoleHierarchy roleHierarchy() {
-        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
-        roleHierarchy.setHierarchy("ROLE_ADMIN > ROLE_STAFF > ROLE_EV_DRIVER");
-        return roleHierarchy;
+        return RoleHierarchyImpl.fromHierarchy(
+                "ROLE_ADMIN > ROLE_STAFF\n" +
+                        "ROLE_STAFF > ROLE_EV_DRIVER"
+        );
     }
 
     @Bean
