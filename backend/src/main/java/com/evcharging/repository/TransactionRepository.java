@@ -1,6 +1,7 @@
 package com.evcharging.repository;
 
 import com.evcharging.entity.Transaction;
+import com.evcharging.enums.TransactionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -23,5 +24,12 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     Optional<Transaction> findBySessionId(Long sessionId);
 
     Optional<Transaction> findByInvoiceNumber(String invoiceNumber);
+
+    List<Transaction> findByChargingSessionIdInAndStatus(
+            List<Long> sessionIds,
+            TransactionStatus status
+    );
+
+    List<Transaction> findByDriverIdOrderByTimestampDesc(Long driverId);
 
 }

@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface EVDriverRepository extends JpaRepository<EVDriver, Long> {
     Optional<EVDriver> findByAccountId(Long accountId);
+    Optional<EVDriver> findByAccountEmail(String email);
 }

@@ -10,21 +10,16 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
-
-
 @Repository
 public interface ChargingSessionRepository extends JpaRepository<ChargingSession, Long> {
-    // ✅ SỬA: driver.id thay vì account.id (vì entity dùng EVDriver, không có Account)
     @Query("SELECT cs FROM ChargingSession cs WHERE cs.driver.id = :driverId")
     List<ChargingSession> findByAccountId(@Param("driverId") Long driverId);
-
+    List<ChargingSession> findByStationId(Long stationId);
     List<ChargingSession> findByStatus(SessionStatus status);
 
-    // ✅ SỬA: driver.id thay vì user.id
     @Query("SELECT cs FROM ChargingSession cs WHERE cs.driver.id = :driverId")
     List<ChargingSession> findByUserId(@Param("driverId") Long driverId);
 
-    // ⭐ Method findByStationAndDateRange
     @Query("SELECT cs FROM ChargingSession cs " +
             "WHERE cs.station.id = :stationId " +
             "AND cs.startTime BETWEEN :startDate AND :endDate")
@@ -32,7 +27,7 @@ public interface ChargingSessionRepository extends JpaRepository<ChargingSession
             @Param("stationId") Long stationId,
             @Param("startDate") OffsetDateTime startDate,
             @Param("endDate") OffsetDateTime endDate);
-    // ✅ SỬA: driver.id thay vì account.id
+
     @Query("SELECT cs FROM ChargingSession cs " +
             "WHERE (:driverId IS NULL OR cs.driver.id = :driverId) " +
             "AND cs.startTime BETWEEN :startDate AND :endDate " +
@@ -46,11 +41,7 @@ public interface ChargingSessionRepository extends JpaRepository<ChargingSession
             "WHERE cs.chargingPoint.id = :pointId AND cs.status = 'ACTIVE'")
     Optional<ChargingSession> findActiveSessionByPoint(@Param("pointId") Long pointId);
 
-    // ✅ SỬA: driver.id thay vì account.id
     @Query("SELECT cs FROM ChargingSession cs " +
             "WHERE cs.driver.id = :driverId AND cs.status = 'ACTIVE'")
     Optional<ChargingSession> findActiveSessionByAccount(@Param("driverId") Long driverId);
-
-
-    List<ChargingSession> findByStationIdIn(List<Long> stationIds);
 }
