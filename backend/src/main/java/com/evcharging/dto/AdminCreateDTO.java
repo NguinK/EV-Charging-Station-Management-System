@@ -35,7 +35,9 @@ public class AdminCreateDTO {
     @Pattern(regexp = "^\\+?[0-9]{9,15}$", message = "Phone number must be valid")
     private String phone;
 
+    @Builder.Default
     private Role role = Role.ADMIN; // Mặc định là ADMIN khi tạo qua DTO
 
+    @Builder.Default
     private boolean active = true;   // Cho phép set trạng thái tài khoản (true = kích hoạt)
 }

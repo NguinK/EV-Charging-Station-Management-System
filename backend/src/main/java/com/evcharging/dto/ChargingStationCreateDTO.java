@@ -1,5 +1,6 @@
 package com.evcharging.dto;
 
+import com.evcharging.enums.StationStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -22,8 +23,8 @@ public class ChargingStationCreateDTO {
     private String location;
 
     @NotBlank(message = "Status is required") // ONLINE / OFFLINE
-    private String status;
+    private StationStatus status;
 
     @NotNull(message = "Total ports is required")
-    private Integer totalPorts;
+    private Integer totalPoints;
 }

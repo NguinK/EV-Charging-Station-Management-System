@@ -16,4 +16,5 @@ public class DriverProfileDTO {
     private String phone;
     private String email;
     private String password;
+    private Long driverId;
 }

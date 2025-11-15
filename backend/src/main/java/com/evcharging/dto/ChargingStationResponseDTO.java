@@ -20,7 +20,7 @@ public class ChargingStationResponseDTO {
     private String name;
     private String location;
     private String status;     // ONLINE / OFFLINE / MAINTENANCE
-    private Integer totalPorts;
+    private Integer totalPoints;
 
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private OffsetDateTime createdAt;   // thời gian tạo trạm sạc
