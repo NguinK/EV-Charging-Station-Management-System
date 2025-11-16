@@ -57,6 +57,7 @@ public class AdminService {
     public AdminResponseDTO createAdmin(@Valid AdminCreateDTO dto) {
         // Tạo Account từ DTO
         Account account = new Account();
+        account.setFullName(dto.getFullName());
         account.setEmail(dto.getEmail());
         account.setPassword(passwordEncoder.encode(dto.getPassword()));
         account.setRole(dto.getRole());

@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 /**
@@ -25,6 +26,6 @@ public class AdminResponseDTO {
     private Role role; // ví dụ: ADMIN, SUPER_ADMIN
     private boolean active;
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
-    private OffsetDateTime createdAt;
-    private OffsetDateTime updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

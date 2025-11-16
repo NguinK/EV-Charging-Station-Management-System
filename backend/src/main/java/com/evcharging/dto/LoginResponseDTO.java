@@ -1,8 +1,10 @@
 package com.evcharging.dto;
 
 import com.evcharging.enums.Role;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 
@@ -12,23 +14,16 @@ import java.time.Instant;
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class LoginResponseDTO {
     private String token;
     private String fullName;
     private String email;
     private Role role;   // EV_DRIVER / CS_STAFF / ADMIN
     private Instant expiresAt; // optional
-
-    public LoginResponseDTO() {
-    }
-
-    public LoginResponseDTO(String token, String fullName, String email, Role role, Instant expiresAt) {
-        this.token = token;
-        this.fullName = fullName;
-        this.email = email;
-        this.role = role;
-        this.expiresAt = expiresAt;
-    }
-
+    private Long driverId;
+    private Long adminId;
+    private Long staffId;
 
 }

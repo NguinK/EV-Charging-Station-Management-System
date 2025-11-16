@@ -157,7 +157,7 @@ public class ChargingSessionService {
                 session.getStation().getName(),
                 session.getDriver().getFullName(),
                 session.getReservation() != null && session.getReservation().getChargingPoint() != null
-                        ? session.getReservation().getChargingPoint().getCode()
+                        ? session.getReservation().getChargingPoint().getPointCode()
                         : null,
                 session.getStartTime(),
                 session.getEndTime(),

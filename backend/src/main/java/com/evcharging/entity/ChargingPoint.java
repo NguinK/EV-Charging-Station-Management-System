@@ -30,10 +30,7 @@ public class ChargingPoint {
     @JoinColumn(name = "station_id", nullable = false)
     private ChargingStation station;
 
-    @Column(nullable = false, length = 50)
-    private String code; // Mã điểm sạc (ví dụ: CP-001, CP-002)
-
-    //    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
     private ConnectorType connectorType; // CCS, CHADEMO, AC_TYPE2
 

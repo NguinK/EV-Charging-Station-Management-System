@@ -176,7 +176,7 @@ public class StaffChargingSessionServiceImpl implements StaffChargingSessionServ
         response.setStationId(session.getStation().getId());
         response.setStationName(session.getStation().getName());
         response.setChargerId(session.getChargingPoint().getId());
-        response.setChargerCode(session.getChargingPoint().getCode());
+        response.setChargerCode(session.getChargingPoint().getPointCode());
         response.setDriverId(session.getId());
         response.setStartTime(session.getStartTime());
         response.setEndTime(session.getEndTime());

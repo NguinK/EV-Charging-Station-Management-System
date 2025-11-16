@@ -58,7 +58,9 @@ public class AuthService {
         account.setPassword(passwordEncoder.encode(dto.getPassword()));
         account.setRole(Role.EV_DRIVER);
         account.setEnabled(true);
+        account.setFullName(dto.getFullName());
         accountRepository.save(account);
+
 
         // 3. Tạo profile EVDriver
         EVDriver driver = new EVDriver();
@@ -90,20 +92,40 @@ public class AuthService {
         String token = jwtUtil.generateToken(account.getEmail(), account.getRole());
         Instant expiresAt = jwtUtil.getExpirationFromToken(token);
 
-        // 4. Lấy fullName
-        String fullName = switch (account.getRole()) {
-            case EV_DRIVER -> evDriverRepository.findByAccountId(account.getId())
-                    .map(EVDriver::getFullName)
-                    .orElse(null);
-            case ADMIN -> adminRepository.findByAccountId(account.getId())
-                    .map(Admin::getFullName)
-                    .orElse(null);
-            case CS_STAFF -> CSStaffRepository.findByAccountId(account.getId())
-                    .map(CS_Staff::getFullName)
-                    .orElse(null);
-            default -> null;
-        };
+        String fullName = null;
+        Long driverId = null;
+        Long adminId = null;
+        Long staffId = null;
 
-        return new LoginResponseDTO(token, fullName, account.getEmail(), account.getRole(), expiresAt);
+        switch (account.getRole()) {
+            case EV_DRIVER -> {
+                EVDriver driver = evDriverRepository.findByAccountId(account.getId())
+                        .orElse(null);
+                if (driver != null) {
+                    fullName = driver.getFullName();
+                    driverId = driver.getId();
+                }
+            }
+            case ADMIN -> {
+                Admin admin = adminRepository.findByAccountId(account.getId())
+                        .orElse(null);
+                if (admin != null) {
+                    fullName = admin.getFullName();
+                    adminId = admin.getId(); // lấy id admin
+                }
+            }
+            case CS_STAFF -> {
+                CS_Staff staff = CSStaffRepository.findByAccountId(account.getId())
+                        .orElse(null);
+                if (staff != null) {
+                    fullName = staff.getFullName();
+                    staffId = staff.getId(); // lấy id staff
+                }
+            }
+            default -> fullName = null;
+        }
+
+        return new LoginResponseDTO(token, fullName, account.getEmail(),
+                account.getRole(), expiresAt, driverId, adminId, staffId);
     }
-}
+    }

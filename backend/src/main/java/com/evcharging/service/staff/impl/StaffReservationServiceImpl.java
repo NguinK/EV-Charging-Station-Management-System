@@ -150,7 +150,7 @@ public class StaffReservationServiceImpl implements StaffReservationService {
 
         if (reservation.getChargingPoint() != null) {
             response.setChargerId(reservation.getChargingPoint().getId());
-            response.setChargerCode(reservation.getChargingPoint().getCode());
+            response.setChargerCode(reservation.getChargingPoint().getPointCode());
         }
 
         response.setStartTime(reservation.getStartTime());

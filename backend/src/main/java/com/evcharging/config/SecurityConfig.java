@@ -41,12 +41,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
         http
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/auth/**"))
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/auth/**","/admin/**"))
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //JWT is stateless
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/admin/auth/**",
+                                "/admin/auth/createAdmin",
                                 "/auth/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
@@ -57,7 +57,7 @@ public class SecurityConfig {
                         //Admin endpoints
                         .requestMatchers("/api/admin/drivers/**").hasRole("ADMIN")
                         .requestMatchers("/api/charging-points/*/status").hasRole("ADMIN")
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+
 
                         //Staff endpoints
                         .requestMatchers("/staff/**").hasRole("STAFF")
