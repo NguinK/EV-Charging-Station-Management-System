@@ -3,7 +3,7 @@ package com.evcharging.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "staff_assignments", uniqueConstraints = {
@@ -23,19 +23,19 @@ public class StaffAssignment {
     private ChargingStation station;
 
     @Column(name = "assigned_at", nullable = false)
-    private OffsetDateTime assignedAt;
+    private LocalDateTime assignedAt;
 
     @Column(name = "active", nullable = false)
     private Boolean active = true;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
-        createdAt = OffsetDateTime.now();
+        createdAt = LocalDateTime.now();
         if (assignedAt == null) {
-            assignedAt = OffsetDateTime.now();
+            assignedAt = LocalDateTime.now();
         }
     }
 }

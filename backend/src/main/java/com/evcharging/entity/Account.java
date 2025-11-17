@@ -8,13 +8,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 
-/**
- * Entity đại diện cho tài khoản người dùng
- */
+//Entity representing a user account
 @Entity
 @Table(name = "accounts")
 @Getter
@@ -65,15 +63,15 @@ public class Account implements UserDetails {
     private Boolean enabled = true;
 
     @Column(nullable = false, updatable = false)
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Column(nullable = false)
-    private OffsetDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
     @PrePersist
     protected void onCreate() {
-        createdAt = OffsetDateTime.now();
-        updatedAt = OffsetDateTime.now();
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
         if (status == null) {
             status = AccountStatus.ACTIVE;
         }
@@ -84,7 +82,7 @@ public class Account implements UserDetails {
 
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = OffsetDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
 
     // ========== UserDetails Implementation ==========
