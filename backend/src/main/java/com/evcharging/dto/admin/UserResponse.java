@@ -1,10 +1,11 @@
 package com.evcharging.dto.admin;
+
 import com.evcharging.enums.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -18,5 +19,5 @@ public class UserResponse {
     private Role role;
     private AccountStatus status;
     private Boolean enabled;
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
 }

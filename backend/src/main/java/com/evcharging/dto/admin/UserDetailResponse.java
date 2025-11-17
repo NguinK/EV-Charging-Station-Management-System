@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.*;
+
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 @Data
@@ -22,6 +24,6 @@ public class UserDetailResponse {
     private Boolean accountNonLocked;
     private Boolean credentialsNonExpired;
     private Boolean enabled;
-    private OffsetDateTime createdAt;
-    private OffsetDateTime updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }
