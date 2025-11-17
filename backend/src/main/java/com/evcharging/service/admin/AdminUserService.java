@@ -9,13 +9,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.OffsetDateTime;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Service quản lý người dùng cho Admin
- */
+//Service for admin user management
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -23,9 +22,7 @@ public class AdminUserService {
 
     private final AccountRepository accountRepo;
 
-    /**
-     * Lấy danh sách tất cả người dùng (phân trang)
-     */
+    //Lấy danh sách tất cả người dùng (phân trang)
     public Page<UserResponse> getAllUsers(int page, int size, Role role) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 
@@ -39,9 +36,7 @@ public class AdminUserService {
         return accounts.map(this::mapToUserResponse);
     }
 
-    /**
-     * Lấy thống kê người dùng
-     */
+    //Lấy thống kê người dùng
     public UserStatisticsResponse getUserStatistics() {
         log.info("Getting user statistics");
 
@@ -70,7 +65,7 @@ public class AdminUserService {
                 .count();
 
         // User mới trong 30 ngày
-        OffsetDateTime thirtyDaysAgo = OffsetDateTime.now().minusDays(30);
+        LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
         long newUsersLast30Days = allAccounts.stream()
                 .filter(a -> a.getCreatedAt().isAfter(thirtyDaysAgo))
                 .count();
@@ -87,9 +82,7 @@ public class AdminUserService {
                 .build();
     }
 
-    /**
-     * Lấy chi tiết một người dùng
-     */
+    //Lấy chi tiết người dùng
     public UserDetailResponse getUserDetail(Long userId) {
         Account account = accountRepo.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -112,9 +105,7 @@ public class AdminUserService {
                 .build();
     }
 
-    /**
-     * ⭐ Cập nhật role của người dùng (phân quyền)
-     */
+    //Cập nhật role của người dùng
     @Transactional
     public UserResponse updateUserRole(Long userId, Role newRole) {
         log.info("Updating user {} role to {}", userId, newRole);
@@ -124,7 +115,7 @@ public class AdminUserService {
 
         Role oldRole = account.getRole();
         account.setRole(newRole);
-        account.setUpdatedAt(OffsetDateTime.now());
+        account.setUpdatedAt(LocalDateTime.now());
 
         account = accountRepo.save(account);
 
@@ -133,9 +124,7 @@ public class AdminUserService {
         return mapToUserResponse(account);
     }
 
-    /**
-     * ⭐ Cập nhật status của người dùng
-     */
+    //Cập nhật status của người dùng
     @Transactional
     public UserResponse updateUserStatus(Long userId, AccountStatus newStatus) {
         log.info("Updating user {} status to {}", userId, newStatus);
@@ -145,7 +134,7 @@ public class AdminUserService {
 
         AccountStatus oldStatus = account.getStatus();
         account.setStatus(newStatus);
-        account.setUpdatedAt(OffsetDateTime.now());
+        account.setUpdatedAt(LocalDateTime.now());
 
         // Nếu suspend, lock account
         if (newStatus == AccountStatus.SUSPENDED) {
@@ -161,9 +150,7 @@ public class AdminUserService {
         return mapToUserResponse(account);
     }
 
-    /**
-     * Tìm kiếm người dùng
-     */
+    //Tìm kiếm người dùng
     public List<UserResponse> searchUsers(String keyword) {
         log.info("Searching users: {}", keyword);
 
@@ -174,9 +161,7 @@ public class AdminUserService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Xóa người dùng (soft delete)
-     */
+    //Xóa người dùng (soft delete)
     @Transactional
     public void deleteUser(Long userId) {
         log.warn("Deleting user: {}", userId);
@@ -187,7 +172,7 @@ public class AdminUserService {
         // Soft delete: set status = INACTIVE
         account.setStatus(AccountStatus.INACTIVE);
         account.setEnabled(false);
-        account.setUpdatedAt(OffsetDateTime.now());
+        account.setUpdatedAt(LocalDateTime.now());
 
         accountRepo.save(account);
 
