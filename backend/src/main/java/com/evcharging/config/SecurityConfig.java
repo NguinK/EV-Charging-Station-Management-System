@@ -60,7 +60,7 @@ public class SecurityConfig {
 
 
                         //Staff endpoints
-                        .requestMatchers("/staff/**").hasRole("STAFF")
+                        .requestMatchers("/staff/**").hasRole("CS_STAFF")
 
                         //Driver endpoints
                         .requestMatchers(
