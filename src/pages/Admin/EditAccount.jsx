@@ -45,11 +45,11 @@ const EditAccount = () => {
   }, []);
 
   // 🔹 Mở modal thêm
-  const handleAdd = () => {
-    setEditingDriver(null);
-    form.resetFields();
-    setIsModalOpen(true);
-  };
+  // const handleAdd = () => {
+  //   setEditingDriver(null);
+  //   form.resetFields();
+  //   setIsModalOpen(true);
+  // };
 
   // 🔹 Mở modal sửa
   // const handleEdit = (record) => {
@@ -112,12 +112,12 @@ const EditAccount = () => {
 
   // 🔹 Cấu hình cột bảng
   const columns = [
-    {
-      title: "ID",
-      dataIndex: "driverId",
-      key: "driverId",
-      width: 80,
-    },
+    // {
+    //   title: "ID",
+    //   dataIndex: "driverId",
+    //   key: "driverId",
+    //   width: 80,
+    // },
     {
       title: "Họ tên",
       dataIndex: "fullName",
@@ -178,12 +178,12 @@ const EditAccount = () => {
     <div style={{ padding: 20 }}>
       <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
         <Col>
-          <h2>Quản lý tài xế</h2>
+          <h2>Account Management</h2>
         </Col>
         <Col>
-          <Button type="primary" onClick={handleAdd}>
-            + Thêm tài xế
-          </Button>
+          {/* <Button type="primary" onClick={handleAdd}>
+            + Add Driver
+          </Button> */}
         </Col>
       </Row>
 
@@ -255,7 +255,24 @@ const EditAccount = () => {
               </Form.Item>
             </Col>
           </Row>
-
+          
+          {/* <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                label="Connectortype"
+                name="Connectortype">
+                <Input placeholder=" CCS" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                label="batteryCapacity"
+                name="batteryCapacity">
+                <Input placeholder=" 33.5" />
+              </Form.Item>
+            </Col>
+          </Row>
+                 */}
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item label="Loại xe" name="vehicleType">

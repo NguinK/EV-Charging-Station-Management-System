@@ -11,7 +11,7 @@ const HistoryCharge = () => {
   useEffect(() => {
     const fetchPayments = async () => {
       try {
-        const res = await transactionAPI.getTransactionFromSession(); 
+        const res = await transactionAPI.getTransactionFromSession();
         if (res.data) {
           setPayments(res.data);
           setTotalAmount(
@@ -67,7 +67,11 @@ const HistoryCharge = () => {
       title: "Amount (VNĐ)",
       dataIndex: "amount",
       key: "amount",
-      render: (val) => val?.toLocaleString("vi-VN"),
+      render: (val) =>
+        val?.toLocaleString("vi-VN", {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
+        }),
       align: "right",
     },
   ];
@@ -79,7 +83,7 @@ const HistoryCharge = () => {
         <Col xs={24} md={12}>
           <Card className="rounded-2xl shadow-md">
             <Statistic
-              title="Tổng số tiền sạc"
+              title="Total Amount Charged"
               value={totalAmount}
               suffix="VNĐ"
               precision={0}
@@ -90,7 +94,7 @@ const HistoryCharge = () => {
         <Col xs={24} md={12}>
           <Card className="rounded-2xl shadow-md">
             <Statistic
-              title="Tổng số lượt sạc"
+              title="Total Charging Sessions"
               value={totalCount}
               precision={0}
               valueStyle={{ color: "#2563eb" }}

@@ -142,12 +142,6 @@ function LoginPage() {
                   valuePropName="checked"
                   className="!mb-0"
                 ></Form.Item>
-                <Button
-                  type="link"
-                  className="!p-0 !text-[#8fffba] hover:!text-[#b9ffda]"
-                >
-                  Forgot password?
-                </Button>
               </div>
 
               <Button
@@ -158,10 +152,6 @@ function LoginPage() {
                 Login
               </Button>
             </Form>
-
-            <Divider plain className="!text-[#98ad9f]">
-              or continue with
-            </Divider>
           </div>
         </Card>
       </div>

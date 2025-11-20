@@ -217,12 +217,12 @@ const ChargingStation = () => {
   // ==============================
   return (
     <div className="p-6 min-h-screen bg-gray-50">
-      <h1 className="text-2xl font-bold mb-2">⚡ Quản lý trạm sạc</h1>
+      <h1 className="text-2xl font-bold mb-2">⚡ Station Management</h1>
       <Row gutter={20}>
         {/* ===== CỘT TRẠM BÊN TRÁI ===== */}
         <Col span={6}>
           <Card
-            title="Danh sách trạm"
+            title="Station List"
             className="shadow-md rounded-xl border border-gray-200"
             loading={loadingStations}
           >

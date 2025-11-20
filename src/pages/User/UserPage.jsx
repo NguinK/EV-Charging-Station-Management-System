@@ -124,7 +124,7 @@ export default function UserPage() {
 
                 {/* 👇 số dư ví */}
                 <div className="text-sm font-semibold mt-1">
-                  Số dư ví:{" "}
+                  Balance:{" "}
                   {walletBalance != null
                     ? walletBalance.toLocaleString("vi-VN")
                     : "Đang tải..."}{" "}

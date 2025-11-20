@@ -51,11 +51,12 @@ function RegisterPage() {
           ? values.dateOfBirth.format("YYYY-MM-DD")
           : null,
         address: values.address,
+        batteryCapacity: values.batteryCapacity,
+        connectorType: values.connectorType,
       };
 
       const res = await authAPI.postResgisterUser(payload);
-      console.log("Register success:", res);
-      message.success("Register successfully!");
+      message.success("Register successfully!", res);
       navigate("/login");
     } catch (error) {
       console.error("Register failed:", error);
@@ -229,7 +230,32 @@ function RegisterPage() {
                 </Form.Item>
               </Col>
             </Row>
-
+            <Row gutter={12}>
+              <Col span={12}>
+                <Form.Item
+                  name="batteryCapacity"
+                  label="Battery Capacity (kWh)"
+                  className={formItemClassName}
+                >
+                  <Input
+                    
+                    placeholder="e.g., 50"
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="connectorType"
+                  label="Connector Type"
+                  className={formItemClassName}
+                >
+                  <Input
+                 
+                    placeholder="e.g., Type 2"
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
             <Row gutter={12}>
               <Col span={12}>
                 <Form.Item

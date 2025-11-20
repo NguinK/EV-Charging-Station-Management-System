@@ -95,7 +95,7 @@ function Charge() {
   return (
     <div className="w-full flex justify-center mt-10">
       <Card
-        title="🗓️ Đặt lịch sạc"
+        title="🗓️ Reservation"
         size="default"
         className="w-[480px] shadow-lg text-center"
       >

@@ -51,16 +51,16 @@ const Wallet = () => {
   return (
     <div className="w-full flex justify-center mt-10">
       <Card
-        title="Ví của bạn"
+        title="Wallet"
         size="default"
         className="w-[480px] shadow-lg text-center"
       >
         <Button type="primary" onClick={() => setOpen(true)}>
-          Nạp tiền
+          Deposit
         </Button>
 
         <Modal
-          title="Nạp tiền vào ví"
+          title="Deposit"
           open={open}
           onCancel={() => setOpen(false)}
           onOk={() => form.submit()}
@@ -69,7 +69,7 @@ const Wallet = () => {
         >
           <Form form={form} layout="vertical" onFinish={onFinish}>
             <Form.Item
-              label="Số tiền"
+              label="Amount"
               name="amount"
               rules={[{ required: true, message: "Vui lòng nhập số tiền!" }]}
             >
@@ -84,7 +84,7 @@ const Wallet = () => {
               />
             </Form.Item>
 
-            <Form.Item label="Mô tả" name="description">
+            <Form.Item label="Description" name="description">
               <Input placeholder="Nhập mô tả (nếu có)" />
             </Form.Item>
           </Form>

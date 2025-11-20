@@ -20,9 +20,8 @@ function getItem(label, key, icon, children) {
 
 const items = [
   getItem("Station", "station", <PieChartOutlined />),
-  getItem("History", "history", <DesktopOutlined />),
+  getItem("Revenue", "history", <DesktopOutlined />),
   getItem("Account", "account", <UserOutlined />),
-  getItem("Revenue", "Wallet", <WalletOutlined />),
   getItem("Logout", "logout", <LogoutOutlined />),
 ];
 
