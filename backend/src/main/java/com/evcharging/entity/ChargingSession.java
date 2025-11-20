@@ -50,13 +50,13 @@ public class ChargingSession {
     private Long endedByStaffId;
 
     // Quan hệ với Driver
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "driver_id", nullable = false)
     private EVDriver driver;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "vehicle_id", nullable = false)
-    private Vehicle vehicle;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "vehicle_id", nullable = false)
+//    private Vehicle vehicle;
 
     // Quan hệ với Station
     @ManyToOne(fetch = FetchType.LAZY)
@@ -75,7 +75,7 @@ public class ChargingSession {
     private OffsetDateTime lastUpdatedTime;
 
     //Quan hệ M-1 với ChargingPoint
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "charging_point_id", nullable = false)
     private ChargingPoint chargingPoint;
 

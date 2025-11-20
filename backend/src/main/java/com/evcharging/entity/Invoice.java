@@ -54,11 +54,6 @@ public class Invoice {
     private OffsetDateTime paidAt;
     private String status;
 
-    //Cancellation
-    private OffsetDateTime cancelledAt;
-    @Column(length = 500)
-    private String cancelReason;
-
     private OffsetDateTime createdAt;
 
     @PrePersist

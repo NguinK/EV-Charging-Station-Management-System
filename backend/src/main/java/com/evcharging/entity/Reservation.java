@@ -21,8 +21,8 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "driver_id", nullable = false)
-    private Long driverId;
+//    @Column(name = "driver_id", nullable = false)
+//    private Long driverId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "charging_point_id")
@@ -48,12 +48,6 @@ public class Reservation {
 
     @Column(name = "holding_fee", precision = 10, scale = 2)
     private BigDecimal holdingFee;
-
-    @Column(name = "driver_name", length = 200)
-    private String driverName;
-
-    @Column(name = "driver_phone", length = 20)
-    private String driverPhone;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;

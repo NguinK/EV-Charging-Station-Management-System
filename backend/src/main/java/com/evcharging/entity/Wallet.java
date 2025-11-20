@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 import java.time.OffsetDateTime;
 
 @Entity
-@Table(name = "wallets")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "wallets")
 public class Wallet {
 
     @Id
