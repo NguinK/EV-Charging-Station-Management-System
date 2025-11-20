@@ -9,12 +9,6 @@ import lombok.NoArgsConstructor;
 import java.time.OffsetDateTime;
 import java.util.List;
 
-/**
- * DTO cho tài khoản hệ thống EV Charging, bao gồm:
- * - EV Driver (người dùng xe điện)
- * - Charging Station Staff (nhân viên trạm)
- * - Admin (quản trị viên)
- */
 @Data
 @Builder
 @NoArgsConstructor
