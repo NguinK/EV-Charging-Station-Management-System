@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/sessions")
+@RequestMapping("/drivers/sessions")
 public class ChargingSessionController {
 
     private final ChargingSessionService sessionService;
@@ -43,7 +43,6 @@ public class ChargingSessionController {
             @RequestParam Long pointId,
             @RequestParam Long driverId,
             @RequestParam int startSoc) {
-
         return sessionService.startDirectSession(pointId, driverId, startSoc);
     }
 
