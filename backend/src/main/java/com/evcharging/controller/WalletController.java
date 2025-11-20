@@ -4,6 +4,7 @@ import com.evcharging.dto.DtoMapper;
 import com.evcharging.entity.Wallet;
 import com.evcharging.entity.WalletTransaction;
 import com.evcharging.service.WalletService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,5 +42,13 @@ public class WalletController {
         }
     }
 
-
+    @GetMapping("/{accountId}")
+    public ResponseEntity<?> getWallet(@PathVariable Long accountId) {
+        try {
+            Wallet wallet = walletService.getWallet(accountId);
+            return ResponseEntity.ok(dtoMapper.toWalletDTO(wallet));
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+    }
 }
