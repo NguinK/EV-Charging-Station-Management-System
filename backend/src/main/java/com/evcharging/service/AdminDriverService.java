@@ -30,6 +30,7 @@ public class AdminDriverService {
     public DriverProfileDTO createDriver(DriverProfileDTO dto) {
         // Tạo Account mới
         Account account = new Account();
+        account.setFullName(dto.getFullName());
         account.setEmail(dto.getEmail());
         account.setPhone(dto.getPhone());
         account.setPassword(passwordEncoder.encode(dto.getPassword()));
@@ -38,13 +39,13 @@ public class AdminDriverService {
 
         // Tạo EVDriver gắn với Account
         EVDriver driver = new EVDriver();
-        driver.setAccount(savedAccount);
         driver.setFullName(dto.getFullName());
         driver.setDateOfBirth(dto.getDateOfBirth());
         driver.setAddress(dto.getAddress());
         driver.setDriverLicense(dto.getDriverLicense());
         driver.setVehicleNumber(dto.getVehicleNumber());
         driver.setVehicleType(dto.getVehicleType());
+        driver.setAccount(savedAccount);
 
         EVDriver savedDriver = driverRepository.save(driver);
 
