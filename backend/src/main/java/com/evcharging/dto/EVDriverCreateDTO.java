@@ -1,12 +1,9 @@
 package com.evcharging.dto;
 
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import com.evcharging.enums.ConnectorType;
+import jakarta.validation.constraints.*;
 import lombok.*;
-
 import java.time.LocalDate;
 
 
@@ -39,8 +36,20 @@ public class EVDriverCreateDTO {
 
     // Thông tin bổ sung cho EV Driver
     private String driverLicense;
+
+    @NotBlank(message = "Biển số xe là bắt buộc")
     private String vehicleNumber;
+
+    @NotBlank(message = "Loại xe là bắt buộc")
     private String vehicleType;
     private LocalDate dateOfBirth;
     private String address;
+
+    @NotNull(message = "Dung lượng pin là bắt buộc")
+    @DecimalMin(value = "10.0", message = "Dung lượng pin tối thiểu 10 kWh")
+    @DecimalMax(value = "200.0", message = "Dung lượng pin tối đa 200 kWh")
+    private Double batteryCapacity;
+
+    @NotNull(message = "Loại cổng sạc là bắt buộc")
+    private ConnectorType connectorType;
 }
