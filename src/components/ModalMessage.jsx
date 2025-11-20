@@ -35,12 +35,11 @@ const ModalMessage = () => {
         Booking
       </Button>
       <Modal
-        title="Booking Charging"
+        title="Reservation"
         open={open}
         confirmLoading={confirmLoading}
         footer={null}
         onCancel={handleCancel}
-        
       >
           <BookingPage onSuccess={handleBookingSuccess} />
       </Modal>
