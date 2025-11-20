@@ -1,92 +1,4 @@
-// import React, { useEffect, useState } from "react";
-// import { Card, Spin, message } from "antd";
-// import dayjs from "dayjs";
-// import { useSearchParams } from "react-router-dom";
-// import chargingSessionAPI from "../../api/chargingSessionAPI";
 
-// function SessionInfo() {
-//   const [params] = useSearchParams();
-//   const sessionId = params.get("id");
-//   const [sessionData, setSessionData] = useState(null);
-//   const [loading, setLoading] = useState(false);
-
-//   useEffect(() => {
-//     const fetchSessionStatus = async () => {
-//       if (!sessionId) return;
-//       try {
-//         setLoading(true);
-//         const res = await chargingSessionAPI.getByReservation(sessionId);
-//         if (res.data) {
-//           setSessionData(res.data);
-//         } else {
-//           message.warning("Không có dữ liệu phiên sạc!");
-//         }
-//       } catch (err) {
-//         message.error("Không thể lấy thông tin sạc!");
-//         console.error(err);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     // Gọi ngay khi load và cập nhật mỗi 5 giây
-//     fetchSessionStatus();
-//     const interval = setInterval(fetchSessionStatus, 5000);
-//     return () => clearInterval(interval);
-//   }, [sessionId]);
-
-//   return (
-//     <div className="w-full flex justify-center mt-10">
-//       <Card
-//         title="🔋 Phiên sạc đang hoạt động"
-//         size="default"
-//         className="w-[500px] h-auto shadow-lg"
-//       >
-//         {loading && (
-//           <div className="flex justify-center items-center py-10">
-//             <Spin tip="Đang tải dữ liệu..." />
-//           </div>
-//         )}
-
-//         {!loading && sessionData && (
-//           <div className="text-center">
-//             <img
-//               src="/ev_logo.png"
-//               alt="charging"
-//               className="w-24 mx-auto mb-4"
-//             />
-//             <p>
-//               <b>Session ID:</b> {sessionId}
-//             </p>
-//             <p>
-//               ⚡ <b>SoC:</b> {sessionData.soc ?? "--"}%
-//             </p>
-//             <p>
-//               🔋 <b>Năng lượng:</b> {sessionData.energy?.toFixed(2) ?? "--"} kWh
-//             </p>
-//             <p>
-//               💰 <b>Chi phí:</b>{" "}
-//               {sessionData.cost
-//                 ? sessionData.cost.toLocaleString("vi-VN") + " đ"
-//                 : "--"}
-//             </p>
-//             <p>
-//               🟢 <b>Trạng thái:</b> {sessionData.status}
-//             </p>
-//           </div>
-//         )}
-
-//         {!loading && !sessionData && (
-//           <p className="text-center text-gray-500">
-//             Không tìm thấy phiên sạc nào.
-//           </p>
-//         )}
-//       </Card>
-//     </div>
-//   );
-// }
-
-// export default SessionInfo;
 import React, { useEffect, useState } from "react";
 import { Card, Spin, message, Progress, Button } from "antd";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -150,7 +62,7 @@ function SessionInfo() {
     };
 
     fetchSession();
-    const interval = setInterval(fetchSession, 15000);
+    const interval = setInterval(fetchSession, 3000);
     return () => clearInterval(interval);
   }, [sessionId]);
 
