@@ -45,6 +45,8 @@ function LoginPage() {
       // ✅ Lấy token từ response
       const token = res?.data?.token;
       const userInfo = {
+        id: res?.data?.driverId, 
+        driverId: res?.data?.driverId, 
         fullName: res?.data?.fullName,
         email: res?.data?.email,
         role: res?.data?.role,
@@ -55,7 +57,7 @@ function LoginPage() {
       localStorage.setItem("userInfo", JSON.stringify(userInfo));
 
       message.success("Login successful!");
-       navigate("/user");
+      navigate("/user");
       if (userInfo.role === "ADMIN") {
         navigate("/admin");
       } else {
@@ -160,8 +162,6 @@ function LoginPage() {
             <Divider plain className="!text-[#98ad9f]">
               or continue with
             </Divider>
-
-         
           </div>
         </Card>
       </div>
