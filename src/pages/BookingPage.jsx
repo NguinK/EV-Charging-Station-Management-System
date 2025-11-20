@@ -13,22 +13,6 @@ function BookingPage() {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.reservation);
-  // const [stations, setStations] = useState([]);
-
-  // ✅ Lấy danh sách trạm sạc khi component mount
-  // useEffect(() => {
-  //   const fetchStations = async () => {
-  //     try {
-  //       const res = await chargingStationAPI.getAllStations();
-  //       setStations(res.data || []); // res.data = mảng trạm sạc
-  //     } catch (error) {
-  //       message.error("Không thể tải danh sách trạm sạc!");
-  //       console.error("Lỗi getAllStations:", error);
-  //     }
-  //   };
-
-  //   fetchStations();
-  // }, []);
   // ✅ State lưu danh sách trạm
   const [stations, setStations] = useState([]);
 
@@ -68,7 +52,6 @@ function BookingPage() {
       .unwrap()
       .then((res) => {
         message.success("Đặt xe thành công!");
-        console.log("Kết quả API:", res);
         // ✅ Lưu ID đặt xe theo tài khoản hiện tại
         const userInfo = JSON.parse(localStorage.getItem("userInfo"));
         if (userInfo && userInfo.id) {
@@ -108,13 +91,13 @@ function BookingPage() {
           optionFilterProp="children"
         >
           {stations
-            .filter((s) => s.status !== "OFFLINE")
+            .filter((s) => s.status !== "INACTIVE")
             .map((station) => (
               <Select.Option key={station.id} value={station.id}>
                 {station.name} – {" "}
                 <span
                 style={{
-                  color: station.status === "OFFLINE" ? "red" : "green",
+                  color: station.status === "INACTIVE" ? "red" : "green",
                   fontWeight: 500,
                 }}
               >
