@@ -16,6 +16,7 @@ import UserPage from "./pages/User/UserPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import HistoryCharge from "./pages/User/HistoryCharge";
 import SessionInfo from "./pages/User/Seesion";
+import Wallet from "./pages/User/Wallet";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
         <Route path="history" element={<HistoryCharge />} />
         <Route path="charge" element={<Charge />} />
         <Route path="session" element={<SessionInfo />} />
+        <Route path="wallet" element={<Wallet/>} />
       </Route>
 
       <Route
