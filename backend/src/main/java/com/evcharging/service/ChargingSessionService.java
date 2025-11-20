@@ -180,16 +180,19 @@ public class ChargingSessionService {
                 session.getDriver().getFullName(),
                 session.getReservation() != null && session.getReservation().getChargingPoint() != null
                         ? session.getReservation().getChargingPoint().getPointCode()
-                        : null,
+                        : (session.getChargingPoint() != null ? session.getChargingPoint().getPointCode() : null),
                 session.getStartTime(),
                 session.getEndTime(),
-                session.getStartSoc(),
-                session.getEndSoc(),
-                session.getEnergyConsumed(),
+                session.getStartSoc() != null ? session.getStartSoc() : 0,
+                session.getEndSoc() != null ? session.getEndSoc() : 0,
+                session.getEnergyConsumed() != null ? session.getEnergyConsumed() : 0.0,
                 session.getCost(),
                 session.getStatus(),
                 transactionId,
-                null // paymentUrl sẽ set sau nếu có
+                null, // paymentUrl sẽ set sau nếu có
+                session.getStation().getId(),                    // stationId
+                session.getDriver().getId(),                     // driverId
+                session.getChargingPoint() != null ? session.getChargingPoint().getId() : null  // pointId
         );
 
         return dto;

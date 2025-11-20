@@ -4,13 +4,9 @@ package com.evcharging.dto;
 import com.evcharging.enums.ConnectorType;
 import jakarta.validation.constraints.*;
 import lombok.*;
+
 import java.time.LocalDate;
 
-
-/**
- * DTO dùng khi Admin hoặc hệ thống tạo tài khoản người dùng mới.
- * Hỗ trợ: EV_DRIVER, CS_STAFF, ADMIN
- */
 @Getter
 @Setter
 @NoArgsConstructor

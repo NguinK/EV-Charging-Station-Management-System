@@ -409,7 +409,7 @@ public class InvoicePdfGenerator {
         // Footer note
         Paragraph footer = new Paragraph(
                 "\n_______________________________________________\n" +
-                        "Hóa đơn được in lúc: " + java.time.LocalDateTime.now().format(DATE_TIME_FORMATTER)
+                        "Hóa đơn được in lúc: " + java.time.OffsetDateTime.now().format(DATE_TIME_FORMATTER)
         )
                 .setFontSize(8)
                 .setTextAlignment(TextAlignment.CENTER)

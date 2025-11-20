@@ -1,5 +1,6 @@
 package com.evcharging.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -8,15 +9,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO dùng để cập nhật thông tin quản trị viên (Admin)
- * Áp dụng cho chức năng "Cập nhật tài khoản quản trị" trong hệ thống EV Charging.
- */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class AdminUpdateDTO {
+
+    @Email(message = "Email không hợp lệ")
+    private String email;
 
     @NotBlank(message = "Họ tên không được để trống")
     @Size(min = 2, max = 100, message = "Họ tên phải có từ 2-100 ký tự")

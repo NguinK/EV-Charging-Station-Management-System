@@ -10,7 +10,7 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,7 +65,7 @@ public class AdminUserService {
                 .count();
 
         // User mới trong 30 ngày
-        LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+        OffsetDateTime thirtyDaysAgo = OffsetDateTime.now().minusDays(30);
         long newUsersLast30Days = allAccounts.stream()
                 .filter(a -> a.getCreatedAt().isAfter(thirtyDaysAgo))
                 .count();
@@ -115,7 +115,7 @@ public class AdminUserService {
 
         Role oldRole = account.getRole();
         account.setRole(newRole);
-        account.setUpdatedAt(LocalDateTime.now());
+        account.setUpdatedAt(OffsetDateTime.now());
 
         account = accountRepo.save(account);
 
@@ -134,7 +134,7 @@ public class AdminUserService {
 
         AccountStatus oldStatus = account.getStatus();
         account.setStatus(newStatus);
-        account.setUpdatedAt(LocalDateTime.now());
+        account.setUpdatedAt(OffsetDateTime.now());
 
         // Nếu suspend, lock account
         if (newStatus == AccountStatus.SUSPENDED) {
@@ -172,7 +172,7 @@ public class AdminUserService {
         // Soft delete: set status = INACTIVE
         account.setStatus(AccountStatus.INACTIVE);
         account.setEnabled(false);
-        account.setUpdatedAt(LocalDateTime.now());
+        account.setUpdatedAt(OffsetDateTime.now());
 
         accountRepo.save(account);
 

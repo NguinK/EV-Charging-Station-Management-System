@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Data
@@ -18,7 +18,7 @@ public class StaffResponse {
     private String phone;
     private String fullName;
     private AccountStatus status;
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
     private List<StaffStationInfo> assignedStations;
 
     // Only returned when first creating staff
@@ -32,6 +32,6 @@ public class StaffResponse {
         private Long stationId;
         private String stationName;
         private String stationLocation;
-        private LocalDateTime assignedAt;
+        private OffsetDateTime assignedAt;
     }
 }

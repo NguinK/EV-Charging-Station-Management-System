@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Data
 @Builder
@@ -19,5 +19,5 @@ public class UserResponse {
     private Role role;
     private AccountStatus status;
     private Boolean enabled;
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 }

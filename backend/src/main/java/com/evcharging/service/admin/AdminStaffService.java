@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -77,7 +77,7 @@ public class AdminStaffService {
 
         // 5. Create StaffAssignment entries for each station
         Long staffAccountId = staffAccount.getId();
-        LocalDateTime now = LocalDateTime.now();
+        OffsetDateTime now = OffsetDateTime.now();
 
         List<StaffAssignment> assignments = stations.stream()
                 .map(station -> {
@@ -154,7 +154,7 @@ public class AdminStaffService {
         staffAssignmentRepository.saveAll(existingAssignments);
 
         // Create new assignments
-        LocalDateTime now = LocalDateTime.now();
+        OffsetDateTime now = OffsetDateTime.now();
         List<StaffAssignment> newAssignments = stations.stream()
                 .map(station -> {
                     StaffAssignment assignment = new StaffAssignment();
@@ -187,7 +187,7 @@ public class AdminStaffService {
         // Deactivate account
         staffAccount.setStatus(AccountStatus.INACTIVE);
         staffAccount.setEnabled(false);
-        staffAccount.setUpdatedAt(LocalDateTime.now());
+        staffAccount.setUpdatedAt(OffsetDateTime.now());
         accountRepository.save(staffAccount);
 
         // Deactivate all assignments

@@ -45,6 +45,7 @@ public class AdminDriverService {
         driver.setDriverLicense(dto.getDriverLicense());
         driver.setVehicleNumber(dto.getVehicleNumber());
         driver.setVehicleType(dto.getVehicleType());
+        driver.setBatteryCapacity(dto.getBatteryCapacity());
         driver.setAccount(savedAccount);
 
         EVDriver savedDriver = driverRepository.save(driver);
@@ -92,6 +93,10 @@ public class AdminDriverService {
         dto.setVehicleType(driver.getVehicleType());
         dto.setEmail(driver.getAccount().getEmail());
         dto.setPhone(driver.getAccount().getPhone());
+        dto.setBatteryCapacity(driver.getBatteryCapacity());
+        dto.setConnectorType(driver.getConnectorType());
+        dto.setDriverId(driver.getId());
+        dto.setPassword(null);
 
         return dto;
     }

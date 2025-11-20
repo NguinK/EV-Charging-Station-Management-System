@@ -26,4 +26,7 @@ public class ChargingSessionDTO {
     private SessionStatus status;
     private Long transactionId;
     private String paymentUrl;
+    private Long stationId;
+    private Long driverId;
+    private Long pointId;
 }

@@ -85,9 +85,13 @@ public class DtoMapper {
                 .updatedAt(point.getUpdatedAt());
 
         if (point.getStation() != null) {
-            builder.stationId(point.getStation().getId())
-                    .stationName(point.getStation().getName())
-                    .location(point.getStation().getLocation());
+            builder.stationId(point.getStation().getId());
+            if (point.getStation().getName() != null) {
+                builder.stationName(point.getStation().getName());
+            }
+            if (point.getStation().getLocation() != null) {
+                builder.location(point.getStation().getLocation());
+            }
         }
 
         return builder.build();
@@ -120,6 +124,28 @@ public class DtoMapper {
                 .build();
     }
 
+    public ChargingSessionDTO toChargingSessionDTO(ChargingSession session) {
+        ChargingSessionDTO dto = new ChargingSessionDTO();
+        dto.setId(session.getId());
+
+        if (session.getStation() != null) {
+            dto.setStationId(session.getStation().getId());
+            dto.setStationName(session.getStation().getName());
+        }
+
+        if (session.getDriver() != null) {
+            dto.setDriverId(session.getDriver().getId());
+            dto.setDriverName(session.getDriver().getFullName());
+        }
+
+        if (session.getChargingPoint() != null) {
+            dto.setPointId(session.getChargingPoint().getId());
+            dto.setPointCode(session.getChargingPoint().getPointCode());
+        }
+
+        return dto;
+    }
+
     // Wallet mapping methods
     public WalletResponseDTO toWalletDTO(Wallet wallet) {
         if (wallet == null) {
@@ -135,6 +161,13 @@ public class DtoMapper {
 
         if (wallet.getAccount() != null) {
             builder.accountId(wallet.getAccount().getId());
+            builder.ownerEmail(wallet.getAccount().getEmail());
+
+            // Add owner info based on role
+            if (wallet.getAccount().getDriver() != null) {
+                builder.ownerName(wallet.getAccount().getDriver().getFullName());
+            }
+            builder.ownerEmail(wallet.getAccount().getEmail());
         }
 
         return builder.build();

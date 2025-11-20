@@ -1,14 +1,12 @@
 package com.evcharging.dto;
 
+import com.evcharging.enums.ConnectorType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
-/**
- * DTO phản hồi khi trả thông tin trạm sạc về cho client.
- * Dùng trong các API: GET /stations, GET /stations/{id}, v.v.
- */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -27,4 +25,7 @@ public class ChargingStationResponseDTO {
 
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private OffsetDateTime updatedAt;   // thời gian cập nhật trạm sạc
+
+    private List<ConnectorType> availableConnectorTypes;
+    private Integer availablePoints;
 }

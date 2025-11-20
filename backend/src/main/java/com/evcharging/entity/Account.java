@@ -5,12 +5,10 @@ import com.evcharging.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Collection;
-import java.util.Collections;
 
 //Entity representing a user account
 @Entity
@@ -63,15 +61,24 @@ public class Account implements UserDetails {
     private Boolean enabled = true;
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
     @Column(nullable = false)
-    private LocalDateTime updatedAt;
+    private OffsetDateTime updatedAt;
+
+    @OneToOne(mappedBy = "account", fetch = FetchType.LAZY)
+    private EVDriver driver;
+
+    @OneToOne(mappedBy = "account", fetch = FetchType.LAZY)
+    private Admin admin;
+
+    @OneToOne(mappedBy = "account", fetch = FetchType.LAZY)
+    private CS_Staff staff;
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
+        createdAt = OffsetDateTime.now();
+        updatedAt = OffsetDateTime.now();
         if (status == null) {
             status = AccountStatus.ACTIVE;
         }
@@ -82,7 +89,7 @@ public class Account implements UserDetails {
 
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+        updatedAt = OffsetDateTime.now();
     }
 
     // ========== UserDetails Implementation ==========
