@@ -80,7 +80,7 @@ function Charge() {
   }, [bookings, dispatch, userScopedKey]);
 
   useEffect(() => {
-    if (latestBooking?.status === "USED") {
+    if (latestBooking?.status === "COMPLETED") {
       message.info("Phiên đặt đã được sử dụng. Vui lòng đặt lại.");
       setLatestBooking(null);
       localStorage.removeItem(userScopedKey);
@@ -95,7 +95,7 @@ function Charge() {
   return (
     <div className="w-full flex justify-center mt-10">
       <Card
-        title="🗓️ Reservation"
+        title="🗓️ Đặt lịch sạc"
         size="default"
         className="w-[480px] shadow-lg text-center"
       >
@@ -116,11 +116,11 @@ function Charge() {
             />
             <div className="text-center text-gray-800">
               <h2 className="font-bold text-lg text-green-600 mb-2">
-                🎉 Đặt xe thành công!
+                🎉 Đặt lịch thành công!
               </h2>
               <QRCodeCanvas value={qrUrl} size={180} includeMargin level="M" />
               <p className="mt-2 text-sm text-gray-400">
-                Quét mã này bằng điện thoại để bắt đầu phiên sạc.
+                Quét mã này  để bắt đầu phiên sạc.
               </p>
 
               <p>

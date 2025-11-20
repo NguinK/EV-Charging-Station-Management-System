@@ -178,11 +178,11 @@ const ChargingStation = () => {
           color={
             status === "AVAILABLE"
               ? "green"
-              : status === "CHARGING"
+              : status === "OCCUPIED"
               ? "blue"
-              : status === "PENDING"
-              ? "gold"
-              : "red"
+              : status === "RESERVED"
+              ? "red"
+              : "gold"
           }
         >
           {status}
@@ -193,15 +193,7 @@ const ChargingStation = () => {
       title: "Hành động",
       key: "actions",
       render: (_, record) => (
-        <Space>
-          {/* {record.status === "AVAILABLE" && (
-            <Button
-              type="primary"
-              onClick={() => handleStartCharging(record.reservationId || 1)}
-            >
-              Bắt đầu
-            </Button>
-          )} */}
+        <Space>           
           {record.status === "CHARGING" && (
             <Button danger onClick={() => handleStopCharging(record.sessionId)}>
               Dừng
@@ -246,9 +238,9 @@ const ChargingStation = () => {
                   <span>{st.name}</span>
                   <Tag
                     color={
-                      st.status === "ONLINE"
+                      st.status === "ACTIVE"
                         ? "green"
-                        : st.status === "OFFLINE"
+                        : st.status === "INACTIVE"
                         ? "red"
                         : "gold"
                     }
@@ -314,7 +306,7 @@ const ChargingStation = () => {
             <Select
               options={[
                 { value: "CCS", label: "CCS" },
-                { value: "CHAdeMO", label: "CHAdeMO" },
+                { value: "CHADEMO", label: "CHADEMO" },
                 { value: "AC", label: "AC" },
               ]}
             />
