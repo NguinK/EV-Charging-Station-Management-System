@@ -54,7 +54,7 @@ public class InvoicePdfGenerator {
 
         try {
             // Set font (optional - for Vietnamese support)
-             PdfFont font = PdfFontFactory.createFont("path/to/font.ttf", PdfEncodings.IDENTITY_H);
+             PdfFont font = PdfFontFactory.createFont("fonts/NotoSerif-VariableFont_wdth,wght.ttf", PdfEncodings.IDENTITY_H);
              doc.setFont(font);
 
             // 1. Header - Company Info

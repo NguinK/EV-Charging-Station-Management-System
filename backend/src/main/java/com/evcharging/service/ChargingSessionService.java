@@ -58,12 +58,30 @@ public class ChargingSessionService {
             throw new IllegalStateException("Reservation not valid for charging");
         }
 
+        if (startSoc < 0 || startSoc > 100) {
+            throw new IllegalArgumentException("SOC must be between 0 and 100");
+        }
+        if (startSoc >= 95) {
+            throw new IllegalArgumentException("Battery is nearly full, charging not recommended");
+        }
+
+        EVDriver driver = evDriverRepository.findById(reservation.getDriver().getId())
+                .orElseThrow(() -> new RuntimeException("Driver not found"));
+
+        if (driver.getBatteryCapacity() == null || driver.getBatteryCapacity() <= 0) {
+            throw new IllegalStateException("Driver has no valid battery capacity configured. Please update your vehicle information.");
+        }
+        if (driver.getConnectorType() == null) {
+            throw new IllegalStateException("Driver has no connector type configured. Please update your vehicle information.");
+        }
+
         // Đánh dấu Reservation đã được sử dụng
         reservation.setStatus(ReservationStatus.COMPLETED);
 
         ChargingSession session = new ChargingSession();
         session.setReservation(reservation);
-        session.setDriver(reservation.getDriver());
+        session.setDriver(driver);
+//        session.setDriver(reservation.getDriver());
         session.setStation(reservation.getStation());
         session.setStartTime(OffsetDateTime.now());
         session.setStartSoc(startSoc);
@@ -83,6 +101,10 @@ public class ChargingSessionService {
                 .orElseThrow(() -> new IllegalArgumentException("Charging point not found"));
         EVDriver driver = evDriverRepository.findById(driverId)
                 .orElseThrow(() -> new IllegalArgumentException("Driver not found"));
+
+        if (driver.getBatteryCapacity() == null || driver.getBatteryCapacity() <= 0) {
+            throw new IllegalStateException("Driver has no valid battery capacity configured. Please update your vehicle information.");
+        }
 
         ChargingSession session = new ChargingSession();
         session.setDriver(driver);
@@ -125,7 +147,7 @@ public class ChargingSessionService {
 
         // Tính phí
         BigDecimal finalCost = pricingService.calculateChargingFee(session);
-        session.setCost(finalCost.doubleValue());
+        session.setTotalCost(finalCost.doubleValue());
 
         // Giải phóng trụ
         ChargingPoint point = session.getChargingPoint();
@@ -201,9 +223,17 @@ public class ChargingSessionService {
             // Tính lượng điện đã nạp thêm
             double addedEnergy = power * durationHours;
 
+            EVDriver driver = session.getDriver();
+            Double batteryCapacity = driver.getBatteryCapacity();
+
+            if (batteryCapacity == null || batteryCapacity <= 0) {
+                // Fallback: 60 kWh nếu không có dữ liệu
+                batteryCapacity = 60.0; // Fallback: 60 kWh
+                log.warn("Session {} - Driver {} has no battery capacity, using default 60 kWh",
+                        session.getId(), driver.getId());
+            }
+
             // Fallback nếu energyConsumed đang null
-            Vehicle vehicle = session.getVehicle();
-            Double batteryCapacity = vehicle.getBatteryCapacity();
             double currentEnergy = session.getEnergyConsumed() != null ? session.getEnergyConsumed() : 0.0;
             double totalEnergy = currentEnergy + addedEnergy;
             int startSoc = session.getStartSoc();
@@ -212,7 +242,7 @@ public class ChargingSessionService {
             int newSoc = Math.min(100, (int) (startSoc + (totalEnergy / batteryCapacity) * 100));
             session.setEndSoc(newSoc);
 
-            BigDecimal tempCost = pricingService.calculateChargingFee(session);
+            BigDecimal tempCost = pricingService.calculateLiveChargingFee(session,now);
             session.setCost(tempCost.doubleValue());
 
             // Cập nhật thời gian

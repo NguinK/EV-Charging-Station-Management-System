@@ -142,9 +142,9 @@ public class StaffReservationServiceImpl implements StaffReservationService {
     private ReservationSummaryResponse mapToResponse(Reservation reservation) {
         ReservationSummaryResponse response = new ReservationSummaryResponse();
         response.setId(reservation.getId());
-        response.setDriverId(reservation.getDriverId());
-        response.setDriverName(reservation.getDriverName());
-        response.setDriverPhone(reservation.getDriverPhone());
+        response.setDriverId(reservation.getDriver().getId());
+        response.setDriverName(reservation.getDriver().getFullName());
+        response.setDriverPhone(reservation.getDriver().getPhone());
         response.setStationId(reservation.getStation().getId());
         response.setStationName(reservation.getStation().getName());
 

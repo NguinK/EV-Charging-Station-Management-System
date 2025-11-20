@@ -55,6 +55,7 @@ public class ReservationService {
                 res.getChargingPoint().getId(), // nếu bạn muốn trả về id trụ
                 res.getStation().getId(),
                 res.getHoldingFee().doubleValue()
+
         );
     }
 

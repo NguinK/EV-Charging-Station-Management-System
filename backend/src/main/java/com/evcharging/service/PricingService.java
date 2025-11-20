@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
+import java.time.OffsetDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +18,22 @@ import java.time.Duration;
 public class PricingService {
 
     private final SystemConfigurationService configService;
+    public BigDecimal calculateLiveChargingFee(ChargingSession session, OffsetDateTime now) {
+        if (session == null || session.getStartTime() == null) {
+            throw new IllegalArgumentException("Invalid charging session");
+        }
 
+        ChargingPoint point = session.getChargingPoint();
+        if (point == null) {
+            throw new IllegalArgumentException("Charging point is required");
+        }
+
+        BigDecimal energyFee = calculateEnergyFee(session.getEnergyConsumed(), point.getPricePerKwh());
+        BigDecimal timeFee = calculateTimeFee(session.getStartTime(), now, point.getPricePerMinute());
+        BigDecimal serviceFee = getServiceFee();
+
+        return energyFee.add(timeFee).add(serviceFee).setScale(2, RoundingMode.HALF_UP);
+    }
     //Tính tổng phí sạc
     public BigDecimal calculateChargingFee(ChargingSession session) {
         if (session == null || session.getStartTime() == null || session.getEndTime() == null) {

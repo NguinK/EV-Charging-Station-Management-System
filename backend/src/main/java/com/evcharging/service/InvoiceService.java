@@ -244,9 +244,6 @@ public class InvoiceService {
         }
 
         invoice.setStatus("CANCELLED");
-        invoice.setCancelledAt(OffsetDateTime.now());
-        invoice.setCancelReason(reason);
-
         invoice = invoiceRepository.save(invoice);
 
         log.info("Invoice cancelled: {} - Reason: {}", invoice.getInvoiceNumber(), reason);

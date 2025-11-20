@@ -66,9 +66,12 @@ public class AuthService {
         EVDriver driver = new EVDriver();
         driver.setAccount(account);
         driver.setFullName(dto.getFullName());
+        driver.setPhone(dto.getPhone());
         driver.setDriverLicense(dto.getDriverLicense());
         driver.setVehicleNumber(dto.getVehicleNumber());
         driver.setVehicleType(dto.getVehicleType());
+        driver.setBatteryCapacity(dto.getBatteryCapacity());
+        driver.setConnectorType(dto.getConnectorType());
         driver.setAddress(dto.getAddress());
         driver.setDateOfBirth(dto.getDateOfBirth());
         evDriverRepository.save(driver);
