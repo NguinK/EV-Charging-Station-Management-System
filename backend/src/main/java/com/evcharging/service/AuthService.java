@@ -14,12 +14,14 @@ import com.evcharging.repository.AccountRepository;
 import com.evcharging.repository.AdminRepository;
 import com.evcharging.repository.CS_StaffRepository;
 import com.evcharging.repository.EVDriverRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 
+@Slf4j
 @Service
 public class AuthService {
 
@@ -29,19 +31,22 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final AdminRepository adminRepository;
     private final CS_StaffRepository CSStaffRepository;
+    private final WalletService walletService;
 
     public AuthService(AccountRepository accountRepository,
                        EVDriverRepository evDriverRepository,
                        PasswordEncoder passwordEncoder,
                        JwtUtil jwtUtil,
                        AdminRepository adminRepository,
-                       CS_StaffRepository CSStaffRepository) {
+                       CS_StaffRepository CSStaffRepository,
+                       WalletService walletService) {
         this.accountRepository = accountRepository;
         this.evDriverRepository = evDriverRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
         this.adminRepository = adminRepository;
         this.CSStaffRepository = CSStaffRepository;
+        this.walletService = walletService;
     }
 
     @Transactional
@@ -76,7 +81,17 @@ public class AuthService {
         driver.setDateOfBirth(dto.getDateOfBirth());
         evDriverRepository.save(driver);
 
-        // 4. Trả về DTO
+        // 4. Auto create wallet
+        try {
+            walletService.createWallet(account.getId());
+            log.info("✅ Wallet auto-created for new driver: {} (accountId: {})",
+                    account.getEmail(), account.getId());
+        } catch (Exception e) {
+            log.error("Failed to create wallet for new driver: {} - Error: {}",
+                    account.getEmail(), e.getMessage(), e);
+        }
+
+        // 5. Trả về DTO
         return new EVDriverResponseDTO(driver.getId(), driver.getFullName(),
                 account.getEmail(), driver.getVehicleNumber());
     }
@@ -131,4 +146,4 @@ public class AuthService {
         return new LoginResponseDTO(token, fullName, account.getEmail(),
                 account.getRole(), expiresAt, driverId, adminId, staffId);
     }
-    }
+}

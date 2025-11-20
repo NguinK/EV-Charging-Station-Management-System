@@ -5,6 +5,9 @@ import com.evcharging.entity.Wallet;
 import com.evcharging.entity.WalletTransaction;
 import com.evcharging.enums.TransactionType;
 import com.evcharging.enums.WalletStatus;
+import com.evcharging.exception.InsufficientBalanceException;
+import com.evcharging.exception.WalletNotActiveException;
+import com.evcharging.exception.WalletNotFoundException;
 import com.evcharging.repository.AccountRepository;
 import com.evcharging.repository.WalletRepository;
 import com.evcharging.repository.WalletTransactionRepository;
@@ -25,15 +28,13 @@ public class WalletService {
     private final WalletTransactionRepository transactionRepo;
     private final AccountRepository accountRepo;
 
-    /**
-     * Tạo ví mới cho user
-     */
+    //Tạo ví mới
     @Transactional
     public Wallet createWallet(Long accountId) {
         log.info("Creating wallet for account: {}", accountId);
 
         Account account = accountRepo.findById(accountId)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new RuntimeException("Account not found with ID: " + accountId));
 
         // Kiểm tra đã có ví chưa
         if (walletRepo.findByAccountId(accountId).isPresent()) {
@@ -47,26 +48,24 @@ public class WalletService {
 
         wallet = walletRepo.save(wallet);
 
-        log.info("Wallet created: {}", wallet.getId());
+        log.info("Wallet created successfully: walletId={}, accountId={}", wallet.getId(), accountId);
 
         return wallet;
     }
 
-    /**
-     * Nạp tiền vào ví
-     */
+    //Nạp tiền vào ví
     @Transactional
     public WalletTransaction deposit(Long accountId, double amount, String description) {
         log.info("Depositing {} VND to account: {}", amount, accountId);
 
         if (amount <= 0) {
-            throw new RuntimeException("Deposit amount must be positive");
+            throw new IllegalArgumentException("Deposit amount must be positive");
         }
 
         Wallet wallet = getOrCreateWallet(accountId);
 
         if (wallet.getStatus() != WalletStatus.ACTIVE) {
-            throw new RuntimeException("Wallet is not active");
+            throw new WalletNotActiveException(wallet.getStatus());
         }
 
         double balanceBefore = wallet.getBalance();
@@ -87,31 +86,28 @@ public class WalletService {
 
         transaction = transactionRepo.save(transaction);
 
-        log.info("Deposit completed. Balance: {} VND", balanceAfter);
+        log.info("Deposit completed. New balance: {} VND", balanceAfter);
 
         return transaction;
     }
 
-    /**
-     * Rút tiền từ ví
-     */
+    //Rút tiền từ ví
     @Transactional
     public WalletTransaction withdraw(Long accountId, double amount, String description) {
         log.info("Withdrawing {} VND from account: {}", amount, accountId);
 
         if (amount <= 0) {
-            throw new RuntimeException("Withdrawal amount must be positive");
+            throw new IllegalArgumentException("Withdrawal amount must be positive");
         }
 
-        Wallet wallet = walletRepo.findByAccountId(accountId)
-                .orElseThrow(() -> new RuntimeException("Wallet not found"));
+        Wallet wallet = getWallet(accountId);
 
         if (wallet.getStatus() != WalletStatus.ACTIVE) {
-            throw new RuntimeException("Wallet is not active");
+            throw new WalletNotActiveException(wallet.getStatus());
         }
 
         if (wallet.getBalance() < amount) {
-            throw new RuntimeException("Insufficient balance");
+            throw new InsufficientBalanceException(amount, wallet.getBalance());
         }
 
         double balanceBefore = wallet.getBalance();
@@ -132,27 +128,28 @@ public class WalletService {
 
         transaction = transactionRepo.save(transaction);
 
-        log.info("Withdrawal completed. Balance: {} VND", balanceAfter);
+        log.info("Withdrawal completed. New balance: {} VND", balanceAfter);
 
         return transaction;
     }
 
-    /**
-     * Trừ tiền (dùng cho thanh toán)
-     */
+    //Trừ tiền (dùng cho thanh toán)
     @Transactional
     public WalletTransaction deductBalance(Long accountId, double amount, String description) {
         log.info("Deducting {} VND from account: {}", amount, accountId);
 
-        Wallet wallet = walletRepo.findByAccountId(accountId)
-                .orElseThrow(() -> new RuntimeException("Wallet not found"));
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Deduction amount must be positive");
+        }
+
+        Wallet wallet = getWallet(accountId);
 
         if (wallet.getStatus() != WalletStatus.ACTIVE) {
-            throw new RuntimeException("Wallet is not active");
+            throw new WalletNotActiveException(wallet.getStatus());
         }
 
         if (wallet.getBalance() < amount) {
-            throw new RuntimeException("Insufficient balance. Current: " + wallet.getBalance() + " VND");
+            throw new InsufficientBalanceException(amount, wallet.getBalance());
         }
 
         double balanceBefore = wallet.getBalance();
@@ -171,17 +168,19 @@ public class WalletService {
 
         transaction = transactionRepo.save(transaction);
 
-        log.info("Deduction completed. Balance: {} VND", balanceAfter);
+        log.info("Deduction completed. New balance: {} VND", balanceAfter);
 
         return transaction;
     }
 
-    /**
-     * Cộng tiền (dùng cho hoàn tiền)
-     */
+    //Cộng tiền (dùng cho hoàn tiền)
     @Transactional
     public WalletTransaction addBalance(Long accountId, double amount, String description) {
         log.info("Adding {} VND to account: {}", amount, accountId);
+
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Amount must be positive");
+        }
 
         Wallet wallet = getOrCreateWallet(accountId);
 
@@ -206,25 +205,19 @@ public class WalletService {
         return transaction;
     }
 
-    /**
-     * Lấy thông tin ví
-     */
+    //Lấy thông tin ví
     public Wallet getWallet(Long accountId) {
         return walletRepo.findByAccountId(accountId)
-                .orElseThrow(() -> new RuntimeException("Wallet not found"));
+                .orElseThrow(() -> new WalletNotFoundException(accountId));
     }
 
-    /**
-     * Lấy lịch sử giao dịch
-     */
+    //Lấy lịch sử giao dịch
     public List<WalletTransaction> getTransactionHistory(Long accountId) {
         Wallet wallet = getWallet(accountId);
         return transactionRepo.findByWalletIdOrderByCreatedAtDesc(wallet.getId());
     }
 
-    /**
-     * Lấy lịch sử giao dịch theo khoảng thời gian
-     */
+    //Lấy lịch sử giao dịch theo khoảng thời gian
     public List<WalletTransaction> getTransactionHistory(Long accountId,
                                                          OffsetDateTime startDate,
                                                          OffsetDateTime endDate) {
@@ -232,9 +225,7 @@ public class WalletService {
         return transactionRepo.findByWalletIdAndDateRange(wallet.getId(), startDate, endDate);
     }
 
-    /**
-     * Khóa ví
-     */
+    //Khóa ví
     @Transactional
     public Wallet lockWallet(Long accountId, String reason) {
         log.warn("Locking wallet for account: {}, Reason: {}", accountId, reason);
@@ -245,9 +236,7 @@ public class WalletService {
         return walletRepo.save(wallet);
     }
 
-    /**
-     * Mở khóa ví
-     */
+    //Mở khóa ví
     @Transactional
     public Wallet unlockWallet(Long accountId) {
         log.info("Unlocking wallet for account: {}", accountId);
@@ -258,10 +247,8 @@ public class WalletService {
         return walletRepo.save(wallet);
     }
 
-    /**
-     * Lấy hoặc tạo ví mới nếu chưa có
-     */
-    private Wallet getOrCreateWallet(Long accountId) {
+    //Lấy hoặc tạo ví mới nếu chưa có
+    public Wallet getOrCreateWallet(Long accountId) {
         return walletRepo.findByAccountId(accountId)
                 .orElseGet(() -> createWallet(accountId));
     }
