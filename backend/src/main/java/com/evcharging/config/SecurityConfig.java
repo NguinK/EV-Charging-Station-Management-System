@@ -2,6 +2,8 @@ package com.evcharging.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -39,45 +41,85 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource, RoleHierarchy roleHierarchy) throws Exception {
         http
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/auth/**","/admin/**","/drivers/**"))
+                .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //JWT is stateless
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/auth/register-driver",
+                                "/auth/login",
                                 "/admin/auth/createAdmin",
-                                "/admin/auth/**",
-                                "/auth/**",
+                                "/admin/auth/login",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**"
-
                         ).permitAll()
 
-                        //Admin endpoints
-                        .requestMatchers("/api/admin/drivers/**").hasRole("ADMIN")
-                        .requestMatchers("/api/charging-points/*/status").hasRole("ADMIN")
-                        .requestMatchers("/api/admin/staff/**").hasRole("ADMIN")
+                        //Admin user management
+                        .requestMatchers("/admin/auth/getAllAdmins").hasRole("ADMIN")
+                        .requestMatchers("/admin/auth/ById/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/auth/updateAdmin/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/auth/deleteAdmin/**").hasRole("ADMIN")
+
+                        //Admin API endpoints
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                        // Charging point admin controls
+                        .requestMatchers(
+                                HttpMethod.POST, "/api/charging-points/**"
+                        ).hasRole("ADMIN")
+                        .requestMatchers(
+                                HttpMethod.DELETE, "/api/charging-points/**"
+                        ).hasRole("ADMIN")
+                        .requestMatchers(
+                                HttpMethod.PUT, "/api/charging-points/*/pricing"
+                        ).hasRole("ADMIN")
+                        .requestMatchers(
+                                HttpMethod.PUT, "/api/charging-points/*/status"
+                        ).hasRole("ADMIN")
+
+                        // Station creation should be admin-only
+                        .requestMatchers(
+                                HttpMethod.POST, "/api/stations/createStation"
+                        ).hasRole("ADMIN")
+
                         //Staff endpoints
                         .requestMatchers("/staff/**").hasRole("CS_STAFF")
+                        .requestMatchers("/api/staff/**").hasRole("CS_STAFF")
 
                         //Driver endpoints
+                        .requestMatchers("/drivers/**").hasRole("EV_DRIVER")
+
+                        //Driver can read stations, sessions, wallets, transactions, charging points
                         .requestMatchers(
-                                "/drivers/**",
-                                "/api/stations/**",
-                                "/api/sessions/**",
-                                "/api/wallets/**",
-                                "/api/transactions/**"
+                                HttpMethod.GET, "/api/stations/**"
                         ).hasRole("EV_DRIVER")
+                        .requestMatchers(
+                                HttpMethod.GET, "/api/charging-points/**"
+                        ).hasRole("EV_DRIVER")
+                        .requestMatchers("/api/sessions/**").hasRole("EV_DRIVER")
+                        .requestMatchers("/api/wallets/**").hasRole("EV_DRIVER")
+                        .requestMatchers("/api/transactions/**").hasRole("EV_DRIVER")
 
                         //All other requests must be authenticated
-                        .anyRequest().authenticated()
+//                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(httpBasic -> httpBasic.disable())
-                .formLogin(form -> form.disable());
-
+                .formLogin(form -> form.disable())
+                .authorizeHttpRequests(auth -> {
+                    // Create hierarchical authority voter
+                    auth.anyRequest().authenticated();
+                });
         return http.build();
+    }
+
+    @Bean
+    public DefaultMethodSecurityExpressionHandler methodSecurityExpressionHandler(RoleHierarchy roleHierarchy) {
+        DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
+        expressionHandler.setRoleHierarchy(roleHierarchy);
+        return expressionHandler;
     }
 }

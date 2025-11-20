@@ -22,7 +22,7 @@ public class ChargingStationCreateDTO {
     @NotBlank(message = "Location is required")
     private String location;
 
-    @NotBlank(message = "Status is required") // ONLINE / OFFLINE
+    @NotNull(message = "Status is required")// ACTIVE/INACTIVE
     private StationStatus status;
 
     @NotNull(message = "Total ports is required")
