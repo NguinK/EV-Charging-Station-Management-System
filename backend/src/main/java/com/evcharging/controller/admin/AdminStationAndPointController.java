@@ -36,10 +36,7 @@ public class AdminStationAndPointController {
 
     // ========== DASHBOARD ==========
 
-    /**
-     * GET /api/admin/dashboard
-     * Lấy dashboard tổng quan
-     */
+    //Lấy dashboard tổng quan
     @GetMapping("/dashboard")
     public ResponseEntity<ChargingStationDashboardResponse> getDashboard() {
         return ResponseEntity.ok(stationService.getDashboard());
@@ -47,28 +44,19 @@ public class AdminStationAndPointController {
 
     // ========== STATION MANAGEMENT ==========
 
-    /**
-     * GET /api/admin/stations
-     * Lấy danh sách tất cả trạm
-     */
+    //Lấy danh sách tất cả trạm
     @GetMapping("/stations")
     public ResponseEntity<List<ChargingStationDetailResponse>> getAllStations() {
         return ResponseEntity.ok(stationService.getAllStationsDetail());
     }
 
-    /**
-     * GET /api/admin/stations/{id}
-     * Lấy chi tiết một trạm
-     */
+    //Lấy chi tiết một trạm
     @GetMapping("/stations/{id}")
     public ResponseEntity<ChargingStationDetailResponse> getStation(@PathVariable Long id) {
         return ResponseEntity.ok(stationService.getStationDetail(id));
     }
 
-    /**
-     * POST /api/admin/stations
-     * Tạo trạm mới
-     */
+    //Tạo trạm mới
     @PostMapping("/stations")
     public ResponseEntity<ChargingStation> createStation(
             @RequestBody CreateChargingStationRequest request) {
@@ -77,10 +65,7 @@ public class AdminStationAndPointController {
 
     // ========== CHARGING POINT MANAGEMENT ==========
 
-    /**
-     * ⭐ GET /api/admin/stations/{stationId}/points
-     * Lấy danh sách điểm sạc của một trạm cụ thể
-     */
+    //Lấy danh sách điểm sạc của một trạm
     @GetMapping("/stations/{stationId}/points")
     public ResponseEntity<List<ChargingPointResponseDTO>> getStationPoints(
             @PathVariable Long stationId) {
@@ -89,10 +74,7 @@ public class AdminStationAndPointController {
         return ResponseEntity.ok(points);
     }
 
-    /**
-     * ⭐ POST /api/admin/stations/{stationId}/points
-     * Thêm điểm sạc vào trạm
-     */
+    //Thêm điểm sạc vào trạm
     @PostMapping("/stations/{stationId}/points")
     public ResponseEntity<ChargingPointResponseDTO> addPoint(
             @PathVariable Long stationId,
@@ -107,12 +89,7 @@ public class AdminStationAndPointController {
         return ResponseEntity.ok(dto);
     }
 
-    // ========== REMOTE CONTROL ==========
-
-    /**
-     * POST /api/admin/stations/{id}/control
-     * Điều khiển từ xa trạm sạc
-     */
+    //Điều khiển từ xa trạm sạc
     @PostMapping("/stations/{id}/control")
     public ResponseEntity<ChargingStationOperationResponse> controlStation(
             @PathVariable Long id,
@@ -120,10 +97,7 @@ public class AdminStationAndPointController {
         return ResponseEntity.ok(stationService.controlStation(id, operation));
     }
 
-    /**
-     * POST /api/admin/points/{id}/control
-     * Điều khiển từ xa điểm sạc
-     */
+    //Điều khiển từ xa điểm sạc
     @PostMapping("/points/{id}/control")
     public ResponseEntity<ChargingPointOperationResponse> controlPoint(
             @PathVariable Long id,
@@ -133,10 +107,7 @@ public class AdminStationAndPointController {
 
     // ========== REVENUE REPORTS ==========
 
-    /**
-     * GET /api/admin/reports/revenue/by-station
-     * Báo cáo doanh thu theo trạm
-     */
+    //Báo cáo doanh thu theo trạm
     @GetMapping("/reports/revenue/by-station")
     public ResponseEntity<List<RevenueByChargingStationResponse>> getRevenueByStation(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime startDate,
@@ -144,10 +115,7 @@ public class AdminStationAndPointController {
         return ResponseEntity.ok(reportService.getRevenueByStation(startDate, endDate));
     }
 
-    /**
-     * GET /api/admin/reports/revenue/timeline
-     * Báo cáo doanh thu theo thời gian
-     */
+    //Báo cáo doanh thu theo thời gian
     @GetMapping("/reports/revenue/timeline")
     public ResponseEntity<RevenueTimelineResponse> getRevenueTimeline(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime startDate,
@@ -158,10 +126,7 @@ public class AdminStationAndPointController {
 
     // ========== USAGE REPORTS ==========
 
-    /**
-     * GET /api/admin/reports/usage
-     * Báo cáo tần suất sử dụng trạm
-     */
+    //Báo cáo sử dụng trạm sạc
     @GetMapping("/reports/usage")
     public ResponseEntity<List<ChargingStationUsageResponse>> getStationUsage(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime startDate,
@@ -171,10 +136,7 @@ public class AdminStationAndPointController {
 
     // ========== AI FORECAST ==========
 
-    /**
-     * GET /api/admin/forecast/{stationId}
-     * AI dự báo nhu cầu sử dụng trạm
-     */
+    //AI dự báo nhu cầu sử dụng trạm sạc
     @GetMapping("/forecast/{stationId}")
     public ResponseEntity<ChargingStationDemandForecastResponse> forecastDemand(
             @PathVariable Long stationId) {

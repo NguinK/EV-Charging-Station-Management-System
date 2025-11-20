@@ -1,5 +1,6 @@
 package com.evcharging.service.admin;
 
+import com.evcharging.dto.DtoMapper;
 import com.evcharging.dto.admin.*;
 import com.evcharging.entity.*;
 import com.evcharging.enums.*;
@@ -25,10 +26,9 @@ public class AdminStationService {
     private final ChargingPointRepository pointRepo;
     private final ChargingSessionRepository sessionRepo;
     private final PaymentRepository paymentRepo;
+    private final DtoMapper mapper;
 
-    /**
-     * Lấy dashboard tổng quan tất cả trạm sạc
-     */
+    //Lấy dashboard tổng quan tất cả trạm sạc
     public ChargingStationDashboardResponse getDashboard() {
         log.info("Getting station dashboard");
 
@@ -37,7 +37,6 @@ public class AdminStationService {
 
         // Thống kê tổng quan
         long totalStations = allStations.size();
-        // ✅ So sánh trực tiếp với enum
         long onlineStations = allStations.stream()
                 .filter(s -> s.getStatus() == StationStatus.ACTIVE)
                 .count();
@@ -72,9 +71,7 @@ public class AdminStationService {
                 .build();
     }
 
-    /**
-     * Lấy danh sách tất cả trạm với thông tin chi tiết
-     */
+    //Lấy danh sách tất cả trạm với thông tin chi tiết
     public List<ChargingStationDetailResponse> getAllStationsDetail() {
         log.info("Getting all stations detail");
 
@@ -85,9 +82,7 @@ public class AdminStationService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Lấy chi tiết một trạm cụ thể
-     */
+    //Lấy chi tiết một trạm cụ thể
     public ChargingStationDetailResponse getStationDetail(Long stationId) {
         ChargingStation station = stationRepo.findById(stationId)
                 .orElseThrow(() -> new RuntimeException("Station not found"));
@@ -95,9 +90,7 @@ public class AdminStationService {
         return buildStationDetail(station);
     }
 
-    /**
-     * ⭐ Điều khiển từ xa: Bật/Tắt trạm
-     */
+    //Điều khiển từ xa: Bật/Tắt trạm
     @Transactional
     public ChargingStationOperationResponse controlStation(Long stationId, ChargingStationOperation operation) {
         log.info("Controlling station {}: {}", stationId, operation);
@@ -105,7 +98,6 @@ public class AdminStationService {
         ChargingStation station = stationRepo.findById(stationId)
                 .orElseThrow(() -> new RuntimeException("Station not found"));
 
-        // ✅ Lấy trực tiếp enum
         StationStatus oldStatus = station.getStatus();
         StationStatus newStatus;
 
@@ -126,7 +118,6 @@ public class AdminStationService {
                 throw new RuntimeException("Unknown operation: " + operation);
         }
 
-        // ✅ Set trực tiếp enum, không cần String.valueOf()
         station.setStatus(newStatus);
         station.setUpdatedAt(OffsetDateTime.now());
         stationRepo.save(station);
@@ -145,9 +136,7 @@ public class AdminStationService {
                 .build();
     }
 
-    /**
-     * ⭐ Điều khiển từ xa: Bật/Tắt điểm sạc cụ thể
-     */
+    //Điều khiển từ xa: Bật/Tắt điểm sạc cụ thể
     @Transactional
     public ChargingPointOperationResponse controlPoint(Long pointId, ChargingPointOperation operation) {
         log.info("Controlling point {}: {}", pointId, operation);
@@ -203,9 +192,7 @@ public class AdminStationService {
                 .build();
     }
 
-    /**
-     * Tạo trạm sạc mới
-     */
+    //Tạo trạm sạc mới
     @Transactional
     public ChargingStation createStation(CreateChargingStationRequest request) {
         log.info("Creating new station: {}", request.getName());
@@ -227,9 +214,7 @@ public class AdminStationService {
         return station;
     }
 
-    /**
-     * Thêm điểm sạc vào trạm
-     */
+    //Thêm điểm sạc vào trạm
     @Transactional
     public ChargingPoint addPointToStation(Long stationId, CreateChargingPointRequest request) {
         log.info("Adding point to station {}: {}", stationId, request.getPointCode());

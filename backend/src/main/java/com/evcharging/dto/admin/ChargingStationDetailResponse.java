@@ -1,5 +1,6 @@
 package com.evcharging.dto.admin;
 
+import com.evcharging.dto.ChargingPointResponseDTO;
 import com.evcharging.entity.ChargingPoint;
 import com.evcharging.enums.*;
 import lombok.AllArgsConstructor;

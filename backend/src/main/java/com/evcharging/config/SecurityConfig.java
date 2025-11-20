@@ -47,6 +47,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/admin/auth/createAdmin",
+                                "/admin/auth/**",
                                 "/auth/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",

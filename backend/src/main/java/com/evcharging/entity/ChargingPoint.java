@@ -3,6 +3,7 @@ package com.evcharging.entity;
 import com.evcharging.enums.ChargingPointStatus;
 import com.evcharging.enums.ChargingSpeed;
 import com.evcharging.enums.ConnectorType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,6 +29,7 @@ public class ChargingPoint {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "station_id", nullable = false)
+    @JsonIgnore
     private ChargingStation station;
 
     @Enumerated(EnumType.STRING)

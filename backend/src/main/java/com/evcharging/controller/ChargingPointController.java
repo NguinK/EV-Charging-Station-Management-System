@@ -33,8 +33,8 @@ public class ChargingPointController {
     //Lấy tất cả trụ của trạm
     @GetMapping("/station/{stationId}")
     public ResponseEntity<List<ChargingPointResponseDTO>> getPointsByStation(@PathVariable Long stationId) {
-        List<ChargingPointResponseDTO> responseList = chargingPointService.getPointsByStation(stationId);
-        return ResponseEntity.ok(responseList);
+        List<ChargingPointResponseDTO> points = chargingPointService.getPointsByStation(stationId);
+        return ResponseEntity.ok(points);
     }
 
     //Lấy các điểm sạc có sẵn của một trạm

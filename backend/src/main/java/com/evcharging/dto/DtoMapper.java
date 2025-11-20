@@ -94,7 +94,7 @@ public class DtoMapper {
     }
 
     public List<ChargingPointResponseDTO> toChargingPointDTOList(List<ChargingPoint> points) {
-        if (points == null) {
+        if (points == null || points.isEmpty()) {
             return List.of();
         }
 
