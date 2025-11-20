@@ -7,13 +7,13 @@ import {
   Input,
   Space,
   Popconfirm,
-  message,
+ 
   Row,
   Col,
   DatePicker,
   Tag,
 } from "antd";
-import dayjs from "dayjs";
+
 import adminDriverAPI from "../../api/adminDriverAPI";
 import { App } from "antd";
 
@@ -23,7 +23,7 @@ const EditAccount = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingDriver, setEditingDriver] = useState(null);
   const [form] = Form.useForm();
-  const { message, modal } = App.useApp();
+  const { message } = App.useApp();
   // 🔹 Lấy danh sách tài xế
   const fetchDrivers = async () => {
     setLoading(true);
@@ -52,14 +52,14 @@ const EditAccount = () => {
   };
 
   // 🔹 Mở modal sửa
-  const handleEdit = (record) => {
-    setEditingDriver(record);
-    form.setFieldsValue({
-      ...record,
-      dateOfBirth: record.dateOfBirth ? dayjs(record.dateOfBirth) : null,
-    });
-    setIsModalOpen(true);
-  };
+  // const handleEdit = (record) => {
+  //   setEditingDriver(record);
+  //   form.setFieldsValue({
+  //     ...record,
+  //     dateOfBirth: record.dateOfBirth ? dayjs(record.dateOfBirth) : null,
+  //   });
+  //   setIsModalOpen(true);
+  // };
 
   // 🔹 Xoá tài xế
   const handleDelete = async (record) => {
@@ -156,9 +156,9 @@ const EditAccount = () => {
       key: "actions",
       render: (_, record) => (
         <Space>
-          <Button size="small" type="link" onClick={() => handleEdit(record)}>
+          {/* <Button size="small" type="link" onClick={() => handleEdit(record)}>
             Sửa
-          </Button>
+          </Button> */}
           <Popconfirm
             title="Xác nhận xóa tài xế này?"
             okText="Xóa"

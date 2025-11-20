@@ -6,8 +6,19 @@ import {
   LogoutOutlined,
   CarOutlined,
 } from "@ant-design/icons";
-import { Layout, Avatar, message, Menu, Space, Button, Typography } from "antd";
+import {
+  Layout,
+  Avatar,
+  message,
+  Menu,
+  Space,
+  Button,
+  Typography,
+  Badge,
+} from "antd";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
+
+import walletAPI from "../../api/walletAPI";
 
 const { Title, Text } = Typography;
 const { Header, Sider, Content } = Layout;
@@ -15,7 +26,7 @@ const { Header, Sider, Content } = Layout;
 export default function UserPage() {
   const navigate = useNavigate();
   const location = useLocation();
- const [selectedKey, setSelectedKey] = useState("profile");
+  const [walletBalance, setWalletBalance] = useState(null);
   const userInfo = useMemo(
     () => JSON.parse(localStorage.getItem("userInfo")) || {},
     []
@@ -28,6 +39,24 @@ export default function UserPage() {
       navigate("/login");
     }
   }, [token, navigate]);
+  const accountId = userInfo.driverId || userInfo.id;
+
+  useEffect(() => {
+    if (!token) {
+      message.warning("Bạn cần đăng nhập để truy cập dashboard!");
+      navigate("/login");
+      return;
+    }
+
+    if (!accountId) return;
+
+    const fetchBalance = async () => {
+      const res = await walletAPI.getWallet(accountId);
+      setWalletBalance(res.data.balance);
+    };
+
+    fetchBalance();
+  }, [token, navigate, userInfo, accountId]);
 
   const fullName = userInfo.fullName || "User";
   const email = userInfo.email || "example@gmail.com";
@@ -41,14 +70,19 @@ export default function UserPage() {
 
   const menuItems = [
     { key: "/user/charge", icon: <PieChartOutlined />, label: "Booking" },
-    { key: "/user/session", icon: <CarOutlined /> , label: "Session" },
+    { key: "/user/session", icon: <CarOutlined />, label: "Session" },
     { key: "/user/history", icon: <DesktopOutlined />, label: "History" },
+    { key: "/user/wallet", icon: <WalletOutlined />, label: "Wallet" },
   ];
 
   return (
     <Layout
       className="min-h-screen bg-gradient-to-br from-[#f9fafb] to-[#eef1f4]"
-      style={{ padding: "0 40px 40px 40px", gap: "36px", flexDirection: "column" }}
+      style={{
+        padding: "0 40px 40px 40px",
+        gap: "36px",
+        flexDirection: "column",
+      }}
     >
       <Header
         style={{
@@ -69,16 +103,17 @@ export default function UserPage() {
             border: "1px solid #e5e7eb",
             borderRadius: "18px",
             boxShadow: "0 12px 40px rgba(0,0,0,0.06)",
-             height: "fit-content"
+            height: "fit-content",
           }}
         >
-          <div className="px-6 pt-5 pb-10 border-b border-[#f0f0f0]">
+          <div className="px-6 pt-5  border-b border-[#f0f0f0]">
             <Space size={15} align="center">
               <Avatar
-                size={40}
+                size={35}
                 style={{
                   background: "linear-gradient(135deg,#22c55e,#16a34a)",
                   fontSize: "20px",
+                  left: 10,
                 }}
               >
                 {fullName.charAt(0)}
@@ -86,6 +121,15 @@ export default function UserPage() {
               <div>
                 <div className="font-semibold">{fullName}</div>
                 <div className="text-gray-500 text-sm">{email}</div>
+
+                {/* 👇 số dư ví */}
+                <div className="text-sm font-semibold mt-1">
+                  Số dư ví:{" "}
+                  {walletBalance != null
+                    ? walletBalance.toLocaleString("vi-VN")
+                    : "Đang tải..."}{" "}
+                  đ
+                </div>
               </div>
             </Space>
           </div>
@@ -106,7 +150,7 @@ export default function UserPage() {
               danger
               className="w-full justify-start"
               onClick={handleLogout}
-              style={{left:13}}
+              style={{ left: 13 }}
             >
               Log out
             </Button>
