@@ -65,6 +65,13 @@ public class EVDriverService {
         dto.setVehicleNumber(driver.getVehicleNumber());
         dto.setVehicleType(driver.getVehicleType());
 
+        // Map new vehicle and battery fields
+        dto.setBatteryCapacityKwh(driver.getBatteryCapacityKwh());
+        dto.setManufacturer(driver.getManufacturer());
+        dto.setModel(driver.getModel());
+        dto.setLicensePlate(driver.getLicensePlate());
+        dto.setConnectorType(driver.getConnectorType());
+
         if (driver.getAccount() != null) {
             dto.setPhone(driver.getAccount().getPhone());
             dto.setEmail(driver.getAccount().getEmail());

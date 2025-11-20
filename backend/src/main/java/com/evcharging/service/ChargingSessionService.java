@@ -201,15 +201,22 @@ public class ChargingSessionService {
             // Tính lượng điện đã nạp thêm
             double addedEnergy = power * durationHours;
 
-            // Fallback nếu energyConsumed đang null
-            Vehicle vehicle = session.getVehicle();
-            Double batteryCapacity = vehicle.getBatteryCapacity();
+            // Get battery capacity from driver
+            EVDriver driver = session.getDriver();
+            Double batteryCapacity = driver.getBatteryCapacityKwh();
+            
+            // Skip if battery capacity is not set
+            if (batteryCapacity == null || batteryCapacity <= 0) {
+                continue;
+            }
+
             double currentEnergy = session.getEnergyConsumed() != null ? session.getEnergyConsumed() : 0.0;
             double totalEnergy = currentEnergy + addedEnergy;
             int startSoc = session.getStartSoc();
             session.setEnergyConsumed(totalEnergy);
 
-            int newSoc = Math.min(100, (int) (startSoc + (totalEnergy / batteryCapacity) * 100));
+            // Use BatteryCalculationUtil to calculate new SoC
+            int newSoc = com.evcharging.utils.BatteryCalculationUtil.calculateNewSoc(startSoc, addedEnergy, batteryCapacity);
             session.setEndSoc(newSoc);
 
             BigDecimal tempCost = pricingService.calculateChargingFee(session);

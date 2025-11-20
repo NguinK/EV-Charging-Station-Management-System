@@ -46,6 +46,13 @@ public class AdminDriverService {
         driver.setVehicleNumber(dto.getVehicleNumber());
         driver.setVehicleType(dto.getVehicleType());
 
+        // Set new vehicle and battery fields
+        driver.setBatteryCapacityKwh(dto.getBatteryCapacityKwh());
+        driver.setManufacturer(dto.getManufacturer());
+        driver.setModel(dto.getModel());
+        driver.setLicensePlate(dto.getLicensePlate());
+        driver.setConnectorType(dto.getConnectorType());
+
         EVDriver savedDriver = driverRepository.save(driver);
 
         // B3: Trả về DTO
@@ -63,6 +70,13 @@ public class AdminDriverService {
         driver.setDriverLicense(dto.getDriverLicense());
         driver.setVehicleNumber(dto.getVehicleNumber());
         driver.setVehicleType(dto.getVehicleType());
+
+        // Update new vehicle and battery fields
+        driver.setBatteryCapacityKwh(dto.getBatteryCapacityKwh());
+        driver.setManufacturer(dto.getManufacturer());
+        driver.setModel(dto.getModel());
+        driver.setLicensePlate(dto.getLicensePlate());
+        driver.setConnectorType(dto.getConnectorType());
 
         EVDriver saved = driverRepository.save(driver);
         return mapToProfileDTO(saved);
@@ -91,6 +105,13 @@ public class AdminDriverService {
         dto.setVehicleType(driver.getVehicleType());
         dto.setEmail(driver.getAccount().getEmail());
         dto.setPhone(driver.getAccount().getPhone());
+
+        // Map new vehicle and battery fields
+        dto.setBatteryCapacityKwh(driver.getBatteryCapacityKwh());
+        dto.setManufacturer(driver.getManufacturer());
+        dto.setModel(driver.getModel());
+        dto.setLicensePlate(driver.getLicensePlate());
+        dto.setConnectorType(driver.getConnectorType());
 
         return dto;
     }

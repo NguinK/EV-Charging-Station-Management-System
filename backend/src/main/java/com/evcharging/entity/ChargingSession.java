@@ -33,11 +33,17 @@ public class ChargingSession {
     @Column(name = "cost")
     private double cost;                 // Chi phí tạm tính
 
+    /**
+     * Battery state of charge in percentage (0-100) at the start of the charging session, NOT kWh.
+     */
     @Column(name = "start_soc")
-    private Integer startSoc;                // SOC % lúc bắt đầu
+    private Integer startSoc;
 
+    /**
+     * Battery state of charge in percentage (0-100) at the end of the charging session, NOT kWh.
+     */
     @Column(name = "end_soc")
-    private Integer endSoc;                  // SOC % lúc kết thúc
+    private Integer endSoc;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
@@ -53,10 +59,6 @@ public class ChargingSession {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "driver_id", nullable = false)
     private EVDriver driver;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "vehicle_id", nullable = false)
-    private Vehicle vehicle;
 
     // Quan hệ với Station
     @ManyToOne(fetch = FetchType.LAZY)

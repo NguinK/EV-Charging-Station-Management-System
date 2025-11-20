@@ -19,9 +19,22 @@ public class ChargingSessionDTO {
     private String pointCode;
     private OffsetDateTime startTime;
     private OffsetDateTime endTime;
+
+    /**
+     * Battery state of charge in percentage (0-100) at the start of charging, NOT kWh.
+     */
     private int startSoc;
+
+    /**
+     * Battery state of charge in percentage (0-100) at the end of charging, NOT kWh.
+     */
     private int endSoc;
+
+    /**
+     * Energy consumed during the charging session in kilowatt-hours (kWh).
+     */
     private double energyConsumed;
+
     private double cost;
     private SessionStatus status;
     private Long transactionId;
