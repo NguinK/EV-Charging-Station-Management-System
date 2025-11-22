@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.Period;
 
 @Slf4j
 @Service
@@ -55,6 +57,17 @@ public class AuthService {
         if (accountRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Email đã được sử dụng");
         }
+        if (accountRepository.findByPhone(dto.getPhone()).isPresent()) {
+            throw new IllegalArgumentException("Số điện thoại đã được sử dụng");
+        }
+        LocalDate dob = dto.getDateOfBirth();
+        if (dob.isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("Ngày sinh không hợp lệ (không thể ở tương lai)");
+        }
+        int age = Period.between(dob, LocalDate.now()).getYears();
+        if (age < 18) {
+            throw new IllegalArgumentException("Tài xế phải ít nhất 18 tuổi");
+        }
 
         // 2. Tạo account
         Account account = new Account();
@@ -84,7 +97,7 @@ public class AuthService {
         // 4. Auto create wallet
         try {
             walletService.createWallet(account.getId());
-            log.info("✅ Wallet auto-created for new driver: {} (accountId: {})",
+            log.info(" Wallet auto-created for new driver: {} (accountId: {})",
                     account.getEmail(), account.getId());
         } catch (Exception e) {
             log.error("Failed to create wallet for new driver: {} - Error: {}",

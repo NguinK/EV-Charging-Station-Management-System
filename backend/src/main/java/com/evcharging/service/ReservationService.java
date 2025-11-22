@@ -66,6 +66,10 @@ public class ReservationService {
 
         ChargingStation station = stationRepository.findById(dto.getStationId())
                 .orElseThrow(() -> new RuntimeException("Station not found"));
+        // 3. check connector type
+        if (dto.getConnectorType() == null) {
+            throw new IllegalArgumentException("Connector type is required");
+        }
 
         // Lấy giờ hiện tại theo UTC
         OffsetDateTime nowUTC = OffsetDateTime.now(ZoneOffset.UTC);

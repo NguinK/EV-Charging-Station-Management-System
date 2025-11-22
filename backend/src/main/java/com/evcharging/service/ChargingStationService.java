@@ -45,6 +45,14 @@ public class ChargingStationService {
     }
 
     public ChargingStationResponseDTO createStation(ChargingStationCreateDTO dto) {
+        if (dto.getTotalPoints() == null || dto.getTotalPoints() <= 0) {
+            throw new IllegalArgumentException("Total points must be greater than 0");
+        }
+
+        if (stationRepo.existsByName(dto.getName())) {
+            throw new IllegalArgumentException("Station name already exists");
+        }
+
         ChargingStation station = new ChargingStation();
         station.setName(dto.getName());
         station.setLocation(dto.getLocation());
