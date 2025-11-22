@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
@@ -32,6 +33,7 @@ public class ChargingSessionService {
     private final NotificationService notificationService;
     private final ChargingPointRepository chargingPointRepo;
     private final PricingService pricingService;
+    private final SimpMessagingTemplate messagingTemplate;
 
 
     public ChargingSessionService(ChargingSessionRepository sessionRepo,
@@ -39,13 +41,15 @@ public class ChargingSessionService {
                                   TransactionRepository transactionRepo,
                                   NotificationService notificationService,
                                   ChargingPointRepository chargingPointRepo,
-                                  PricingService pricingService) {
+                                  PricingService pricingService,
+                                  SimpMessagingTemplate messagingTemplate) {
         this.sessionRepo = sessionRepo;
         this.reservationRepo = reservationRepo;
         this.transactionRepo = transactionRepo;
         this.notificationService = notificationService;
         this.chargingPointRepo = chargingPointRepo;
         this.pricingService = pricingService;
+        this.messagingTemplate = messagingTemplate;
     }
 
     // Bắt đầu phiên sạc từ một Reservation hợp lệ
@@ -91,8 +95,13 @@ public class ChargingSessionService {
         session.setEnergyConsumed(0.0);
         session.setCost(0.0);
         session = sessionRepo.save(session);
+        ChargingSessionDTO dto = toDTO(session);
 
-        return toDTO(session); // trả về DTO
+        // Push qua WebSocket cho client subscribe /topic/session/{id}
+        messagingTemplate.convertAndSend("/topic/session/" + dto.getId(), dto);
+
+        return dto;
+
     }
 
     @Transactional
@@ -122,7 +131,10 @@ public class ChargingSessionService {
         chargingPointRepo.save(point);
 
         session = sessionRepo.save(session);
-        return toDTO(session);
+        ChargingSessionDTO dto = toDTO(session);
+        messagingTemplate.convertAndSend("/topic/session/" + dto.getId(), dto);
+
+        return dto;
     }
 
     // Kết thúc phiên sạc thủ công, cập nhật thông tin và tạo Transaction
@@ -167,6 +179,8 @@ public class ChargingSessionService {
         // Trả DTO
         ChargingSessionDTO dto = toDTO(session);
         dto.setTransactionId(tx.getId());
+        messagingTemplate.convertAndSend("/topic/session/" + dto.getId(), dto);
+
         return dto;
     }
 
@@ -251,6 +265,9 @@ public class ChargingSessionService {
             // Cập nhật thời gian
             session.setLastUpdatedTime(now);
             sessionRepo.save(session);
+
+            ChargingSessionDTO dto = toDTO(session);
+            messagingTemplate.convertAndSend("/topic/session/" + dto.getId(), dto);
 
             // Gọi auto end nếu đủ điều kiện
             checkAndAutoEnd(session, newSoc);
