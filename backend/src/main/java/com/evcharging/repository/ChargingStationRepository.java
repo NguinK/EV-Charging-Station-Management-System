@@ -9,11 +9,15 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ChargingStationRepository extends JpaRepository<ChargingStation, Long> {
     // Ví dụ: tìm theo tên
-    List<ChargingStation> findByNameContainingIgnoreCase(String name);
+    boolean existsByName(String name);
+
+    // bạn cũng có thể thêm các query khác nếu cần
+    Optional<ChargingStation> findByName(String name);
 
     // Ví dụ: tìm theo trạng thái
     List<ChargingStation> findByStatus(StationStatus status);
