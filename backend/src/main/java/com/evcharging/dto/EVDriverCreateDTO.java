@@ -15,7 +15,7 @@ import java.time.LocalDate;
 public class EVDriverCreateDTO {
 
     @NotBlank
-    @Size(min = 2, max = 100)
+    @Size(min = 2, max = 25)
     private String fullName;
 
     @NotBlank
@@ -23,29 +23,33 @@ public class EVDriverCreateDTO {
     private String email;
 
     @NotBlank
-    @Pattern(regexp = "^\\+?[0-9]{9,15}$", message = "Số điện thoại không hợp lệ")
+    @Pattern(regexp = "^\\+?[0-9]{9,15}$", message = "Invalid phone number")
     private String phone;
 
     @NotBlank
-    @Size(min = 6, message = "Mật khẩu phải có ít nhất 6 ký tự")
+    @Size(min = 6, message = "The password must at least has 6 characters ")
     private String password;
 
     // Thông tin bổ sung cho EV Driver
+    @NotNull(message = "Driver license is required")
     private String driverLicense;
 
-    @NotBlank(message = "Biển số xe là bắt buộc")
+    @NotBlank(message = "Vehicle number is required")
     private String vehicleNumber;
 
-    @NotBlank(message = "Loại xe là bắt buộc")
+    @NotBlank(message = "Vehicle type is required")
     private String vehicleType;
+    @NotNull(message = "Date of birth is required")
+
     private LocalDate dateOfBirth;
+    @NotNull(message = "Address is required")
     private String address;
 
-    @NotNull(message = "Dung lượng pin là bắt buộc")
-    @DecimalMin(value = "10.0", message = "Dung lượng pin tối thiểu 10 kWh")
-    @DecimalMax(value = "200.0", message = "Dung lượng pin tối đa 200 kWh")
+    @NotNull(message = "Battery Capacity is required")
+    @DecimalMin(value = "10.0", message = "Battery capacity is at least 10 kWh")
+    @DecimalMax(value = "200.0", message = "Battery capacity is at most 200kWh")
     private Double batteryCapacity;
 
-    @NotNull(message = "Loại cổng sạc là bắt buộc")
+    @NotNull(message = "Car's connector type is required")
     private ConnectorType connectorType;
 }
