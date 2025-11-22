@@ -24,14 +24,12 @@ import java.util.List;
 @RequestMapping("/api/admin/staff")
 @RequiredArgsConstructor
 @Tag(name = "Admin Staff Management", description = "APIs for managing staff users (Admin only)")
-@SecurityRequirement(name = "Bearer Authentication")
-@PreAuthorize("hasRole('ADMIN')")
 public class AdminStaffController {
 
     private final AdminStaffService adminStaffService;
 
     @Operation(summary = "Create new staff user", description = "Create a new staff account and assign to charging stations")
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<ApiResponse<StaffResponse>> createStaff(
             @Valid @RequestBody CreateStaffRequest request) {
 
@@ -54,7 +52,7 @@ public class AdminStaffController {
     }
 
     @Operation(summary = "Get all staff users", description = "Get paginated list of all staff users")
-    @GetMapping
+    @GetMapping("/getAll")
     public ResponseEntity<ApiResponse<Page<StaffResponse>>> getAllStaff(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
