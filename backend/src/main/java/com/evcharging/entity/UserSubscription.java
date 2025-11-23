@@ -37,9 +37,6 @@ public class UserSubscription {
     @Column(nullable = false)
     private SubscriptionStatus status;
 
-    private Double usedMinutes; // Số phút đã sử dụng trong tháng
-    private Double usedKwh; // Số kWh đã sử dụng trong tháng
-
     @Column(nullable = false)
     private Boolean autoRenew; // Tự động gia hạn
 

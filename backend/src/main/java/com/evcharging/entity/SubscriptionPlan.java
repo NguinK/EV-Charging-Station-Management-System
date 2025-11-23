@@ -1,6 +1,6 @@
 package com.evcharging.entity;
 
-import com.evcharging.enums.PlanStatus;
+import com.evcharging.enums.SubscriptionStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,21 +22,13 @@ public class SubscriptionPlan {
     @Column(nullable = false)
     private String name; // Basic, Premium, VIP
 
-    @Column(length = 1000)
-    private String description;
-
-    @Column(nullable = false)
-    private Double monthlyFee; // Phí hàng tháng (VND)
-
-    private Double discountRate; // Tỷ lệ giảm giá (%)
-
-    private Integer freeMinutesPerMonth; // Số phút miễn phí/tháng
-    private Double freeKwhPerMonth; // Số kWh miễn phí/tháng
-
-    @Enumerated(EnumType.STRING)
-    private PlanStatus status;
+    private Double discountPercent; // Tỷ lệ giảm giá (%)
 
     private OffsetDateTime createdAt;
+
+    @Column(nullable = false)
+    private Double price;
+
 
     @PrePersist
     protected void onCreate() {
