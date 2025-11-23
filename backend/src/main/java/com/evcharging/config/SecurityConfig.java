@@ -66,6 +66,7 @@ public class SecurityConfig {
 
                         //Admin API endpoints
                                 .requestMatchers("/api/admin/staff/**").hasRole("ADMIN")
+                                .requestMatchers("/api/subscriptions/create").hasRole("ADMIN")
 
                         // Charging point admin controls
                         .requestMatchers(
@@ -92,6 +93,8 @@ public class SecurityConfig {
 
                         //Driver endpoints
                         .requestMatchers("/drivers/**").hasRole("EV_DRIVER")
+                                .requestMatchers("api/subscriptions/register").hasRole("EV_DRIVER")
+
 
                         //Driver can read stations, sessions, wallets, transactions, charging points
                         .requestMatchers(
