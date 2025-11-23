@@ -37,6 +37,20 @@ public class DtoMapper {
         return dto;
     }
 
+    public UserSubResponseDTO toUserSubResponseDTO(UserSubscription entity) {
+        UserSubResponseDTO dto = new UserSubResponseDTO();
+        dto.setId(entity.getId());
+        dto.setAccountId(entity.getAccount().getId());
+        dto.setPlanName(entity.getPlan().getName());
+        dto.setDiscountPercent(entity.getPlan().getDiscountPercent());
+        dto.setStartDate(entity.getStartDate());
+        dto.setEndDate(entity.getEndDate());
+        dto.setStatus(entity.getStatus());
+        dto.setAutoRenew(entity.getAutoRenew());
+        return dto;
+    }
+
+
     public TransactionDTO toTransactionDTO(Transaction tx) {
         TransactionDTO dto = new TransactionDTO();
         dto.setId(tx.getId());
