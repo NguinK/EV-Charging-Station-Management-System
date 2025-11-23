@@ -61,10 +61,8 @@ public class AdminService {
         account.setEmail(dto.getEmail());
         account.setPassword(passwordEncoder.encode(dto.getPassword()));
         account.setRole(dto.getRole());
-        account.setEnabled(dto.isActive());
         account.setPhone(dto.getPhone());
-        account.setAccountNonExpired(true);
-        account.setAccountNonLocked(true);
+
 
         // Tạo Admin và gắn Account
         Admin admin = new Admin();
@@ -116,9 +114,6 @@ public class AdminService {
             if (dto.getNewPassword() != null && !dto.getNewPassword().isBlank()) {
                 account.setPassword(passwordEncoder.encode(dto.getNewPassword()));
             }
-
-            // Cập nhật trạng thái active
-            account.setEnabled(dto.isActive());
 
             // Lưu vào database - Account sẽ tự động cascade update
             Admin saved = adminRepository.save(entity);

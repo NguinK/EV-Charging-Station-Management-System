@@ -66,10 +66,6 @@ public class AdminStaffService {
                 .password(passwordEncoder.encode(rawPassword))
                 .role(Role.CS_STAFF)
                 .status(AccountStatus.ACTIVE)
-                .accountNonExpired(true)
-                .accountNonLocked(true)
-                .credentialsNonExpired(true)
-                .enabled(true)
                 .build();
 
         staffAccount = accountRepository.save(staffAccount);
@@ -186,7 +182,6 @@ public class AdminStaffService {
 
         // Deactivate account
         staffAccount.setStatus(AccountStatus.INACTIVE);
-        staffAccount.setEnabled(false);
         staffAccount.setUpdatedAt(OffsetDateTime.now());
         accountRepository.save(staffAccount);
 

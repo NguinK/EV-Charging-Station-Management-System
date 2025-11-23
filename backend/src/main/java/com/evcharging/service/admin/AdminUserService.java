@@ -96,10 +96,6 @@ public class AdminUserService {
                 .fullName(account.getFullName())
                 .role(account.getRole())
                 .status(account.getStatus())
-                .accountNonExpired(account.getAccountNonExpired())
-                .accountNonLocked(account.getAccountNonLocked())
-                .credentialsNonExpired(account.getCredentialsNonExpired())
-                .enabled(account.getEnabled())
                 .createdAt(account.getCreatedAt())
                 .updatedAt(account.getUpdatedAt())
                 .build();
@@ -136,13 +132,6 @@ public class AdminUserService {
         account.setStatus(newStatus);
         account.setUpdatedAt(OffsetDateTime.now());
 
-        // Nếu suspend, lock account
-        if (newStatus == AccountStatus.SUSPENDED) {
-            account.setAccountNonLocked(false);
-        } else if (newStatus == AccountStatus.ACTIVE) {
-            account.setAccountNonLocked(true);
-        }
-
         account = accountRepo.save(account);
 
         log.info("User {} status changed: {} → {}", userId, oldStatus, newStatus);
@@ -171,7 +160,6 @@ public class AdminUserService {
 
         // Soft delete: set status = INACTIVE
         account.setStatus(AccountStatus.INACTIVE);
-        account.setEnabled(false);
         account.setUpdatedAt(OffsetDateTime.now());
 
         accountRepo.save(account);
@@ -189,7 +177,6 @@ public class AdminUserService {
                 .fullName(account.getFullName())
                 .role(account.getRole())
                 .status(account.getStatus())
-                .enabled(account.getEnabled())
                 .createdAt(account.getCreatedAt())
                 .build();
     }
