@@ -1,197 +1,92 @@
-//package com.evcharging.service;
-//
-//import com.evcharging.entity.*;
-//import com.evcharging.enums.PlanStatus;
-//import com.evcharging.enums.SubscriptionStatus;
-//import com.evcharging.repository.*;
-//import lombok.RequiredArgsConstructor;
-//import lombok.extern.slf4j.Slf4j;
-//import org.springframework.stereotype.Service;
-//import org.springframework.transaction.annotation.Transactional;
-//import java.time.OffsetDateTime;
-//import java.util.List;
-//
-//@Slf4j
-//@Service
-//@RequiredArgsConstructor
-//public class SubscriptionService {
-//
-//    private final SubscriptionPlanRepository planRepo;
-//    private final UserSubscriptionRepository userSubscriptionRepo;
-//    private final AccountRepository accountRepo;
-//    private final WalletService walletService;
-//
-//    /**
-//     * Lấy tất cả gói thuê bao đang active
-//     */
-//    public List<SubscriptionPlan> getAllActivePlans() {
-//        return planRepo.findByStatus(PlanStatus.ACTIVE);
-//    }
-//
-//    /**
-//     * Đăng ký gói thuê bao
-//     */
-//    @Transactional
-//    public UserSubscription subscribe(Long accountId, Long planId, boolean autoRenew) {
-//        log.info("Account {} subscribing to plan {}", accountId, planId);
-//
-//        Account account = accountRepo.findById(accountId)
-//                .orElseThrow(() -> new RuntimeException("Account not found"));
-//
-//        SubscriptionPlan plan = planRepo.findById(planId)
-//                .orElseThrow(() -> new RuntimeException("Plan not found"));
-//
-//        if (plan.getStatus() != PlanStatus.ACTIVE) {
-//            throw new RuntimeException("Plan is not active");
-//        }
-//
-//        // Kiểm tra đã có subscription active chưa
-//        userSubscriptionRepo.findActiveSubscription(accountId, OffsetDateTime.now())
-//                .ifPresent(sub -> {
-//                    throw new RuntimeException("User already has an active subscription");
-//                });
-//
-//        // Trừ tiền từ ví
-//        walletService.deductBalance(
-//                accountId,
-//                plan.getMonthlyFee(),
-//                "Subscription payment: " + plan.getName());
-//
-//        // Tạo subscription
-//        OffsetDateTime startDate = OffsetDateTime.now();
-//        OffsetDateTime endDate = startDate.plusMonths(1);
-//
-//        UserSubscription subscription = new UserSubscription();
-//        subscription.setAccount(account);
-//        subscription.setPlan(plan);
-//        subscription.setStartDate(startDate);
-//        subscription.setEndDate(endDate);
-//        subscription.setStatus(SubscriptionStatus.ACTIVE);
-//        subscription.setUsedMinutes(0.0);
-//        subscription.setUsedKwh(0.0);
-//        subscription.setAutoRenew(autoRenew);
-//
-//        subscription = userSubscriptionRepo.save(subscription);
-//
-//        log.info("Subscription created: {}", subscription.getId());
-//
-//        return subscription;
-//    }
-//
-//    /**
-//     * Hủy subscription
-//     */
-//    @Transactional
-//    public UserSubscription cancelSubscription(Long subscriptionId) {
-//        log.info("Cancelling subscription: {}", subscriptionId);
-//
-//        UserSubscription subscription = userSubscriptionRepo.findById(subscriptionId)
-//                .orElseThrow(() -> new RuntimeException("Subscription not found"));
-//
-//        if (subscription.getStatus() != SubscriptionStatus.ACTIVE) {
-//            throw new RuntimeException("Subscription is not active");
-//        }
-//
-//        subscription.setStatus(SubscriptionStatus.CANCELLED);
-//        subscription.setAutoRenew(false);
-//
-//        subscription = userSubscriptionRepo.save(subscription);
-//
-//        log.info("Subscription cancelled: {}", subscriptionId);
-//
-//        return subscription;
-//    }
-//
-//    /**
-//     * Gia hạn subscription tự động
-//     */
-//    @Transactional
-//    public UserSubscription renewSubscription(Long subscriptionId) {
-//        log.info("Renewing subscription: {}", subscriptionId);
-//
-//        UserSubscription oldSubscription = userSubscriptionRepo.findById(subscriptionId)
-//                .orElseThrow(() -> new RuntimeException("Subscription not found"));
-//
-//        SubscriptionPlan plan = oldSubscription.getPlan();
-//
-//        // Trừ tiền
-//        walletService.deductBalance(
-//                oldSubscription.getAccount().getId(),
-//                plan.getMonthlyFee(),
-//                "Subscription renewal: " + plan.getName());
-//
-//        // Tạo subscription mới
-//        OffsetDateTime startDate = oldSubscription.getEndDate();
-//        OffsetDateTime endDate = startDate.plusMonths(1);
-//
-//        UserSubscription newSubscription = new UserSubscription();
-//        newSubscription.setAccount(oldSubscription.getAccount());
-//        newSubscription.setPlan(plan);
-//        newSubscription.setStartDate(startDate);
-//        newSubscription.setEndDate(endDate);
-//        newSubscription.setStatus(SubscriptionStatus.ACTIVE);
-//        newSubscription.setUsedMinutes(0.0);
-//        newSubscription.setUsedKwh(0.0);
-//        newSubscription.setAutoRenew(oldSubscription.getAutoRenew());
-//
-//        newSubscription = userSubscriptionRepo.save(newSubscription);
-//
-//        // Update old subscription
-//        oldSubscription.setStatus(SubscriptionStatus.EXPIRED);
-//        userSubscriptionRepo.save(oldSubscription);
-//
-//        log.info("Subscription renewed: {}", newSubscription.getId());
-//
-//        return newSubscription;
-//    }
-//
-//    /**
-//     * Cập nhật usage (được gọi sau mỗi phiên sạc)
-//     */
-//    @Transactional
-//    public void updateUsage(Long accountId, double minutes, double kwh) {
-//        userSubscriptionRepo.findActiveSubscription(accountId, OffsetDateTime.now())
-//                .ifPresent(subscription -> {
-//                    subscription.setUsedMinutes(subscription.getUsedMinutes() + minutes);
-//                    subscription.setUsedKwh(subscription.getUsedKwh() + kwh);
-//                    userSubscriptionRepo.save(subscription);
-//
-//                    log.debug("Updated subscription usage for account {}: +{} min, +{} kWh",
-//                            accountId, minutes, kwh);
-//                });
-//    }
-//
-//    /**
-//     * Kiểm tra còn quota không (cho free minutes/kwh)
-//     */
-//    public boolean hasQuota(Long accountId, double minutes, double kwh) {
-//        return userSubscriptionRepo.findActiveSubscription(accountId, OffsetDateTime.now())
-//                .map(subscription -> {
-//                    SubscriptionPlan plan = subscription.getPlan();
-//
-//                    boolean hasMinutes = (plan.getFreeMinutesPerMonth() == null) ||
-//                            (subscription.getUsedMinutes() + minutes <= plan.getFreeMinutesPerMonth());
-//
-//                    boolean hasKwh = (plan.getFreeKwhPerMonth() == null) ||
-//                            (subscription.getUsedKwh() + kwh <= plan.getFreeKwhPerMonth());
-//
-//                    return hasMinutes && hasKwh;
-//                })
-//                .orElse(false);
-//    }
-//
-//    /**
-//     * Lấy subscription active của user
-//     */
-//    public UserSubscription getActiveSubscription(Long accountId) {
-//        return userSubscriptionRepo.findActiveSubscription(accountId, OffsetDateTime.now())
-//                .orElse(null);
-//    }
-//
-//    /**
-//     * Lấy lịch sử subscription của user
-//     */
-//    public List<UserSubscription> getSubscriptionHistory(Long accountId) {
-//        return userSubscriptionRepo.findByAccountId(accountId);
-//    }
-//}
+package com.evcharging.service;
+
+import com.evcharging.dto.*;
+import com.evcharging.entity.*;
+import com.evcharging.enums.SubscriptionStatus;
+import com.evcharging.repository.*;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.time.OffsetDateTime;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class SubscriptionService {
+
+    private final SubscriptionPlanRepository planRepo;
+    private final UserSubscriptionRepository userSubscriptionRepo;
+    private final AccountRepository accountRepo;
+    private final WalletService walletService;
+    private final WalletRepository walletRepo;
+    private final SubscriptionPlanRepository subscriptionPlanRepo;
+    private final DtoMapper dtoMapper;
+
+    public SubPlanResponseDTO createPlan(SubPlanCreateDTO dto) {
+        if (subscriptionPlanRepo.existsByName(dto.getName())) {
+            throw new IllegalArgumentException("Plan name already exists");
+        }
+
+        SubscriptionPlan plan = new SubscriptionPlan();
+        plan.setName(dto.getName());
+        plan.setDiscountPercent(dto.getDiscountPercent());
+        plan.setPrice(dto.getPrice());
+
+        SubscriptionPlan saved = subscriptionPlanRepo.save(plan);
+        return new SubPlanResponseDTO(saved.getId(), saved.getName(), saved.getDiscountPercent(),saved.getCreatedAt(),saved.getPrice());
+    }
+
+    @Transactional
+    public UserSubResponseDTO registerSubscription(Long accountId, UserSubCreateDTO dto) {
+        // 1. Kiểm tra account
+        Account account = accountRepo.findById(accountId)
+                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+
+        // 2. Kiểm tra plan theo name
+        SubscriptionPlan plan = subscriptionPlanRepo.findByName(dto.getPlanName())
+                .orElseThrow(() -> new IllegalArgumentException("Subscription plan not found"));
+
+        // 3. Kiểm tra driver đã có gói active chưa
+        boolean hasActive = userSubscriptionRepo.existsByAccountAndStatus(account, SubscriptionStatus.ACTIVE);
+        if (hasActive) {
+            throw new IllegalArgumentException("Driver already has an active subscription");
+        }
+
+        // 4. Lấy ví
+        Wallet wallet = walletRepo.findByAccountId(account.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Wallet not found"));
+
+        // 5. Tính phí gói
+        Double subscriptionFee = plan.getPrice();
+        if (subscriptionFee == null) {
+            throw new IllegalStateException("Subscription plan " + plan.getName() + " does not have a price set");
+        }
+
+        // 6. Check số dư (so sánh double)
+        if (wallet.getBalance() < subscriptionFee) {
+            throw new IllegalArgumentException("Not enough balance for plan " + plan.getName());
+        }
+
+        // 7. Trừ tiền (hàm nhận double)
+        WalletTransaction tx = walletService.deductBalance(
+                accountId,
+                subscriptionFee,
+                "Đăng ký gói " + plan.getName()
+        );
+
+        // 8. Tạo subscription
+        UserSubscription subscription = new UserSubscription();
+        subscription.setAccount(account);
+        subscription.setPlan(plan);
+        subscription.setStartDate(OffsetDateTime.now());
+        subscription.setEndDate(OffsetDateTime.now().plusMonths(1));
+        subscription.setStatus(SubscriptionStatus.ACTIVE);
+        subscription.setAutoRenew(dto.getAutoRenew());
+
+        UserSubscription saved = userSubscriptionRepo.save(subscription);
+
+        // 9. Trả về DTO
+        return dtoMapper.toUserSubResponseDTO(saved);
+    }
+}

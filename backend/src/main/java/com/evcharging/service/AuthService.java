@@ -75,7 +75,6 @@ public class AuthService {
         account.setPhone(dto.getPhone());
         account.setPassword(passwordEncoder.encode(dto.getPassword()));
         account.setRole(Role.EV_DRIVER);
-        account.setEnabled(true);
         account.setFullName(dto.getFullName());
         accountRepository.save(account);
 
