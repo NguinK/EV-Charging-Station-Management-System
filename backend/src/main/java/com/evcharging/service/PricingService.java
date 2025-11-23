@@ -1,8 +1,7 @@
 package com.evcharging.service;
 
-import com.evcharging.entity.ChargingPoint;
-import com.evcharging.entity.ChargingSession;
-import com.evcharging.entity.Reservation;
+import com.evcharging.entity.*;
+import com.evcharging.repository.UserSubscriptionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -11,6 +10,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +18,7 @@ import java.time.OffsetDateTime;
 public class PricingService {
 
     private final SystemConfigurationService configService;
+    private final UserSubscriptionRepository userSubscriptionRepo;
     public BigDecimal calculateLiveChargingFee(ChargingSession session, OffsetDateTime now) {
         if (session == null || session.getStartTime() == null) {
             throw new IllegalArgumentException("Invalid charging session");
@@ -72,6 +73,18 @@ public class PricingService {
                 .add(timeFee)
                 .add(serviceFeeAmount)
                 .add(reservationFeeAmount);
+        Long accountId = session.getDriver().getAccount().getId();
+
+        // 5. Lấy subscription active để áp dụng discount
+        Optional<UserSubscription> activeSub = userSubscriptionRepo.findActiveSubscription(accountId, OffsetDateTime.now());
+
+        if (activeSub.isPresent()) {
+            double discountPercent = activeSub.get().getPlan().getDiscountPercent();
+            BigDecimal discount = totalFee.multiply(BigDecimal.valueOf(discountPercent / 100.0));
+            totalFee = totalFee.subtract(discount);
+            log.info("Applied subscription discount {}% => -{} VND", discountPercent, discount);
+        }
+
 
         log.info("Charging fee breakdown - Energy: {}, Time: {}, Service: {}, Reservation: {}, Total: {}",
                 energyFee, timeFee, serviceFeeAmount, reservationFeeAmount, totalFee);
