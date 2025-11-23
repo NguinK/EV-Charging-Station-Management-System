@@ -16,14 +16,9 @@ import java.time.OffsetDateTime;
 @Builder
 public class SubPlanResponseDTO {
     private Long id;
-    private String name;           // Tên gói (ví dụ: "Gói VIP", "Gói Basic")
-    private String type;           // Loại gói: PREPAID / POSTPAID / MEMBERSHIP
-    private Double price;          // Giá gói (VNĐ hoặc USD)
-    private Integer durationDays;  // Thời hạn (ngày)
-
+    private String name;            // Basic, VIP
+    private Double discountPercent; // % giảm giá
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private OffsetDateTime createdAt;  // Ngày tạo gói
-
-    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
-    private OffsetDateTime updatedAt;  // Ngày cập nhật gần nhất
+    private Double price;
 }
