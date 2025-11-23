@@ -17,8 +17,6 @@ public interface ChargingSessionRepository extends JpaRepository<ChargingSession
     List<ChargingSession> findByStationId(Long stationId);
     List<ChargingSession> findByStatus(SessionStatus status);
 
-    @Query("SELECT cs FROM ChargingSession cs WHERE cs.driver.id = :driverId")
-    List<ChargingSession> findByUserId(@Param("driverId") Long driverId);
 
     @Query("SELECT cs FROM ChargingSession cs " +
             "WHERE cs.station.id = :stationId " +
@@ -41,7 +39,4 @@ public interface ChargingSessionRepository extends JpaRepository<ChargingSession
             "WHERE cs.chargingPoint.id = :pointId AND cs.status = 'ACTIVE'")
     Optional<ChargingSession> findActiveSessionByPoint(@Param("pointId") Long pointId);
 
-    @Query("SELECT cs FROM ChargingSession cs " +
-            "WHERE cs.driver.id = :driverId AND cs.status = 'ACTIVE'")
-    Optional<ChargingSession> findActiveSessionByAccount(@Param("driverId") Long driverId);
 }

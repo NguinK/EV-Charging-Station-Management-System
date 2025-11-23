@@ -35,9 +35,6 @@ public class Transaction {
     @Column(name = "payment_method", length = 30)
     private PaymentMethod paymentMethod; // EWALLET, BANKING, CASH
 
-    @Column(name = "payment_notes", length = 500)
-    private String paymentNotes;
-
     @Column(name = "processed_by_staff_id")
     private Long processedByStaffId;
 
@@ -58,9 +55,6 @@ public class Transaction {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "charging_session_id")
     private ChargingSession chargingSession;
-
-    @Column(length = 500)
-    private String description;
 
     // Quan hệ
     @ManyToOne

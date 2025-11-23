@@ -144,41 +144,39 @@ public class ChargingSessionService {
                 .orElseThrow(() -> new IllegalArgumentException("Session not found"));
 
         if (session.getStatus() != SessionStatus.CHARGING) {
-            throw new IllegalStateException("Session is not active");
+            // đã kết thúc rồi thì trả DTO luôn, không tạo transaction nữa
+            return toDTO(session);
         }
 
-        //  Lấy dữ kiện từ session
         int endSoc = session.getEndSoc() != null ? session.getEndSoc() : 100;
         double energy = session.getEnergyConsumed();
 
-        // Cập nhật session
         session.setEndTime(OffsetDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")));
         session.setEndSoc(endSoc);
         session.setEnergyConsumed(energy);
         session.setStatus(SessionStatus.COMPLETED);
 
-        // Tính phí
         BigDecimal finalCost = pricingService.calculateChargingFee(session);
-        session.setTotalCost(finalCost.doubleValue());
+        session.setCost(finalCost.doubleValue());
 
-        // Giải phóng trụ
         ChargingPoint point = session.getChargingPoint();
         point.setStatus(ChargingPointStatus.AVAILABLE);
         chargingPointRepo.save(point);
 
-        // Gửi thông báo
         notificationService.sendChargingComplete(session.getDriver());
 
-        // Tạo transaction
-        Transaction tx = transactionService.createTransaction(session, finalCost, TransactionStatus.PENDING);
-        session.setTransaction(tx);
+        // chỉ tạo transaction nếu chưa có
+        if (session.getTransaction() == null) {
+            Transaction tx = transactionService.createTransaction(session, finalCost, TransactionStatus.PENDING);
+            session.setTransaction(tx);
+        }
 
-        // Lưu session
         sessionRepo.save(session);
 
-        // Trả DTO
         ChargingSessionDTO dto = toDTO(session);
-        dto.setTransactionId(tx.getId());
+        if (session.getTransaction() != null) {
+            dto.setTransactionId(session.getTransaction().getId());
+        }
         messagingTemplate.convertAndSend("/topic/session/" + dto.getId(), dto);
 
         return dto;
@@ -235,7 +233,7 @@ public class ChargingSessionService {
             // Lấy công suất tối đa từ ChargingPoint
             ChargingPoint point = session.getChargingPoint();
             int maxPower = point != null && point.getMaxPower() != null ? point.getMaxPower() : 30; // fallback 30kW
-            double power = maxPower * 0.6; // giả lập 60% công suất
+            double power = maxPower * 0.9; // giả lập 60% công suất
 
             // Tính lượng điện đã nạp thêm
             double addedEnergy = power * durationHours;

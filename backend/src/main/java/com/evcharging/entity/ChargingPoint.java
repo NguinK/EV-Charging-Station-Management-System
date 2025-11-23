@@ -27,9 +27,8 @@ public class ChargingPoint {
     @Column(name = "point_code", unique = true, nullable = false)
     private String pointCode;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "station_id", nullable = false)
-    @JsonIgnore
     private ChargingStation station;
 
     @Enumerated(EnumType.STRING)

@@ -88,27 +88,11 @@ public class ChargingSession {
 //    @Enumerated(EnumType.STRING)
 //    private PaymentMethod paymentMethod;
 
-    @Column(name = "total_cost")
-    private Double totalCost;
 
     public Double getEnergyDelivered() {
         return this.energyConsumed;
     }
 
-    public Double getTotalCost() {
-        if (this.totalCost != null && this.totalCost > 0) {
-            return this.totalCost;
-        }
-        if (this.cost != 0) {
-            return this.cost;
-        }
-        return 0.0;
-    }
-
-    public void setTotalCost(Double cost) {
-        this.totalCost = cost;
-        this.cost = cost;
-    }
 
     @PrePersist
     protected void onCreate() {

@@ -29,7 +29,8 @@ public class PricingService {
             throw new IllegalArgumentException("Charging point is required");
         }
 
-        BigDecimal energyFee = calculateEnergyFee(session.getEnergyConsumed(), point.getPricePerKwh());
+        double effectiveEnergy = Math.min(session.getEnergyConsumed(), session.getDriver().getBatteryCapacity());
+        BigDecimal energyFee = calculateEnergyFee(effectiveEnergy, point.getPricePerKwh());
         BigDecimal timeFee = calculateTimeFee(session.getStartTime(), now, point.getPricePerMinute());
         BigDecimal serviceFee = getServiceFee();
 
