@@ -25,5 +25,6 @@ public class LoginResponseDTO {
     private Long driverId;
     private Long adminId;
     private Long staffId;
+    private Long accountId;
 
 }
