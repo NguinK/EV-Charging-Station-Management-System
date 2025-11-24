@@ -40,7 +40,7 @@ public class AdminReportService {
                             station.getId(), startDate, endDate);
 
                     double totalRevenue = sessions.stream()
-                            .mapToDouble(ChargingSession::getTotalCost)
+                            .mapToDouble(ChargingSession::getCost)
                             .sum();
 
                     double totalEnergy = sessions.stream()
@@ -81,7 +81,7 @@ public class AdminReportService {
         for (ChargingSession session : sessions) {
             String period = formatPeriod(session.getStartTime(), granularity);
 
-            revenueByPeriod.merge(period, session.getTotalCost(), Double::sum);
+            revenueByPeriod.merge(period, session.getCost(), Double::sum);
             sessionsByPeriod.merge(period, 1, Integer::sum);
         }
 

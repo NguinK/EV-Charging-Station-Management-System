@@ -133,7 +133,6 @@ public class StaffReservationServiceImpl implements StaffReservationService {
         penalty.setStatus(TransactionStatus.PENDING);
         penalty.setReservation(reservation);
         penalty.setDriver(reservation.getDriver());
-        penalty.setDescription("No-show penalty for reservation #" + reservationId);
         transactionRepository.save(penalty);
 
         return mapToResponse(reservation);

@@ -63,7 +63,6 @@ public class StaffPaymentServiceImpl implements StaffPaymentService {
 
         // Cập nhật transaction
         transaction.setPaymentMethod(paymentMethod);
-        transaction.setPaymentNotes(request.getPaymentNotes());
         transaction.setStatus(TransactionStatus.SUCCESS);
         transaction.setPaidAt(OffsetDateTime.now());
         transaction.setProcessedByStaffId(securityUtils.getCurrentStaffAccountId());
@@ -139,7 +138,6 @@ public class StaffPaymentServiceImpl implements StaffPaymentService {
         refund.setChargingSession(originalTransaction.getChargingSession());
         refund.setReservation(originalTransaction.getReservation());
         refund.setDriver(originalTransaction.getDriver());
-        refund.setDescription("Refund for transaction #" + transactionId + ": " + reason);
         refund.setProcessedByStaffId(securityUtils.getCurrentStaffAccountId());
         refund.setInvoiceNumber(invoiceNumberGenerator.generate());
         refund.setPaidAt(OffsetDateTime.now());
@@ -179,7 +177,6 @@ public class StaffPaymentServiceImpl implements StaffPaymentService {
         response.setStatus(transaction.getStatus().name());
         response.setPaymentMethod(transaction.getPaymentMethod() != null
                 ? transaction.getPaymentMethod().name() : null);
-        response.setPaymentNotes(transaction.getPaymentNotes());
         response.setInvoiceNumber(transaction.getInvoiceNumber());
         response.setTimestamp(transaction.getTimestamp());
         response.setPaidAt(transaction.getPaidAt());

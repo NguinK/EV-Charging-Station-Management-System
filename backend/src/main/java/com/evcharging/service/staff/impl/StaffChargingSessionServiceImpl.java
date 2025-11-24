@@ -142,7 +142,7 @@ public class StaffChargingSessionServiceImpl implements StaffChargingSessionServ
         transaction.setStatus(TransactionStatus.PENDING);
         transaction.setChargingSession(session);
         transaction.setDriver(session.getDriver());
-        transaction.setDescription(String.format("Charging payment for %.2f kWh", request.getEnergyUsedKwh()));
+
 
         if (request.getPaymentMethod() != null) {
             try {
