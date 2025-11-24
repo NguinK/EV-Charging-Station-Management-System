@@ -85,7 +85,7 @@ public class ChargingSessionService {
         ChargingSession session = new ChargingSession();
         session.setReservation(reservation);
         session.setDriver(driver);
-//        session.setDriver(reservation.getDriver());
+//       session.setDriver(reservation.getDriver());
         session.setStation(reservation.getStation());
         session.setStartTime(OffsetDateTime.now());
         session.setStartSoc(startSoc);
@@ -144,43 +144,48 @@ public class ChargingSessionService {
                 .orElseThrow(() -> new IllegalArgumentException("Session not found"));
 
         if (session.getStatus() != SessionStatus.CHARGING) {
-            // đã kết thúc rồi thì trả DTO luôn, không tạo transaction nữa
             return toDTO(session);
         }
 
-        int endSoc = session.getEndSoc() != null ? session.getEndSoc() : 100;
-        double energy = session.getEnergyConsumed();
-
+        // set end time
         session.setEndTime(OffsetDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")));
-        session.setEndSoc(endSoc);
-        session.setEnergyConsumed(energy);
-        session.setStatus(SessionStatus.COMPLETED);
 
+        // default endSoc = 100 nếu FE không gửi
+        int endSoc = session.getEndSoc() != null ? session.getEndSoc() : 100;
+        session.setEndSoc(endSoc);
+
+        // ====== 1. Tính năng lượng đã sạc ======
+        double energy = session.getDriver().getBatteryCapacity()
+                * (endSoc - session.getStartSoc()) / 100.0;
+        session.setEnergyConsumed(Math.max(0, energy));
+
+        // ====== 2. Tính tiền ======
         BigDecimal finalCost = pricingService.calculateChargingFee(session);
         session.setCost(finalCost.doubleValue());
 
+        // ====== 3. Mở trụ ======
         ChargingPoint point = session.getChargingPoint();
         point.setStatus(ChargingPointStatus.AVAILABLE);
         chargingPointRepo.save(point);
 
-        notificationService.sendChargingComplete(session.getDriver());
-
-        // chỉ tạo transaction nếu chưa có
+        // ====== 4. Tạo transaction 1 lần ======
         if (session.getTransaction() == null) {
             Transaction tx = transactionService.createTransaction(session, finalCost, TransactionStatus.PENDING);
             session.setTransaction(tx);
         }
 
+        session.setStatus(SessionStatus.COMPLETED);
         sessionRepo.save(session);
 
         ChargingSessionDTO dto = toDTO(session);
         if (session.getTransaction() != null) {
             dto.setTransactionId(session.getTransaction().getId());
         }
-        messagingTemplate.convertAndSend("/topic/session/" + dto.getId(), dto);
 
+        messagingTemplate.convertAndSend("/topic/session/" + dto.getId(), dto);
         return dto;
     }
+
 
     // Mapper entity -> DTO
     private ChargingSessionDTO toDTO(ChargingSession session) {
@@ -211,13 +216,14 @@ public class ChargingSessionService {
     }
 
     public void checkAndAutoEnd(ChargingSession session, int currentSoc) {
-        if (currentSoc == 100) {
+        if (currentSoc >= 100) {
             context.getBean(ChargingSessionService.class)
                     .endSession(session.getId());
         }
     }
 
-    @Scheduled(fixedRate = 3000) // chạy mỗi 3 giây
+    @Scheduled(fixedRate = 3000)
+    @Transactional
     public void autoUpdateChargingSessions() {
         List<ChargingSession> activeSessions = sessionRepo.findByStatus(SessionStatus.CHARGING);
 
@@ -227,48 +233,40 @@ public class ChargingSessionService {
                     ? session.getLastUpdatedTime()
                     : session.getStartTime();
 
-            // Tính thời gian trôi qua (h)
             double durationHours = Duration.between(lastUpdate, now).toMillis() / (1000.0 * 60 * 60);
 
-            // Lấy công suất tối đa từ ChargingPoint
             ChargingPoint point = session.getChargingPoint();
-            int maxPower = point != null && point.getMaxPower() != null ? point.getMaxPower() : 30; // fallback 30kW
-            double power = maxPower * 0.9; // giả lập 60% công suất
-
-            // Tính lượng điện đã nạp thêm
-            double addedEnergy = power * durationHours;
+            int maxPower = (point != null && point.getMaxPower() != null) ? point.getMaxPower() : 30;
+            double power = maxPower * 0.9;
 
             EVDriver driver = session.getDriver();
-            Double batteryCapacity = driver.getBatteryCapacity();
+            double batteryCapacity = (driver.getBatteryCapacity() != null && driver.getBatteryCapacity() > 0)
+                    ? driver.getBatteryCapacity() : 60.0;
 
-            if (batteryCapacity == null || batteryCapacity <= 0) {
-                // Fallback: 60 kWh nếu không có dữ liệu
-                batteryCapacity = 60.0; // Fallback: 60 kWh
-                log.warn("Session {} - Driver {} has no battery capacity, using default 60 kWh",
-                        session.getId(), driver.getId());
+            double currentEnergy = session.getEnergyConsumed() != null ? session.getEnergyConsumed() : 0.0;
+            double totalEnergy = currentEnergy + power * durationHours;
+            int startSoc = session.getStartSoc() != null ? session.getStartSoc() : 0;
+            int newSoc = Math.min(100, (int) (startSoc + (totalEnergy / batteryCapacity) * 100));
+
+            session.setEnergyConsumed(totalEnergy);
+            session.setEndSoc(newSoc);
+            session.setLastUpdatedTime(now);
+
+            // Cập nhật phí tạm nếu chưa đầy pin
+            if (newSoc < 100) {
+                BigDecimal tempCost = pricingService.calculateLiveChargingFee(session, now);
+                session.setCost(tempCost.doubleValue());
             }
 
-            // Fallback nếu energyConsumed đang null
-            double currentEnergy = session.getEnergyConsumed() != null ? session.getEnergyConsumed() : 0.0;
-            double totalEnergy = currentEnergy + addedEnergy;
-            int startSoc = session.getStartSoc();
-            session.setEnergyConsumed(totalEnergy);
-
-            int newSoc = Math.min(100, (int) (startSoc + (totalEnergy / batteryCapacity) * 100));
-            session.setEndSoc(newSoc);
-
-            BigDecimal tempCost = pricingService.calculateLiveChargingFee(session,now);
-            session.setCost(tempCost.doubleValue());
-
-            // Cập nhật thời gian
-            session.setLastUpdatedTime(now);
             sessionRepo.save(session);
 
             ChargingSessionDTO dto = toDTO(session);
             messagingTemplate.convertAndSend("/topic/session/" + dto.getId(), dto);
 
-            // Gọi auto end nếu đủ điều kiện
-            checkAndAutoEnd(session, newSoc);
+            // Gọi autoCheckEnd để kết thúc nếu đầy pin
+            checkAndAutoEnd(session,newSoc);
         }
     }
+
+
 }

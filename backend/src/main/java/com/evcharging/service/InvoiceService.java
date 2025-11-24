@@ -92,9 +92,6 @@ public class InvoiceService {
                 ).toMinutes();
                 invoice.setDurationMinutes(minutes);
             }
-
-            //Calculate price breakdown using PricingService
-            calculatePriceBreakdown(invoice, session);
         }
 
         invoice.setPaymentMethod(transaction.getPaymentMethod() != null
@@ -107,48 +104,6 @@ public class InvoiceService {
                 invoiceNumber, transaction.getId());
 
         return invoice;
-    }
-
-    private void calculatePriceBreakdown(Invoice invoice, ChargingSession session) {
-        ChargingPoint point = session.getChargingPoint();
-        if (point == null) return;
-
-        invoice.setPricePerKwh(point.getPricePerKwh());
-        invoice.setPricePerMinute(point.getPricePerMinute());
-
-        if (session.getEnergyConsumed() != null && point.getPricePerKwh() != null) {
-            double energyFee = session.getEnergyConsumed() * point.getPricePerKwh();
-            invoice.setEnergyFee(energyFee);
-        }
-
-        if (invoice.getDurationMinutes() != null && point.getPricePerMinute() != null) {
-            double timeFee = invoice.getDurationMinutes() * point.getPricePerMinute();
-            invoice.setTimeFee(timeFee);
-        }
-
-        invoice.setServiceFee(pricingService.getServiceFee().doubleValue());
-
-        if (session.getReservation() != null) {
-            double reservationFee = pricingService.calculateReservationHoldFee(
-                    session.getReservation()
-            ).doubleValue();
-            invoice.setReservationFee(reservationFee);
-        }
-
-        double subtotal = 0;
-        if (invoice.getEnergyFee() != null) subtotal += invoice.getEnergyFee();
-        if (invoice.getTimeFee() != null) subtotal += invoice.getTimeFee();
-        if (invoice.getServiceFee() != null) subtotal += invoice.getServiceFee();
-        if (invoice.getReservationFee() != null) subtotal += invoice.getReservationFee();
-
-        invoice.setSubtotal(subtotal);
-
-        // Tax/VAT (10%)
-        double tax = subtotal * 0.10;
-        invoice.setTax(tax);
-
-        // Discount (if any - from promotion/voucher)
-        // invoice.setDiscount(calculateDiscount(session));
     }
 
     private void validateTransactionForInvoice(Transaction transaction) {
@@ -287,7 +242,7 @@ public class InvoiceService {
         dto.setSubtotal(invoice.getSubtotal());
         dto.setDiscount(invoice.getDiscount());
         dto.setTax(invoice.getTax());
-        dto.setFinalAmount(invoice.getFinalAmount());
+        invoice.setFinalAmount(invoice.getSubtotal() + invoice.getTax() - (invoice.getDiscount() != null ? invoice.getDiscount() : 0));
 
         // Payment info
         dto.setPaymentMethod(invoice.getPaymentMethod());

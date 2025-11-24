@@ -19,6 +19,7 @@ public class PricingService {
 
     private final SystemConfigurationService configService;
     private final UserSubscriptionRepository userSubscriptionRepo;
+
     public BigDecimal calculateLiveChargingFee(ChargingSession session, OffsetDateTime now) {
         if (session == null || session.getStartTime() == null) {
             throw new IllegalArgumentException("Invalid charging session");
@@ -38,32 +39,24 @@ public class PricingService {
     }
     //Tính tổng phí sạc
     public BigDecimal calculateChargingFee(ChargingSession session) {
-        if (session == null || session.getStartTime() == null || session.getEndTime() == null) {
-            throw new IllegalArgumentException("Invalid charging session");
-        }
-
         ChargingPoint point = session.getChargingPoint();
-        if (point == null) {
-            throw new IllegalArgumentException("Charging point is required");
-        }
-
-        //1. Energy Fee
+        //1. Energy Fee - Phí năng lượng
         BigDecimal energyFee = calculateEnergyFee(
                 session.getEnergyConsumed(),
                 point.getPricePerKwh()
         );
 
-        //2. Time-based Fee
+        //2. Time-based Fee - Phí thời gian sạc
         BigDecimal timeFee = calculateTimeFee(
                 session.getStartTime(),
                 session.getEndTime(),
                 point.getPricePerMinute()
         );
 
-        //3. Service Fee
+        //3. Service Fee - Phí dịch vụ (15,000 VND)
         BigDecimal serviceFeeAmount = getServiceFee();
 
-        //4. Reservation Fee
+        //4. Reservation Fee - Phí giữ chỗ (nếu có đặt trước)
         BigDecimal reservationFeeAmount = BigDecimal.ZERO;
         if (session.getReservation() != null) {
             reservationFeeAmount = calculateReservationHoldFee(session.getReservation());
@@ -74,21 +67,15 @@ public class PricingService {
                 .add(timeFee)
                 .add(serviceFeeAmount)
                 .add(reservationFeeAmount);
+
+        // Áp dụng giảm giá subscription (nếu có)
         Long accountId = session.getDriver().getAccount().getId();
-
-        // 5. Lấy subscription active để áp dụng discount
         Optional<UserSubscription> activeSub = userSubscriptionRepo.findActiveSubscription(accountId, OffsetDateTime.now());
-
         if (activeSub.isPresent()) {
             double discountPercent = activeSub.get().getPlan().getDiscountPercent();
             BigDecimal discount = totalFee.multiply(BigDecimal.valueOf(discountPercent / 100.0));
             totalFee = totalFee.subtract(discount);
-            log.info("Applied subscription discount {}% => -{} VND", discountPercent, discount);
         }
-
-
-        log.info("Charging fee breakdown - Energy: {}, Time: {}, Service: {}, Reservation: {}, Total: {}",
-                energyFee, timeFee, serviceFeeAmount, reservationFeeAmount, totalFee);
 
         return totalFee.setScale(2, RoundingMode.HALF_UP);
     }
@@ -167,27 +154,27 @@ public class PricingService {
     public BigDecimal getServiceFee() {
         BigDecimal serviceFee = configService.getConfigValueAsDecimal(
                 SystemConfigurationService.CHARGING_SERVICE_FEE,
-                BigDecimal.valueOf(15000)
+                BigDecimal.valueOf(5000)
         );
 
         return serviceFee.setScale(2, RoundingMode.HALF_UP);
     }
 
-    //Tính phí giữ chỗ đặt trước theo thời gian
-    public BigDecimal calculateReservationFee(Long durationMinutes) {
-        if (durationMinutes == null || durationMinutes <= 0) {
-            return BigDecimal.ZERO;
-        }
-
-        long hours = (long) Math.ceil(durationMinutes / 60.0);
-
-        BigDecimal feePerHour = configService.getConfigValueAsDecimal(
-                SystemConfigurationService.RESERVATION_HOLD_FEE_PER_HOUR,
-                BigDecimal.valueOf(10000)
-        );
-
-        return BigDecimal.valueOf(hours)
-                .multiply(feePerHour)
-                .setScale(2, RoundingMode.HALF_UP);
-    }
+//    //Tính phí giữ chỗ đặt trước theo thời gian
+//    public BigDecimal calculateReservationFee(Long durationMinutes) {
+//        if (durationMinutes == null || durationMinutes <= 0) {
+//            return BigDecimal.ZERO;
+//        }
+//
+//        long hours = (long) Math.ceil(durationMinutes / 60.0);
+//
+//        BigDecimal feePerHour = configService.getConfigValueAsDecimal(
+//                SystemConfigurationService.RESERVATION_HOLD_FEE_PER_HOUR,
+//                BigDecimal.valueOf(8000)
+//     );
+//
+//        return BigDecimal.valueOf(hours)
+//                .multiply(feePerHour)
+//                .setScale(2, RoundingMode.HALF_UP);
+//    }
 }

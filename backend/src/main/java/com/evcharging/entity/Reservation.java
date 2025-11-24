@@ -21,9 +21,6 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @Column(name = "driver_id", nullable = false)
-//    private Long driverId;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "charging_point_id")
     private ChargingPoint chargingPoint;
