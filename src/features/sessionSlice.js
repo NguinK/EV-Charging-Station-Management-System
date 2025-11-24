@@ -3,7 +3,7 @@ import chargingSessionAPI from "../api/chargingSessionAPI";
 
 export const fetchSessionByReservation = createAsyncThunk(
   "session/fetchByReservation",
-  async (reservationId) => {
+    async (reservationId) => {
     const res = await chargingSessionAPI.getByReservation(reservationId);
     return res.data;
   }
@@ -12,9 +12,9 @@ export const fetchSessionByReservation = createAsyncThunk(
 // sessionSlice.js
 export const endSessionManual = createAsyncThunk(
   "session/endSessionManual",
-  async (sessionId) => {
+   async (sessionId) => {
     const res = await chargingSessionAPI.endManual(sessionId);
-    return res.data;
+    return res.data; // session sau khi kết thúc
   }
 );
 
