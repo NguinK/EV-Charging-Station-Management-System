@@ -45,7 +45,7 @@ function LoginPage() {
       // ✅ Lấy token từ response
       const token = res?.data?.token;
       const userInfo = {
-        id: res?.data?.driverId, 
+        id: res?.data?.accountId, 
         driverId: res?.data?.driverId, 
         fullName: res?.data?.fullName,
         email: res?.data?.email,
@@ -55,7 +55,7 @@ function LoginPage() {
       // ✅ Lưu token + user info
       localStorage.setItem("token", token);
       localStorage.setItem("userInfo", JSON.stringify(userInfo));
-
+      
       message.success("Login successful!");
       navigate("/user");
       if (userInfo.role === "ADMIN") {
@@ -142,6 +142,7 @@ function LoginPage() {
                   valuePropName="checked"
                   className="!mb-0"
                 ></Form.Item>
+
               </div>
 
               <Button
