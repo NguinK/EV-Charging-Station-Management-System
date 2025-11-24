@@ -11,7 +11,7 @@ const HistoryCharge = () => {
   useEffect(() => {
     const fetchPayments = async () => {
       try {
-        const res = await transactionAPI.getTransactionFromSession();
+        const res = await transactionAPI.getMyHistory();
         if (res.data) {
           setPayments(res.data);
           setTotalAmount(
