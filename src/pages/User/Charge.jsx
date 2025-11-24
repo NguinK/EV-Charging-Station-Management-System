@@ -42,7 +42,6 @@ function Charge() {
           );
 
           if (res.data?.id) {
-            message.success("Bắt đầu sạc thành công!");
             // ⚡ Dùng sessionId thay vì reservationId
             navigate(`/user/session?id=${res.data.id}`);
           } else {
@@ -116,11 +115,11 @@ function Charge() {
             />
             <div className="text-center text-gray-800">
               <h2 className="font-bold text-lg text-green-600 mb-2">
-                🎉 Đặt lịch thành công!
+                🎉 Reservated Success!
               </h2>
               <QRCodeCanvas value={qrUrl} size={180} includeMargin level="M" />
               <p className="mt-2 text-sm text-gray-400">
-                Quét mã này  để bắt đầu phiên sạc.
+                Scan to start session.
               </p>
 
               <p>

@@ -155,22 +155,32 @@ const ChargingStation = () => {
   // 🧾 CỘT DỮ LIỆU TRỤ
   // ==============================
   const pointColumns = [
-    { title: "Mã trụ", dataIndex: "pointCode", key: "pointCode" },
-    { title: "Loại sạc", dataIndex: "connectorType", key: "connectorType" },
+    { title: "Point Code", dataIndex: "pointCode", key: "pointCode" },
     {
-      title: "Giá tiền (₫/kWh)",
+      title: "Conector Type",
+      dataIndex: "connectorType",
+      key: "connectorType",
+    },
+    {
+      title: "Per Kwh (₫/kWh)",
       dataIndex: "pricePerKwh",
       key: "pricePerKwh",
       render: (p) => (p ? p.toLocaleString("vi-VN") : "—"),
     },
     {
-      title: "Công suất (kW)",
+      title: "Per Minute (₫/min)",
+      dataIndex: "pricePerMinute",
+      key: "pricePerMinute",
+      render: (p) => (p ? p.toLocaleString("vi-VN") : "—"),
+    },
+    {
+      title: "Max Power (kW)",
       dataIndex: "maxPower",
       key: "maxPower",
       render: (v) => (v ? `${v}` : "—"),
     },
     {
-      title: "Trạng thái",
+      title: "Status",
       dataIndex: "status",
       key: "status",
       render: (status) => (
@@ -190,10 +200,10 @@ const ChargingStation = () => {
       ),
     },
     {
-      title: "Hành động",
+      title: "Actions",
       key: "actions",
       render: (_, record) => (
-        <Space>           
+        <Space>
           {record.status === "CHARGING" && (
             <Button danger onClick={() => handleStopCharging(record.sessionId)}>
               Dừng
@@ -258,13 +268,13 @@ const ChargingStation = () => {
           <Card
             title={
               <Space>
-                <span>Trụ sạc của trạm:</span>
+                <span> Charging points of station:</span>
                 <strong>{selectedStation?.name || "—"}</strong>
               </Space>
             }
             extra={
               <Button type="primary" onClick={() => setOpenModal(true)}>
-                + Thêm trụ
+                + Add Point
               </Button>
             }
             className="shadow-md rounded-xl border border-gray-200"
@@ -282,7 +292,7 @@ const ChargingStation = () => {
 
       {/* Modal thêm trụ */}
       <AntModal
-        title="Thêm trụ sạc mới"
+        title="Add Charging Point"
         open={openModal}
         onCancel={() => setOpenModal(false)}
         onOk={handleAddPoint}
@@ -290,18 +300,14 @@ const ChargingStation = () => {
         cancelText="Huỷ"
       >
         <Form layout="vertical" form={form}>
-          <Form.Item
-            label="Mã trụ (pointCode)"
-            name="pointCode"
-            rules={[{ required: true, message: "Nhập mã trụ!" }]}
-          >
-            <Input placeholder="VD: CP001" />
+          <Form.Item label="Point Code" name="pointCode">
+            <Input placeholder="VD: A1" />
           </Form.Item>
 
           <Form.Item
-            label="Loại sạc"
+            label="Connector Type"
             name="connectorType"
-            rules={[{ required: true, message: "Chọn loại sạc!" }]}
+            rules={[{ required: true, message: "Select Connector Type" }]}
           >
             <Select
               options={[
@@ -313,25 +319,34 @@ const ChargingStation = () => {
           </Form.Item>
 
           <Form.Item
-            label="Công suất (kW)"
+            label="Max Power (kW)"
             name="maxPower"
-            rules={[{ required: true, message: "Nhập công suất!" }]}
+            rules={[
+              { required: true, message: "Input Power" },
+              { type: "number", min: 100, message: "Values must be > 0" },
+            ]}
           >
             <InputNumber min={1} className="w-full" />
           </Form.Item>
 
           <Form.Item
-            label="Giá mỗi kWh (₫)"
+            label="Price per kWh (₫)"
             name="pricePerKwh"
-            rules={[{ required: true, message: "Nhập giá mỗi kWh!" }]}
+            rules={[
+              { required: true, message: "Please input price per kWh" },
+              { type: "number", min: 1000, message: "Values must be > 1000" },
+            ]}
           >
             <InputNumber min={0} step={100} className="w-full" />
           </Form.Item>
 
           <Form.Item
-            label="Giá mỗi phút (₫)"
+            label="Price per minute (₫)"
             name="pricePerMinute"
-            rules={[{ required: true, message: "Nhập giá mỗi phút!" }]}
+            rules={[
+              { required: true, message: "Please input price per minute" },
+              { type: "number", min: 1000, message: "Values must be > 1000" },
+            ]}
           >
             <InputNumber min={0} step={100} className="w-full" />
           </Form.Item>
