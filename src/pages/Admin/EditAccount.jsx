@@ -119,40 +119,50 @@ const EditAccount = () => {
     //   width: 80,
     // },
     {
-      title: "Họ tên",
+      title: "Full Name",
       dataIndex: "fullName",
       key: "fullName",
     },
     {
-      title: "Ngày sinh",
+      title: "Date of Birth",
       dataIndex: "dateOfBirth",
       key: "dateOfBirth",
       render: (dob) => (dob ? new Date(dob).toLocaleDateString("vi-VN") : "-"),
     },
     {
-      title: "Địa chỉ",
+      title: "Address",
       dataIndex: "address",
       key: "address",
       ellipsis: true,
     },
     {
-      title: "Số GPLX",
+      title: "Driver License",
       dataIndex: "driverLicense",
       key: "driverLicense",
     },
     {
-      title: "Biển số xe",
+      title: "Vehicle Number",
       dataIndex: "vehicleNumber",
       key: "vehicleNumber",
     },
     {
-      title: "Loại xe",
+      title: "Phone",
+      dataIndex: "phone",
+      key: "phone",
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+    },
+    {
+      title: "Vehicle Type",
       dataIndex: "vehicleType",
       key: "vehicleType",
       render: (v) => <Tag color="blue">{v}</Tag>,
     },
     {
-      title: "Hành động",
+      title: "Actions",
       key: "actions",
       render: (_, record) => (
         <Space>
@@ -178,7 +188,7 @@ const EditAccount = () => {
     <div style={{ padding: 20 }}>
       <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
         <Col>
-          <h2>Account Management</h2>
+          <h2>👤 Account Management </h2>
         </Col>
         <Col>
           {/* <Button type="primary" onClick={handleAdd}>
