@@ -1,3 +1,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* Không làm text giống ô gõ ở phần profile (Ant Descriptions) */
+.ant-descriptions-item,
+.ant-descriptions-item-label,
+.ant-descriptions-item-content {
+  cursor: default;           /* con trỏ mũi tên, không phải text */
+  caret-color: transparent;  /* ẩn dấu nhấp nháy */
+}
+
+/* Nếu vẫn muốn bỏ viền xanh/outline khi click vào mọi thứ (trừ input) */
+*:focus {
+  outline: none;
+}
+
+/* GIỮ caret + behavior bình thường cho ô nhập */
+input:focus,
+textarea:focus,
+select:focus {
+  caret-color: auto;
+  outline: auto;   /* hoặc outline: none; nếu bạn không thích viền */
+}
