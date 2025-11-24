@@ -5,6 +5,7 @@ import {
   WalletOutlined,
   LogoutOutlined,
   CarOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import {
   Layout,
@@ -18,7 +19,8 @@ import {
 } from "antd";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 
-import walletAPI from "../../api/walletAPI";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchWalletBalance } from "../../features/walletSlice";
 
 const { Title, Text } = Typography;
 const { Header, Sider, Content } = Layout;
@@ -26,7 +28,9 @@ const { Header, Sider, Content } = Layout;
 export default function UserPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [walletBalance, setWalletBalance] = useState(null);
+  const dispatch = useDispatch();
+  const walletBalance = useSelector((state) => state.wallet.balance);
+
   const userInfo = useMemo(
     () => JSON.parse(localStorage.getItem("userInfo")) || {},
     []
@@ -39,24 +43,14 @@ export default function UserPage() {
       navigate("/login");
     }
   }, [token, navigate]);
-  const accountId = userInfo.driverId || userInfo.id;
+  const accountId = userInfo.accountId || userInfo.id;
 
   useEffect(() => {
-    if (!token) {
-      message.warning("Bạn cần đăng nhập để truy cập dashboard!");
-      navigate("/login");
-      return;
-    }
-
+    if (!token) return;
     if (!accountId) return;
 
-    const fetchBalance = async () => {
-      const res = await walletAPI.getWallet(accountId);
-      setWalletBalance(res.data.balance);
-    };
-
-    fetchBalance();
-  }, [token, navigate, userInfo, accountId]);
+    dispatch(fetchWalletBalance(accountId));
+  }, [dispatch, token, accountId]);
 
   const fullName = userInfo.fullName || "User";
   const email = userInfo.email || "example@gmail.com";
@@ -73,6 +67,7 @@ export default function UserPage() {
     { key: "/user/session", icon: <CarOutlined />, label: "Session" },
     { key: "/user/history", icon: <DesktopOutlined />, label: "History" },
     { key: "/user/wallet", icon: <WalletOutlined />, label: "Wallet" },
+    { key: "/user/profile", icon: <UserOutlined />, label: "Profile" },
   ];
 
   return (
@@ -143,12 +138,12 @@ export default function UserPage() {
             style={{ padding: "16px 0" }}
           />
 
-          <div className="px-10 pb-20 border-t border-[#f2f2f2]">
+          <div className="px-5 pb-20 border-t border-[#f2f2f2]">
             <Button
               type="text"
               icon={<LogoutOutlined />}
               danger
-              className="w-full justify-start"
+              className=" justify-start"
               onClick={handleLogout}
               style={{ left: 13 }}
             >
