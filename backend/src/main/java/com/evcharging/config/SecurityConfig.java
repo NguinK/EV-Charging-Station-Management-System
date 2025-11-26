@@ -36,7 +36,8 @@ public class SecurityConfig {
     @Bean
     public RoleHierarchy roleHierarchy() {
         return RoleHierarchyImpl.fromHierarchy(
-                "ROLE_ADMIN > ROLE_CS_STAFF\n" +
+                "ROLE_SUPER_ADMIN > ROLE_ADMIN\n" +
+                        "ROLE_ADMIN > ROLE_CS_STAFF\n" +
                         "ROLE_CS_STAFF > ROLE_EV_DRIVER"
         );
     }
@@ -51,7 +52,6 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/auth/register-driver",
                                 "/auth/login",
-                                "/admin/auth/createAdmin",
                                 "/admin/auth/login",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
@@ -59,11 +59,14 @@ public class SecurityConfig {
                                 "/ws/**"
                         ).permitAll()
 
-                        //Admin user management
-                        .requestMatchers("/admin/auth/getAllAdmins").hasRole("ADMIN")
-                        .requestMatchers("/admin/auth/ById/**").hasRole("ADMIN")
-                        .requestMatchers("/admin/auth/updateAdmin/**").hasRole("ADMIN")
-                        .requestMatchers("/admin/auth/deleteAdmin/**").hasRole("ADMIN")
+                        // SUPER_ADMIN exclusive endpoints - system management
+                        .requestMatchers("/admin/auth/createAdmin").hasRole("SUPER_ADMIN")
+                        .requestMatchers("/admin/auth/getAllAdmins").hasRole("SUPER_ADMIN")
+                        .requestMatchers("/admin/auth/ById/**").hasRole("SUPER_ADMIN")
+                        .requestMatchers("/admin/auth/updateAdmin/**").hasRole("SUPER_ADMIN")
+                        .requestMatchers("/admin/auth/deleteAdmin/**").hasRole("SUPER_ADMIN")
+                        .requestMatchers("/api/admin/users/*/role").hasRole("SUPER_ADMIN")
+                        .requestMatchers("/api/system/**").hasRole("SUPER_ADMIN")
 
                         //Admin API endpoints
                                 .requestMatchers("/api/admin/staff/**").hasRole("ADMIN")

@@ -109,6 +109,18 @@ public class AdminUserService {
         Account account = accountRepo.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        // Prevent modification of SUPER_ADMIN accounts (only SUPER_ADMIN can modify SUPER_ADMIN)
+        if (account.getRole() == Role.SUPER_ADMIN) {
+            log.error("Attempt to modify SUPER_ADMIN role detected for user {}", userId);
+            throw new SecurityException("Cannot modify SUPER_ADMIN role. Only SUPER_ADMIN can manage SUPER_ADMIN accounts.");
+        }
+
+        // Prevent assignment of SUPER_ADMIN role (only SUPER_ADMIN can assign SUPER_ADMIN role)
+        if (newRole == Role.SUPER_ADMIN) {
+            log.error("Attempt to assign SUPER_ADMIN role detected for user {}", userId);
+            throw new SecurityException("Cannot assign SUPER_ADMIN role. Only SUPER_ADMIN can assign this role.");
+        }
+
         Role oldRole = account.getRole();
         account.setRole(newRole);
         account.setUpdatedAt(OffsetDateTime.now());
@@ -127,6 +139,12 @@ public class AdminUserService {
 
         Account account = accountRepo.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Prevent modification of SUPER_ADMIN accounts
+        if (account.getRole() == Role.SUPER_ADMIN) {
+            log.error("Attempt to modify SUPER_ADMIN status detected for user {}", userId);
+            throw new SecurityException("Cannot modify SUPER_ADMIN account status. Only SUPER_ADMIN can manage SUPER_ADMIN accounts.");
+        }
 
         AccountStatus oldStatus = account.getStatus();
         account.setStatus(newStatus);
