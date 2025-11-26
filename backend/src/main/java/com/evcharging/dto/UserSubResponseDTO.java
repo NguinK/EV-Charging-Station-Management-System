@@ -20,6 +20,5 @@ public class UserSubResponseDTO {
     private OffsetDateTime endDate;
     private SubscriptionStatus status;
     private Boolean autoRenew;
-
-
+    private String driverName;
 }

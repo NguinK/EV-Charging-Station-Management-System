@@ -2,6 +2,8 @@ package com.evcharging.dto;
 
 import com.evcharging.entity.*;
 import org.springframework.stereotype.Component;
+
+import java.sql.Driver;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,16 +39,19 @@ public class DtoMapper {
         return dto;
     }
 
-    public UserSubResponseDTO toUserSubResponseDTO(UserSubscription entity) {
+    public UserSubResponseDTO toUserSubResponseDTO(UserSubscription sub) {
+        Account account = sub.getAccount();
+        EVDriver driver = account.getDriver();
         UserSubResponseDTO dto = new UserSubResponseDTO();
-        dto.setId(entity.getId());
-        dto.setAccountId(entity.getAccount().getId());
-        dto.setPlanName(entity.getPlan().getName());
-        dto.setDiscountPercent(entity.getPlan().getDiscountPercent());
-        dto.setStartDate(entity.getStartDate());
-        dto.setEndDate(entity.getEndDate());
-        dto.setStatus(entity.getStatus());
-        dto.setAutoRenew(entity.getAutoRenew());
+        dto.setId(sub.getId());
+        dto.setAccountId(sub.getAccount().getId());
+        dto.setPlanName(sub.getPlan().getName());
+        dto.setDiscountPercent(sub.getPlan().getDiscountPercent());
+        dto.setStartDate(sub.getStartDate());
+        dto.setEndDate(sub.getEndDate());
+        dto.setStatus(sub.getStatus());
+        dto.setAutoRenew(sub.getAutoRenew());
+        dto.setDriverName(driver.getFullName());
         return dto;
     }
 
