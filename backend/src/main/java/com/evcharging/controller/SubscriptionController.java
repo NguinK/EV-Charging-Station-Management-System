@@ -18,30 +18,37 @@ public class SubscriptionController {
 
     private final SubscriptionService subscriptionService;
 
-    // 1. Tạo gói thuê bao mới (admin)
-    @PostMapping("/create")
+    //  Tạo gói thuê bao mới (admin)
+    @PostMapping("/adminCreate")
     public ResponseEntity<SubPlanResponseDTO> createPlan(@RequestBody SubPlanCreateDTO dto) {
         SubPlanResponseDTO response = subscriptionService.createPlan(dto);
         return ResponseEntity.ok(response);
     }
 
-    // 2. Cập nhật gói thuê bao
-    @PutMapping("/update/{id}")
+    //  Cập nhật gói thuê bao
+    @PutMapping("/adminUpdate/{id}")
     public ResponseEntity<SubPlanResponseDTO> updatePlan(@PathVariable Long id,
                                                          @RequestBody SubPlanCreateDTO dto) {
         SubPlanResponseDTO response = subscriptionService.updatePlan(id, dto);
         return ResponseEntity.ok(response);
     }
 
-    // 3. Xóa gói thuê bao
-    @DeleteMapping("/delete/{id}")
+    //  Xóa gói thuê bao
+    @DeleteMapping("/adminDelete/{id}")
     public ResponseEntity<Void> deletePlan(@PathVariable Long id) {
         subscriptionService.deletePlan(id);
         return ResponseEntity.noContent().build();
     }
+    // Admin lấy tất cả subscriptions của mọi driver
+    @GetMapping("/adminGetAllDriverSubs")
+    public ResponseEntity<List<UserSubResponseDTO>> getAllDriverSubscriptions() {
+        List<UserSubResponseDTO> response = subscriptionService.getAllDriverSubscriptions();
+        return ResponseEntity.ok(response);
+    }
+
 
     // 4. Lấy tất cả gói thuê bao
-    @GetMapping
+    @GetMapping("/adminGetAllSubs")
     public ResponseEntity<List<SubPlanResponseDTO>> getAllPlans() {
         List<SubPlanResponseDTO> plans = subscriptionService.getAllPlans();
         return ResponseEntity.ok(plans);
@@ -56,11 +63,13 @@ public class SubscriptionController {
         UserSubResponseDTO response = subscriptionService.registerSubscription(accountId, dto);
         return ResponseEntity.ok(response);
     }
-    //  Lấy gói đang ACTIVE của driver
-    @GetMapping("/active/{accountId}")
-    public ResponseEntity<UserSubResponseDTO> getActiveSubscription(@PathVariable Long accountId) {
-        UserSubResponseDTO response = subscriptionService.getActiveSubscription(accountId);
+
+    // Driver lấy lịch sử subscription của mình
+    @GetMapping("/driverGetSubHistory/{accountId}")
+    public ResponseEntity<List<UserSubResponseDTO>> getSubscriptionHistory(@PathVariable Long accountId) {
+        List<UserSubResponseDTO> response = subscriptionService.getSubscriptionHistory(accountId);
         return ResponseEntity.ok(response);
     }
+
 
 }

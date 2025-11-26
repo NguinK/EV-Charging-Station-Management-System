@@ -139,17 +139,29 @@ public class SubscriptionService {
     }
 
     @Transactional(readOnly = true)
-    public UserSubResponseDTO getActiveSubscription(Long accountId) {
-        // 1. Kiểm tra account
+    public List<UserSubResponseDTO> getAllDriverSubscriptions() {
+        // Lấy tất cả subscription từ bảng UserSubscription
+        List<UserSubscription> subs = userSubscriptionRepo.findAll();
+
+        // Map sang DTO
+        return subs.stream()
+                .map(dtoMapper::toUserSubResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserSubResponseDTO> getSubscriptionHistory(Long accountId) {
+        // Kiểm tra account
         Account account = accountRepo.findById(accountId)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found"));
 
-        // 2. Tìm subscription ACTIVE
-        UserSubscription subscription = userSubscriptionRepo
-                .findByAccountAndStatus(account, SubscriptionStatus.ACTIVE)
-                .orElseThrow(() -> new IllegalArgumentException("No active subscription found"));
+        //  Lấy tất cả subscriptions của driver
+        List<UserSubscription> subs = userSubscriptionRepo.findByAccountId(account.getId());
 
-        // 3. Trả về DTO
-        return dtoMapper.toUserSubResponseDTO(subscription);
+        // Map sang DTO
+        return subs.stream()
+                .map(dtoMapper::toUserSubResponseDTO)
+                .collect(Collectors.toList());
     }
+
 }

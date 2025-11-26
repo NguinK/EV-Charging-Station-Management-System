@@ -66,7 +66,7 @@ public class SecurityConfig {
 
                         //Admin API endpoints
                                 .requestMatchers("/api/admin/staff/**").hasRole("ADMIN")
-                                .requestMatchers("/api/subscriptions/**").hasRole("ADMIN")
+                                .requestMatchers("/api/subscriptions/adminCreate","api/subscriptions/adminDelete/","api/subscriptions/adminUpdate/","api/subscriptions/adminGetAllSubs","api/subscriptions/adminGetAllDriverSubs").hasRole("ADMIN")
 
                         // Charging point admin controls
                         .requestMatchers(
@@ -93,7 +93,8 @@ public class SecurityConfig {
 
                         //Driver endpoints
                         .requestMatchers("/drivers/**").hasRole("EV_DRIVER")
-                                .requestMatchers("api/subscriptions/register").hasRole("EV_DRIVER")
+                        .requestMatchers("api/subscriptions/register").hasRole("EV_DRIVER")
+
 
 
                         //Driver can read stations, sessions, wallets, transactions, charging points
@@ -106,6 +107,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/sessions/**").hasRole("EV_DRIVER")
                         .requestMatchers("/api/wallets/**").hasRole("EV_DRIVER")
                         .requestMatchers("/api/transactions/**").hasRole("EV_DRIVER")
+                                .requestMatchers("/api/subscriptions/driverGetSubHistory/**").hasRole("EV_DRIVER")
 
                         //All other requests must be authenticated
 //                        .anyRequest().authenticated()
