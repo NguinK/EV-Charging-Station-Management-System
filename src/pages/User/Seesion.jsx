@@ -239,7 +239,7 @@ function SessionInfo() {
           </div>
         )}
         <Modal
-          title="🔋 Phiên sạc đã hoàn thành"
+          title="🔋Session Completed"
           open={paymentModalOpen}
           onCancel={() => setPaymentModalOpen(false)}
           footer={null}
@@ -247,14 +247,14 @@ function SessionInfo() {
         >
           <div className="flex flex-col items-center gap-2">
             <p className="mb-1">
-              Năng lượng: <b>{energy}</b> kWh
+             Energy: <b>{energy}</b> kWh
             </p>
             <p className="mb-1">
-              Số tiền phải trả: <b>{cost}</b>
+              Cost: <b>{cost}</b>
             </p>
 
             <p className="mt-4 mb-2 font-semibold">
-              Chọn phương thức thanh toán:
+              Payment Method:
             </p>
 
             {/* Button nằm giữa modal */}

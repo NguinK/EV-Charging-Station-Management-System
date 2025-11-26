@@ -39,9 +39,6 @@ function LoginPage() {
         email: values.email,
         password: values.password,
       });
-
-      console.log("✅ Login success:", res.data);
-
       // ✅ Lấy token từ response
       const token = res?.data?.token;
       const userInfo = {

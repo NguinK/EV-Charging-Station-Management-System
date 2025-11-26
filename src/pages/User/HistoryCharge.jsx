@@ -13,7 +13,14 @@ const HistoryCharge = () => {
       try {
         const res = await transactionAPI.getMyHistory();
         if (res.data) {
-          setPayments(res.data);
+          setPayments(
+            res.data
+              .slice()
+              .sort(
+                (a, b) =>
+                  new Date(b.transactionTime) - new Date(a.transactionTime)
+              )
+          );
           setTotalAmount(
             res.data.reduce((sum, item) => sum + (item.amount || 0), 0)
           );
@@ -109,7 +116,7 @@ const HistoryCharge = () => {
           rowKey="id"
           columns={columns}
           dataSource={payments}
-          pagination={{ pageSize: 5 }}
+          pagination={{ pageSize: 8 }}
         />
       </Card>
     </div>

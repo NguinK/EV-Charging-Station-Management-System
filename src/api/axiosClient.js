@@ -23,5 +23,21 @@ axiosClient.interceptors.request.use( // Dung can thiep request truoc khi gui di
     }
         
 )
+axiosClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error.response?.status;
+
+    // Token hết hạn / không hợp lệ
+    if (status === 401 || status === 403) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userInfo");
+
+      window.location.href = "/login";
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 export default axiosClient;

@@ -37,11 +37,12 @@ const Profile = () => {
   }, [driverId]);
 
   return (
-    <Card title="Profile" style={{ maxWidth: 800, margin: "0 auto" , textAlign: "center"}}>
+    <Card
+      title="Profile"
+      style={{ maxWidth: 800, margin: "0 auto", textAlign: "center" }}
+    >
       {loading || !profile ? (
-        <div style={{ textAlign: "center", padding: "24px 0" }}>
-          <Spin tip="Đang tải thông tin..." />
-        </div>
+        <div style={{ textAlign: "center", padding: "24px 0" }}></div>
       ) : (
         <Descriptions bordered column={1} size="middle">
           <Descriptions.Item label="Full Name">
@@ -62,12 +63,8 @@ const Profile = () => {
           <Descriptions.Item label="Vehicle Type">
             {profile.vehicleType}
           </Descriptions.Item>
-          <Descriptions.Item label="Phone">
-            {profile.phone}
-          </Descriptions.Item>
-          <Descriptions.Item label="Email">
-            {profile.email}
-          </Descriptions.Item>
+          <Descriptions.Item label="Phone">{profile.phone}</Descriptions.Item>
+          <Descriptions.Item label="Email">{profile.email}</Descriptions.Item>
         </Descriptions>
       )}
     </Card>

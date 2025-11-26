@@ -159,7 +159,7 @@ const Wallet = () => {
           columns={columns}
           dataSource={transactions}
           loading={txLoading}
-          pagination={{ pageSize: 5 }}
+          pagination={{ pageSize: 8 }}
           style={{ width: "100%" }} 
           scroll={{ x: true }}
         />

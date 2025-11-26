@@ -121,9 +121,9 @@ export default function UserPage() {
                 <div className="text-sm font-semibold mt-1">
                   Balance:{" "}
                   {walletBalance != null
-                    ? walletBalance.toLocaleString("vi-VN")
+                    ? Math.floor(walletBalance).toLocaleString("vi-VN")
                     : "Đang tải..."}{" "}
-                  đ
+                  đ 
                 </div>
               </div>
             </Space>
