@@ -2,6 +2,7 @@ package com.evcharging.controller;
 
 import com.evcharging.dto.DriverProfileDTO;
 import com.evcharging.service.AdminDriverService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/drivers")
+@Tag(name = "Admin Driver Management", description = "APIs for managing driver users (Admin only)")
 public class AdminDriverController {
 
     private final AdminDriverService adminDriverService;

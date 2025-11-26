@@ -20,6 +20,15 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     //Tìm account theo email
     Optional<Account> findByEmail(String email);
 
+    // Kiểm tra email tồn tại VÀ đang ACTIVE
+    @Query("SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END FROM Account a " +
+            "WHERE a.email = :email AND a.status = 'ACTIVE'")
+    boolean existsByEmailAndActive(@Param("email") String email);
+
+    // Tìm account inactive theo email
+    @Query("SELECT a FROM Account a WHERE a.email = :email AND a.status = 'INACTIVE' AND a.role = 'CS_STAFF'")
+    Optional<Account> findInactiveStaffByEmail(@Param("email") String email);
+
     //Tìm account theo phone
     Optional<Account> findByPhone(String phone);
 

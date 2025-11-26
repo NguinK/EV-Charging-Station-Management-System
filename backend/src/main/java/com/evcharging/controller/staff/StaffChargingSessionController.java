@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/staff/sessions")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('STAFF')")
+@PreAuthorize("hasRole('CS_STAFF')")
 @Tag(name = "Staff Charging Session Management", description = "APIs for staff to manage charging sessions")
 public class StaffChargingSessionController {
     private final StaffChargingSessionService staffChargingSessionService;

@@ -123,7 +123,6 @@ public class AdminService {
         });
     }
 
-
     @Transactional
     public boolean deleteAdmin(Long id) {
         return adminRepository.findById(id).map(a -> {
@@ -131,5 +130,4 @@ public class AdminService {
             return true;
         }).orElse(false);
     }
-
 }

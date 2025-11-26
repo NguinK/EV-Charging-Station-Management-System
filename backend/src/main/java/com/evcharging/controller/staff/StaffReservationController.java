@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/staff")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('STAFF')")
+@PreAuthorize("hasRole('CS_STAFF')")
 @Tag(name = "Staff Reservation Management", description = "APIs for staff to manage reservations")
 public class StaffReservationController {
     private final StaffReservationService staffReservationService;

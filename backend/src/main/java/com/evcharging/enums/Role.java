@@ -19,31 +19,98 @@ public enum Role {
 
         switch (this) {
             case ADMIN -> {
-                // Quyền quản trị toàn cục
+                // STATION & INFRASTRUCTURE
                 auth.add(new SimpleGrantedAuthority("PERM_STATION_MANAGE"));
+                auth.add(new SimpleGrantedAuthority("PERM_STATION_CONTROL"));
                 auth.add(new SimpleGrantedAuthority("PERM_CONNECTOR_MANAGE"));
                 auth.add(new SimpleGrantedAuthority("PERM_PRICING_MANAGE"));
-                auth.add(new SimpleGrantedAuthority("PERM_USER_MANAGE"));
+
+                // USER MANAGEMENT
+                auth. add(new SimpleGrantedAuthority("PERM_USER_MANAGE"));
+                auth.add(new SimpleGrantedAuthority("PERM_STAFF_MANAGE"));
+                auth.add(new SimpleGrantedAuthority("PERM_DRIVER_MANAGE"));
+
+                // REPORTS & ANALYTICS
                 auth.add(new SimpleGrantedAuthority("PERM_REPORT_VIEW"));
+                auth.add(new SimpleGrantedAuthority("PERM_REPORT_REVENUE"));
+                auth.add(new SimpleGrantedAuthority("PERM_REPORT_USAGE"));
+                auth.add(new SimpleGrantedAuthority("PERM_DASHBOARD_VIEW"));
+                auth.add(new SimpleGrantedAuthority("PERM_AI_FORECAST"));
+
+                // BILLING & PAYMENT
                 auth.add(new SimpleGrantedAuthority("PERM_BILLING_MANAGE"));
+                auth.add(new SimpleGrantedAuthority("PERM_TRANSACTION_MANAGE"));
+
+                // SUBSCRIPTION
+                auth.add(new SimpleGrantedAuthority("PERM_SUBSCRIPTION_MANAGE"));
+
+                // SYSTEM
+                auth.add(new SimpleGrantedAuthority("PERM_SYSTEM_CONFIG"));
                 auth.add(new SimpleGrantedAuthority("PERM_TICKET_MANAGE"));
             }
             case CS_STAFF -> {
-                // Hỗ trợ khách: xem & xử lý ticket, xem phiên sạc, tra cứu thanh toán
-                auth.add(new SimpleGrantedAuthority("PERM_TICKET_MANAGE"));
-                auth.add(new SimpleGrantedAuthority("PERM_SESSION_VIEW"));
+                // STATION MANAGEMENT
+                auth.add(new SimpleGrantedAuthority("PERM_STATION_VIEW"));
+                auth. add(new SimpleGrantedAuthority("PERM_STATION_ACCESS"));
+
+                // CHARGING POINT MANAGEMENT
+                auth.add(new SimpleGrantedAuthority("PERM_CHARGER_STATUS_MANAGE"));
+                auth.add(new SimpleGrantedAuthority("PERM_CHARGER_MAINTENANCE"));
+                auth.add(new SimpleGrantedAuthority("PERM_CHARGER_VIEW"));
+
+                // CHARGING SESSION MANAGEMENT
+                auth.add(new SimpleGrantedAuthority("PERM_SESSION_START"));
+                auth.add(new SimpleGrantedAuthority("PERM_SESSION_STOP"));
+                auth. add(new SimpleGrantedAuthority("PERM_SESSION_VIEW"));
+                auth.add(new SimpleGrantedAuthority("PERM_SESSION_MANAGE"));
+
+                // RESERVATION MANAGEMENT
+                auth.add(new SimpleGrantedAuthority("PERM_RESERVATION_VIEW"));
+                auth.add(new SimpleGrantedAuthority("PERM_RESERVATION_CHECKIN"));
+                auth.add(new SimpleGrantedAuthority("PERM_RESERVATION_NOSHOW"));
+
+                // PAYMENT & TRANSACTION
+                auth.add(new SimpleGrantedAuthority("PERM_PAYMENT_RECORD"));
+                auth.add(new SimpleGrantedAuthority("PERM_TRANSACTION_VIEW"));
+                auth.add(new SimpleGrantedAuthority("PERM_REFUND_CREATE"));
+                auth.add(new SimpleGrantedAuthority("PERM_BILLING_VIEW"));
+
+                // USER MANAGEMENT
                 auth.add(new SimpleGrantedAuthority("PERM_USER_VIEW"));
-                auth.add(new SimpleGrantedAuthority("PERM_REFUND_CREATE")); // nếu có quy trình refund
+                auth.add(new SimpleGrantedAuthority("PERM_DRIVER_VERIFY"));
+
+                // SUPPORT & TICKET
+                auth. add(new SimpleGrantedAuthority("PERM_TICKET_MANAGE"));
                 auth.add(new SimpleGrantedAuthority("PERM_REPORT_VIEW_BASIC"));
             }
             case EV_DRIVER -> {
-                // Khách hàng: sử dụng trạm, xem lịch sử, quản lý hồ sơ
+                // STATION & BROWSE
                 auth.add(new SimpleGrantedAuthority("PERM_STATION_BROWSE"));
+                auth.add(new SimpleGrantedAuthority("PERM_CHARGER_VIEW"));
+
+                // RESERVATION
+                auth.add(new SimpleGrantedAuthority("PERM_RESERVATION_CREATE"));
+                auth.add(new SimpleGrantedAuthority("PERM_RESERVATION_VIEW"));
+                auth. add(new SimpleGrantedAuthority("PERM_RESERVATION_CANCEL"));
+
+                // CHARGING SESSION
                 auth.add(new SimpleGrantedAuthority("PERM_SESSION_START"));
                 auth.add(new SimpleGrantedAuthority("PERM_SESSION_STOP"));
+                auth.add(new SimpleGrantedAuthority("PERM_SESSION_VIEW"));
+
+                // PAYMENT & TRANSACTION
                 auth.add(new SimpleGrantedAuthority("PERM_WALLET_PAY"));
+                auth.add(new SimpleGrantedAuthority("PERM_PAYMENT_EWALLET"));
+                auth.add(new SimpleGrantedAuthority("PERM_TRANSACTION_VIEW"));
                 auth.add(new SimpleGrantedAuthority("PERM_HISTORY_VIEW"));
+
+                // SUBSCRIPTION
+                auth.add(new SimpleGrantedAuthority("PERM_SUBSCRIPTION_VIEW"));
+                auth.add(new SimpleGrantedAuthority("PERM_SUBSCRIPTION_REGISTER"));
+
+                // PROFILE
                 auth.add(new SimpleGrantedAuthority("PERM_PROFILE_MANAGE"));
+                auth.add(new SimpleGrantedAuthority("PERM_PROFILE_VIEW"));
             }
         }
         return Collections.unmodifiableList(auth);

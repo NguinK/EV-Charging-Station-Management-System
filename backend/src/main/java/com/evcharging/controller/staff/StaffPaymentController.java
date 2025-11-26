@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/staff/payments")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('STAFF')")
+@PreAuthorize("hasRole('CS_STAFF')")
 @Tag(name = "Staff Payment Management", description = "APIs for staff to process payments")
 public class StaffPaymentController {
     private final StaffPaymentService staffPaymentService;

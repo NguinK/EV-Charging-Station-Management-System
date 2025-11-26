@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/staff/chargers")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('STAFF')")
+@PreAuthorize("hasRole('CS_STAFF')")
 @Tag(name = "Staff Charging Point Management", description = "APIs for staff to manage charging points status")
 public class StaffChargingPointController {
     private final StaffChargingPointService staffChargingPointService;

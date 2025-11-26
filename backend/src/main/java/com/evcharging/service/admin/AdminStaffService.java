@@ -3,11 +3,13 @@ package com.evcharging.service.admin;
 import com.evcharging.dto.admin.CreateStaffRequest;
 import com.evcharging.dto.admin.StaffResponse;
 import com.evcharging.entity.Account;
+import com.evcharging.entity.CS_Staff;
 import com.evcharging.entity.ChargingStation;
 import com.evcharging.entity.StaffAssignment;
 import com.evcharging.enums.AccountStatus;
 import com.evcharging.enums.Role;
 import com.evcharging.repository.AccountRepository;
+import com.evcharging.repository.CS_StaffRepository;
 import com.evcharging.repository.ChargingStationRepository;
 import com.evcharging.repository.StaffAssignmentRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.SecureRandom;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -32,6 +35,7 @@ public class AdminStaffService {
     private final AccountRepository accountRepository;
     private final ChargingStationRepository stationRepository;
     private final StaffAssignmentRepository staffAssignmentRepository;
+    private final CS_StaffRepository csStaffRepository;
     private final PasswordEncoder passwordEncoder;
 
     private static final String PASSWORD_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
@@ -42,36 +46,66 @@ public class AdminStaffService {
     public StaffResponse createStaff(CreateStaffRequest request) {
         log.info("Creating staff user with email: {}", request.getEmail());
 
-        // 1. Validate email is unique
-        if (accountRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("Email already exists: " + request.getEmail());
-        }
-
-        // 2. Validate all stations exist
+        // 1.  Validate all stations exist FIRST
         List<ChargingStation> stations = stationRepository.findAllById(request.getStationIds());
-        if (stations.size() != request.getStationIds().size()) {
+        if (stations. size() != request.getStationIds().size()) {
             throw new IllegalArgumentException("One or more station IDs are invalid");
         }
 
-        // 3. Generate or use provided password
+        // 2. Check if email exists and is ACTIVE
+        if (accountRepository.existsByEmailAndActive(request.getEmail())) {
+            throw new IllegalArgumentException("Email already in use by an active account: " + request.getEmail());
+        }
+
+        // 3.  Check if there's an INACTIVE staff account with same email
+        Optional<Account> inactiveAccount = accountRepository.findInactiveStaffByEmail(request.getEmail());
+
+        Account staffAccount;
         String rawPassword = request.getPassword() != null && !request.getPassword().isBlank()
                 ? request.getPassword()
                 : generateSecurePassword();
 
-        // 4. Create Account entity
-        Account staffAccount = Account.builder()
-                .email(request.getEmail())
-                .phone(request.getPhone())
-                .fullName(request.getFullName())
-                .password(passwordEncoder.encode(rawPassword))
-                .role(Role.CS_STAFF)
-                .status(AccountStatus.ACTIVE)
-                .build();
+        if (inactiveAccount.isPresent()) {
+            // TÁI KÍCH HOẠT account cũ với thông tin mới
+            log.info("Reactivating inactive staff account for email: {}", request. getEmail());
+            staffAccount = inactiveAccount.get();
 
-        staffAccount = accountRepository.save(staffAccount);
-        log.info("Staff account created with ID: {}", staffAccount.getId());
+            // Cập nhật thông tin mới
+            staffAccount.setPhone(request. getPhone());
+            staffAccount. setFullName(request.getFullName());
+            staffAccount.setPassword(passwordEncoder.encode(rawPassword));
+            staffAccount.setStatus(AccountStatus.ACTIVE);
+            staffAccount.setUpdatedAt(OffsetDateTime. now());
 
-        // 5. Create StaffAssignment entries for each station
+            staffAccount = accountRepository.save(staffAccount);
+
+            // Xóa TẤT CẢ assignments cũ (cả active và inactive)
+            List<StaffAssignment> oldAssignments = staffAssignmentRepository
+                    .findAllByStaffAccountId(staffAccount.getId());
+            if (! oldAssignments.isEmpty()) {
+                staffAssignmentRepository. deleteAll(oldAssignments);
+                log.info("Deleted {} old assignments for reactivated staff {}",
+                        oldAssignments.size(), staffAccount.getId());
+            }
+
+        } else {
+            // TẠO MỚI account
+            log.info("Creating new staff account for email: {}", request.getEmail());
+
+            staffAccount = Account.builder()
+                    .email(request.getEmail())
+                    .phone(request.getPhone())
+                    .fullName(request.getFullName())
+                    .password(passwordEncoder.encode(rawPassword))
+                    .role(Role.CS_STAFF)
+                    .status(AccountStatus. ACTIVE)
+                    .build();
+
+            staffAccount = accountRepository. save(staffAccount);
+            log.info("Staff account created with ID: {}", staffAccount.getId());
+        }
+
+        // 4. Create NEW StaffAssignment entries for each station
         Long staffAccountId = staffAccount.getId();
         OffsetDateTime now = OffsetDateTime.now();
 
@@ -84,16 +118,16 @@ public class AdminStaffService {
                     assignment.setActive(true);
                     return assignment;
                 })
-                .collect(Collectors.toList());
+                . collect(Collectors.toList());
 
-        staffAssignmentRepository.saveAll(assignments);
+        staffAssignmentRepository. saveAll(assignments);
         log.info("Created {} station assignments for staff {}", assignments.size(), staffAccountId);
 
-        // 6. Build response
+        // 5. Build response
         return buildStaffResponse(staffAccount, assignments, rawPassword);
     }
 
-    //Get all staff users with pagination
+    // Get all staff users with pagination
     public Page<StaffResponse> getAllStaff(int page, int size) {
         log.info("Getting all staff users - page: {}, size: {}", page, size);
 
@@ -107,7 +141,7 @@ public class AdminStaffService {
         });
     }
 
-    //Get staff details by ID
+    // Get staff details by ID
     public StaffResponse getStaffById(Long staffId) {
         log.info("Getting staff details for ID: {}", staffId);
 
@@ -124,7 +158,7 @@ public class AdminStaffService {
         return buildStaffResponse(staffAccount, assignments, null);
     }
 
-    //Update staff station assignments
+    // Update staff station assignments
     @Transactional
     public StaffResponse updateStaffAssignments(Long staffId, List<Long> newStationIds) {
         log.info("Updating station assignments for staff: {}", staffId);
@@ -194,8 +228,7 @@ public class AdminStaffService {
         log.info("Staff {} deactivated", staffId);
     }
 
-    //HELPER METHODS
-
+    // HELPER METHODS
     private StaffResponse buildStaffResponse(Account account, List<StaffAssignment> assignments, String temporaryPassword) {
         List<StaffResponse.StaffStationInfo> stationInfos = assignments.stream()
                 .map(assignment -> StaffResponse.StaffStationInfo.builder()

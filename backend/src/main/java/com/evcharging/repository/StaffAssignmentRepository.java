@@ -20,4 +20,8 @@ public interface StaffAssignmentRepository extends JpaRepository<StaffAssignment
     List<Long> findStationIdsByStaffAccountId(@Param("staffAccountId") Long staffAccountId);
 
     boolean existsByStaffAccountIdAndStationIdAndActiveTrue(Long staffAccountId, Long stationId);
+
+    @Query("SELECT sa FROM StaffAssignment sa " +
+            "WHERE sa.staffAccountId = :staffAccountId")
+    List<StaffAssignment> findAllByStaffAccountId(@Param("staffAccountId") Long staffAccountId);
 }

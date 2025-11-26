@@ -17,11 +17,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/staff/stations")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('STAFF')")
+@PreAuthorize("hasRole('CS_STAFF')")
 @Tag(name = "Staff Station Management", description = "APIs for staff to manage their assigned stations")
 public class StaffStationController {
     private final StaffStationService staffStationService;
-     @GetMapping("/mine")
+    @GetMapping("/mine")
     @Operation(summary = "Get my assigned stations", description = "Returns all stations assigned to the logged-in staff member")
     public ResponseEntity<ApiResponse<List<StationSummaryResponse>>> getMyStations() {
          List<StationSummaryResponse> stations = staffStationService.getMyStations();
