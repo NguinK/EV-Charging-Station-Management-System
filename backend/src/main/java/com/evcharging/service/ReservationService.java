@@ -31,20 +31,23 @@ public class ReservationService {
     private final EVDriverRepository driverRepository;
     private final ChargingStationRepository stationRepository;
     private final ChargingPointRepository chargingPointRepository;
-    private static final BigDecimal RESERVATION_FEE_PER_HOUR = BigDecimal.valueOf(10000);
+    private final PricingService pricingService;
 
     public ReservationService(ReservationRepository reservationRepository,
                               EVDriverRepository driverRepository,
                               ChargingStationRepository stationRepository,
-                              ChargingPointRepository chargingPointRepository) {
+                              ChargingPointRepository chargingPointRepository,
+                              PricingService pricingService) {
         this.reservationRepository = reservationRepository;
         this.driverRepository = driverRepository;
         this.stationRepository = stationRepository;
         this.chargingPointRepository = chargingPointRepository;
+        this.pricingService = pricingService;
     }
 
     // Hàm dùng chung để map Entity -> DTO
     private ReservationResponseDTO mapToDTO(Reservation res) {
+        BigDecimal holdFee = pricingService.calculateReservationHoldFee(res);
         return new ReservationResponseDTO(
                 res.getId(),
                 res.getStation().getName(),
@@ -52,9 +55,9 @@ public class ReservationService {
                 res.getStatus(),
                 res.getStartTime(),
                 res.getExpireTime(),
-                res.getChargingPoint().getId(), // nếu bạn muốn trả về id trụ
+                res.getChargingPoint().getId(),
                 res.getStation().getId(),
-                res.getHoldingFee().doubleValue()
+                holdFee.doubleValue()
 
         );
     }
@@ -107,14 +110,6 @@ public class ReservationService {
                 reservation.setStartTime(nowUTC); // thời điểm đặt
                 reservation.setExpireTime(endTime); // thời điểm driver dự kiến đến
                 reservation.setStatus(ReservationStatus.CONFIRMED);
-
-                // Tính phí giữ chỗ theo số phút giữ
-                long minutesBetween = Duration.between(nowUTC, endTime).toMinutes();
-                BigDecimal holdingFee = BigDecimal.valueOf(minutesBetween)
-                        .divide(BigDecimal.valueOf(60), 2, RoundingMode.HALF_UP) //phút -> giờ, giữ 2 chữ số thập phân
-                        .multiply(RESERVATION_FEE_PER_HOUR) //nhân phí mỗi giờ
-                        .setScale(0, RoundingMode.HALF_UP); // làm tròn tới đồng
-                reservation.setHoldingFee(holdingFee);
 
                 point.setStatus(ChargingPointStatus.RESERVED);
                 chargingPointRepository.save(point);

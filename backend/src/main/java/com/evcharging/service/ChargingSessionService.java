@@ -154,21 +154,21 @@ public class ChargingSessionService {
         int endSoc = session.getEndSoc() != null ? session.getEndSoc() : 100;
         session.setEndSoc(endSoc);
 
-        // ====== 1. Tính năng lượng đã sạc ======
+        //  1. Tính năng lượng đã sạc
         double energy = session.getDriver().getBatteryCapacity()
                 * (endSoc - session.getStartSoc()) / 100.0;
         session.setEnergyConsumed(Math.max(0, energy));
 
-        // ====== 2. Tính tiền ======
+        // 2. Tính tiền
         BigDecimal finalCost = pricingService.calculateChargingFee(session);
         session.setCost(finalCost.doubleValue());
 
-        // ====== 3. Mở trụ ======
+        //  3. Mở trụ
         ChargingPoint point = session.getChargingPoint();
         point.setStatus(ChargingPointStatus.AVAILABLE);
         chargingPointRepo.save(point);
 
-        // ====== 4. Tạo transaction 1 lần ======
+        //  4. Tạo transaction 1 lần
         if (session.getTransaction() == null) {
             Transaction tx = transactionService.createTransaction(session, finalCost, TransactionStatus.PENDING);
             session.setTransaction(tx);

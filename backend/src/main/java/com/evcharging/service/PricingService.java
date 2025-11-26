@@ -108,7 +108,7 @@ public class PricingService {
         return BigDecimal.valueOf(minutes).multiply(price).setScale(2, RoundingMode.HALF_UP);
     }
 
-    //Tính phí giữ chỗ đặt trước (lấy từ DB, 10,000VND/giờ)
+    //Tính phí giữ chỗ đặt trước (lấy từ DB, 3000VND/giờ)
     public BigDecimal calculateReservationHoldFee(Reservation reservation) {
         if (reservation == null || reservation.getStartTime() == null
                 || reservation.getExpireTime() == null) {
@@ -124,7 +124,7 @@ public class PricingService {
         //Làm tròn lên số giờ
         long hours = (long) Math.ceil(totalMinutes / 60.0);
 
-        //LẤY PHÍ TỪ DB (mặc định 5,000 VND)
+        //LẤY PHÍ TỪ DB (mặc định 3,000 VND)
         BigDecimal feePerHour = configService.getConfigValueAsDecimal(
                 SystemConfigurationService.RESERVATION_HOLD_FEE_PER_HOUR,
                 BigDecimal.valueOf(3000)

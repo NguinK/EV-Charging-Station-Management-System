@@ -21,7 +21,6 @@ public class SystemConfigurationService {
     public static final String RESERVATION_HOLD_FEE_PER_HOUR = "reservation_hold_fee_per_hour";
     public static final String RESERVATION_PENALTY_AMOUNT = "reservation.penalty.amount";
     public static final String CHARGING_SERVICE_FEE = "charging.service.fee";
-    public static final String DEFAULT_CURRENCY = "system.currency.default";
 
     //Lấy giá trị config dạng String
     @Cacheable(value = "systemConfig", key = "#configKey")
