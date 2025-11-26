@@ -94,26 +94,22 @@ function BookingPage() {
             .filter((s) => s.status !== "INACTIVE")
             .map((station) => (
               <Select.Option key={station.id} value={station.id}>
-                {station.name} – {" "}
+                {station.name} –{" "}
                 <span
-                style={{
-                  color: station.status === "INACTIVE" ? "red" : "green",
-                  fontWeight: 500,
-                }}
-              >
-                {station.status}
-              </span>
+                  style={{
+                    color: station.status === "INACTIVE" ? "red" : "green",
+                    fontWeight: 500,
+                  }}
+                >
+                  {station.status}
+                </span>
               </Select.Option>
-              
             ))}
         </Select>
       </Form.Item>
       {/* ✅ Loại cổng sạc */}
 
-      <Form.Item
-        label="Connector Type "
-        name="connectorType"
-      >
+      <Form.Item label="Connector Type " name="connectorType">
         <Select placeholder="Select connector type">
           <Select.Option value="CCS">CCS</Select.Option>
           <Select.Option value="CHADEMO">CHADEMO</Select.Option>
@@ -123,12 +119,46 @@ function BookingPage() {
 
       <Form.Item label="Time " name="endTime">
         <DatePicker
-          showTime={{ format: "HH:mm", minuteStep: 15 }}
+          showTime={{ format: "HH:mm", minuteStep: 5 }}
           format="YYYY-MM-DD HH:mm"
           style={{ width: "32%" }}
           disabledDate={(current) =>
             current && current < dayjs().startOf("day")
           }
+          disabledTime={(current) => {
+            if (!current) return {};
+
+            const now = dayjs();
+
+            // Nếu không phải hôm nay thì không chặn gì thêm
+            if (!current.isSame(now, "day")) {
+              return {};
+            }
+
+            // Disable giờ < giờ hiện tại
+            const disabledHours = () => {
+              const hours = [];
+              for (let h = 0; h < now.hour(); h++) {
+                hours.push(h);
+              }
+              return hours;
+            };
+
+            // Nếu đang chọn đúng giờ hiện tại thì disable phút < phút hiện tại
+            const disabledMinutes = () => {
+              if (current.hour() !== now.hour()) return [];
+              const mins = [];
+              for (let m = 0; m < now.minute(); m++) {
+                mins.push(m);
+              }
+              return mins;
+            };
+
+            return {
+              disabledHours,
+              disabledMinutes,
+            };
+          }}
         />
       </Form.Item>
 

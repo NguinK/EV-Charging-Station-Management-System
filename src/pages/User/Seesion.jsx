@@ -126,6 +126,12 @@ function SessionInfo() {
 
   const handleEndSession = async () => {
     if (!sessionId) return;
+    if (status === "COMPLETED") {
+      message.info("Phiên sạc đã hoàn tất. Vui lòng thanh toán EPayWallet.");
+      // TUỲ BẠN: có thể vẫn giữ activeSession đến sau khi pay xong
+      setPaymentModalOpen(true);
+      return;
+    }
     try {
       const endedSession = await dispatch(endSessionManual(sessionId)).unwrap();
 
@@ -166,6 +172,10 @@ function SessionInfo() {
 
       message.success("Thanh toán EWallet thành công!");
       setPaymentModalOpen(false);
+      //  XÓA SESSION CŨ
+      localStorage.removeItem("activeSession");
+      setSessionId(null);
+      setSessionData(null);
 
       // 3. Chuyển sang trang lịch sử để thấy PENDING -> SUCCESS
       navigate("/user/history");
@@ -226,7 +236,7 @@ function SessionInfo() {
               💰 <b>Cost:</b> {cost}
             </p>
             {/* ✅ Nút dừng sạc */}
-            {status === "CHARGING" && (
+            {(status === "CHARGING" || status === "COMPLETED") && (
               <Button
                 type="primary"
                 danger
@@ -247,15 +257,13 @@ function SessionInfo() {
         >
           <div className="flex flex-col items-center gap-2">
             <p className="mb-1">
-             Energy: <b>{energy}</b> kWh
+              Energy: <b>{energy}</b> kWh
             </p>
             <p className="mb-1">
               Cost: <b>{cost}</b>
             </p>
 
-            <p className="mt-4 mb-2 font-semibold">
-              Payment Method:
-            </p>
+            <p className="mt-4 mb-2 font-semibold">Payment Method:</p>
 
             {/* Button nằm giữa modal */}
             <div className="mt-2 flex justify-center gap-4">
@@ -273,7 +281,6 @@ function SessionInfo() {
                 type="primary"
                 loading={paying}
                 onClick={handlePayEWallet}
-                
               >
                 EPayWallet
               </Button>
