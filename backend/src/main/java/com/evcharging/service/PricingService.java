@@ -53,7 +53,7 @@ public class PricingService {
                 point.getPricePerMinute()
         );
 
-        //3. Service Fee - Phí dịch vụ (15,000 VND)
+        //3. Service Fee - Phí dịch vụ (3000 VND)
         BigDecimal serviceFeeAmount = getServiceFee();
 
         //4. Reservation Fee - Phí giữ chỗ (nếu có đặt trước)
@@ -124,10 +124,10 @@ public class PricingService {
         //Làm tròn lên số giờ
         long hours = (long) Math.ceil(totalMinutes / 60.0);
 
-        //LẤY PHÍ TỪ DB (mặc định 10,000 VND)
+        //LẤY PHÍ TỪ DB (mặc định 5,000 VND)
         BigDecimal feePerHour = configService.getConfigValueAsDecimal(
                 SystemConfigurationService.RESERVATION_HOLD_FEE_PER_HOUR,
-                BigDecimal.valueOf(10000)
+                BigDecimal.valueOf(3000)
         );
 
         BigDecimal totalFee = BigDecimal.valueOf(hours)
@@ -154,7 +154,7 @@ public class PricingService {
     public BigDecimal getServiceFee() {
         BigDecimal serviceFee = configService.getConfigValueAsDecimal(
                 SystemConfigurationService.CHARGING_SERVICE_FEE,
-                BigDecimal.valueOf(5000)
+                BigDecimal.valueOf(3000)
         );
 
         return serviceFee.setScale(2, RoundingMode.HALF_UP);

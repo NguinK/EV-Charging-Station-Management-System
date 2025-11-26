@@ -66,7 +66,7 @@ public class SecurityConfig {
 
                         //Admin API endpoints
                                 .requestMatchers("/api/admin/staff/**").hasRole("ADMIN")
-                                .requestMatchers("/api/subscriptions/create").hasRole("ADMIN")
+                                .requestMatchers("/api/subscriptions/**").hasRole("ADMIN")
 
                         // Charging point admin controls
                         .requestMatchers(

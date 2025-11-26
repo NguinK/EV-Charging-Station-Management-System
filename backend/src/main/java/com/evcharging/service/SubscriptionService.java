@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -35,6 +37,52 @@ public class SubscriptionService {
 
         SubscriptionPlan saved = subscriptionPlanRepo.save(plan);
         return new SubPlanResponseDTO(saved.getId(), saved.getName(), saved.getDiscountPercent(),saved.getCreatedAt(),saved.getPrice());
+    }
+
+    @Transactional
+    public SubPlanResponseDTO updatePlan(Long id, SubPlanCreateDTO dto) {
+        SubscriptionPlan plan = subscriptionPlanRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Plan not found"));
+
+        // Nếu đổi tên, check trùng
+        if (!plan.getName().equals(dto.getName())
+                && subscriptionPlanRepo.existsByName(dto.getName())) {
+            throw new IllegalArgumentException("Plan name already exists");
+        }
+
+        plan.setName(dto.getName());
+        plan.setDiscountPercent(dto.getDiscountPercent());
+        plan.setPrice(dto.getPrice());
+
+        SubscriptionPlan updated = subscriptionPlanRepo.save(plan);
+        return new SubPlanResponseDTO(
+                updated.getId(),
+                updated.getName(),
+                updated.getDiscountPercent(),
+                updated.getCreatedAt(),
+                updated.getPrice()
+        );
+    }
+
+    @Transactional
+    public void deletePlan(Long id) {
+        if (!subscriptionPlanRepo.existsById(id)) {
+            throw new IllegalArgumentException("Plan not found");
+        }
+        subscriptionPlanRepo.deleteById(id);
+    }
+
+    public List<SubPlanResponseDTO> getAllPlans() {
+        List<SubscriptionPlan> plans = subscriptionPlanRepo.findAll();
+        return plans.stream()
+                .map(plan -> new SubPlanResponseDTO(
+                        plan.getId(),
+                        plan.getName(),
+                        plan.getDiscountPercent(),
+                        plan.getCreatedAt(),
+                        plan.getPrice()
+                ))
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -88,5 +136,20 @@ public class SubscriptionService {
 
         // 9. Trả về DTO
         return dtoMapper.toUserSubResponseDTO(saved);
+    }
+
+    @Transactional(readOnly = true)
+    public UserSubResponseDTO getActiveSubscription(Long accountId) {
+        // 1. Kiểm tra account
+        Account account = accountRepo.findById(accountId)
+                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+
+        // 2. Tìm subscription ACTIVE
+        UserSubscription subscription = userSubscriptionRepo
+                .findByAccountAndStatus(account, SubscriptionStatus.ACTIVE)
+                .orElseThrow(() -> new IllegalArgumentException("No active subscription found"));
+
+        // 3. Trả về DTO
+        return dtoMapper.toUserSubResponseDTO(subscription);
     }
 }

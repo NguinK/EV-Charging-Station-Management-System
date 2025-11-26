@@ -19,6 +19,8 @@ public interface UserSubscriptionRepository extends JpaRepository<UserSubscripti
 
     boolean existsByAccountAndStatus(Account account, SubscriptionStatus status);
 
+    Optional<UserSubscription> findByAccountAndStatus(Account account, SubscriptionStatus status);
+
     @Query("SELECT us FROM UserSubscription us " +
             "WHERE us.account.id = :accountId " +
             "AND us.status = 'ACTIVE' " +
@@ -27,5 +29,4 @@ public interface UserSubscriptionRepository extends JpaRepository<UserSubscripti
             @Param("accountId") Long accountId,
             @Param("now") OffsetDateTime now
     );
-
 }
